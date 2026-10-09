@@ -226,7 +226,7 @@ export function Preloader() {
           A
         </div>
         <div className="text-white font-grotesk font-semibold tracking-tight text-lg">
-          ALTRAWARE <span className="font-light opacity-60">TECHNOLOGIES</span>
+          ALTRAWARE <span className="font-light opacity-60">TECHNOLOGY</span>
         </div>
       </div>
       <div className="loader-word text-white/90 text-3xl md:text-5xl" id="loaderWord">
@@ -292,7 +292,7 @@ export function PageTransition() {
           Twende
         </span>
         <span className="text-violet-300/70 font-mono text-xs uppercase tracking-[0.25em] mt-2">
-          Altraware Technologies
+          Altraware Technology
         </span>
       </div>
     </div>

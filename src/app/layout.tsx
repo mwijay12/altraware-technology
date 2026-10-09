@@ -22,8 +22,8 @@ const SITE_URL = "https://www.altraware.co.tz";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Altraware Technologies — Rooted at Home. Engineered for the World.",
-    template: "%s · Altraware Technologies",
+    default: "Altraware Technology — Rooted at Home. Engineered for the World.",
+    template: "%s · Altraware Technology",
   },
   description:
     "Tanzanian software company in Dar es Salaam. Websites, web & mobile apps, and business systems — Faida POS & CareTrack. Kiswahili & English, M-Pesa native, offline-first.",
@@ -44,15 +44,15 @@ export const metadata: Metadata = {
     locale: "en_TZ",
     alternateLocale: ["sw_TZ"],
     url: SITE_URL,
-    siteName: "Altraware Technologies",
-    title: "Altraware Technologies — Rooted at Home. Engineered for the World.",
+    siteName: "Altraware Technology",
+    title: "Altraware Technology — Rooted at Home. Engineered for the World.",
     description:
       "Websites, apps & business systems built in Tanzania for how Tanzania works. Kiswahili-first, M-Pesa native, offline-ready.",
-    images: [{ url: "/logo.jpg", width: 1254, height: 1254, alt: "Altraware Technologies logo" }],
+    images: [{ url: "/logo.jpg", width: 1254, height: 1254, alt: "Altraware Technology logo" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Altraware Technologies",
+    title: "Altraware Technology",
     description: "Tanzanian software studio — websites, apps & business systems.",
     images: ["/logo.jpg"],
   },

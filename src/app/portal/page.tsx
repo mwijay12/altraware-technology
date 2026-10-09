@@ -200,7 +200,7 @@ export default function ClientPortalPage() {
             </div>
             <div>
               <div className="text-deep font-grotesk font-extrabold text-base tracking-tight leading-none">
-                ALTRAWARE TECHNOLOGIES
+                ALTRAWARE TECHNOLOGY
               </div>
               <div className="text-[10px] tracking-[0.25em] text-viol font-mono font-bold uppercase mt-1">
                 CLIENT TERMINAL · PORTAL
@@ -796,7 +796,7 @@ export default function ClientPortalPage() {
                       System Documentation: {activeProject.systemName}
                     </h3>
                     <p className="text-xs text-deep/60 mt-1">
-                      Comprehensive technical architecture, administrative guide, and SLA prepared by Altraware Technologies.
+                      Comprehensive technical architecture, administrative guide, and SLA prepared by Altraware Technology.
                     </p>
                   </div>
 
@@ -1014,7 +1014,7 @@ export default function ClientPortalPage() {
                         Lipa Namba: <span className="font-bold text-emerald-600">5566778</span>
                       </div>
                       <div className="text-[11px] text-deep/60">
-                        Business Name: <span className="text-deep font-semibold">ALTRAWARE TECHNOLOGIES</span>
+                        Business Name: <span className="text-deep font-semibold">ALTRAWARE TECHNOLOGY</span>
                       </div>
                     </div>
 
@@ -1027,7 +1027,7 @@ export default function ClientPortalPage() {
                         A/C: <span className="font-bold text-blue-700">0150XXXXXXXXX</span>
                       </div>
                       <div className="text-[11px] text-deep/60">
-                        Account Name: <span className="text-deep font-semibold">Altraware Technologies Co.</span>
+                        Account Name: <span className="text-deep font-semibold">Altraware Technology Co.</span>
                       </div>
                     </div>
                   </div>

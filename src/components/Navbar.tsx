@@ -186,7 +186,7 @@ export default function Navbar() {
               <div className="leading-none">
                 <div className="font-grotesk font-bold tracking-tight text-[15px]">ALTRAWARE</div>
                 <div className="text-[9px] tracking-[0.32em] font-grotesk text-deep/60 font-medium">
-                  TECHNOLOGIES · DSM
+                  TECHNOLOGY · DSM
                 </div>
               </div>
             </TransitionLink>

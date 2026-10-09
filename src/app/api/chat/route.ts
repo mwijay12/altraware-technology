@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const SYSTEM_PROMPT = `Wewe ni "Altra", msaidizi mwerevu wa akili mnemba (AI) wa kampuni ya kiteknolojia ya Altraware Technologies Ltd iliyopo Dar es Salaam, Tanzania.
+const SYSTEM_PROMPT = `Wewe ni "Altra", msaidizi mwerevu wa akili mnemba (AI) wa kampuni ya kiteknolojia ya Altraware Technology Ltd iliyopo Dar es Salaam, Tanzania.
 Wajibu wako ni kutoa majibu ya kitaalamu, ya heshima na ya kirafiki kwa wateja kwa Kiswahili na Kiingereza (au kuchanganya kulingana na mteja anavyoongea).
 
 Kuhusu Altraware:

@@ -751,7 +751,7 @@ export default function ClientTrackerTab({
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
               <div>
                 <span className="text-[10px] font-mono tracking-widest text-violL uppercase font-bold">
-                  ALTRAWARE TECHNOLOGIES · SYSTEM DOCUMENTATION
+                  ALTRAWARE TECHNOLOGY · SYSTEM DOCUMENTATION
                 </span>
                 <h3 className="text-2xl font-bold font-grotesk mt-0.5">{printDocProject.systemName}</h3>
                 <p className="text-xs text-white/50">Mteja: {printDocProject.clientName} · Tarehe: {new Date().toLocaleDateString("sw-TZ")}</p>

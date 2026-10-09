@@ -109,7 +109,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <img src="/logo.png" alt="Altraware" className="w-full h-full object-contain" />
             </div>
             <div>
-              <div className="text-white font-grotesk font-extrabold text-sm tracking-tight">ALTRAWARE TECHNOLOGIES</div>
+              <div className="text-white font-grotesk font-extrabold text-sm tracking-tight">ALTRAWARE TECHNOLOGY</div>
               <div className="text-[10px] tracking-[0.25em] text-violL font-mono font-bold uppercase">ADMIN CONSOLE</div>
             </div>
           </div>

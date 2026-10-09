@@ -2,7 +2,7 @@
 
 /**
  * Glyph Portal © 2026 Christian Katzmann. MIT.
- * Adapted for Altraware Technologies: rock-solid scroll camera through live typography.
+ * Adapted for Altraware Technology: rock-solid scroll camera through live typography.
  */
 import React, { useId, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
 

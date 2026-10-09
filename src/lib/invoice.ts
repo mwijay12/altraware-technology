@@ -91,7 +91,7 @@ export async function downloadInvoicePdf(inv: Invoice, content: SiteContent) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(17);
-  doc.text("ALTRAWARE TECHNOLOGIES LTD", 36, 14);
+  doc.text("ALTRAWARE TECHNOLOGY LTD", 36, 14);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.text("Websites · Apps · Business Systems — Dar es Salaam, Tanzania", 36, 20);
@@ -220,7 +220,7 @@ export async function downloadInvoicePdf(inv: Invoice, content: SiteContent) {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(8);
   doc.text(
-    `Asante sana! Questions about this invoice? WhatsApp ${c.phonePrimary} · Altraware Technologies Ltd`,
+    `Asante sana! Questions about this invoice? WhatsApp ${c.phonePrimary} · Altraware Technology Ltd`,
     W / 2,
     292,
     { align: "center" }

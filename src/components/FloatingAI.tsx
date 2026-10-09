@@ -84,7 +84,7 @@ export default function FloatingAI() {
       setMsgs([
         {
           from: "ai",
-          text: "Habari! Mimi ni Altra — msaidizi wa AI wa Altraware Technologies. 💜\nNipo tayari kukujibu chochote kuhusu bei za tovuti (kuanzia TSh 350k), mifumo yetu (Faida POS & CareTrack), miradi tuliyotengeneza, au kukuunganisha moja kwa moja na David au Clemence kupitia WhatsApp!",
+          text: "Habari! Mimi ni Altra — msaidizi wa AI wa Altraware Technology. 💜\nNipo tayari kukujibu chochote kuhusu bei za tovuti (kuanzia TSh 350k), mifumo yetu (Faida POS & CareTrack), miradi tuliyotengeneza, au kukuunganisha moja kwa moja na David au Clemence kupitia WhatsApp!",
           quick: ["Bei za Tovuti & Mifumo?", "Nieleze kuhusu Faida POS", "CareTrack inafanyaje kazi?", "Wasiliana WhatsApp"],
         },
       ]);

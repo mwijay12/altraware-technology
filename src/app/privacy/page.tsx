@@ -5,7 +5,7 @@ import { DEFAULT_CONTENT } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How Altraware Technologies collects, uses and protects your personal data — in line with Tanzania's Personal Data Protection Act (PDPA) 2022.",
+    "How Altraware Technology collects, uses and protects your personal data — in line with Tanzania's Personal Data Protection Act (PDPA) 2022.",
 };
 
 export default function PrivacyPage() {

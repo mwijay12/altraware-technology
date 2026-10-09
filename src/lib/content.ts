@@ -193,7 +193,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   about: {
     shortDescription:
-      "Altraware Technologies is a Tanzanian software company based in Dar es Salaam. We design and build websites, web and mobile apps, and management systems for small businesses, schools, care centres and NGOs. We combine local understanding — including mobile payments and Kiswahili — with modern engineering and practical, long-term support.",
+      "Altraware Technology is a Tanzanian software company based in Dar es Salaam. We design and build websites, web and mobile apps, and management systems for small businesses, schools, care centres and NGOs. We combine local understanding — including mobile payments and Kiswahili — with modern engineering and practical, long-term support.",
     longIntro:
       "We help organisations move from paper, spreadsheets and scattered tools to reliable digital systems. Founded by David Mwijage and Clemence Ng'unda, we build with data privacy in mind, work in clear phases with written agreements, and stay with our clients after launch through maintenance and support plans.",
     areas: [
@@ -882,7 +882,7 @@ export const DEFAULT_CONTENT: SiteContent = {
         tags: ["trust", "brela", "compliance", "contracts"],
         body: [
           "Every month, we meet business owners in Dar es Salaam who were burned by informal developers. The common stories are painful: an advance payment was sent to an individual mobile number, but the developer stopped answering calls; or the website was launched, but the freelancer refused to share administrative credentials and domain passwords.",
-          "Software is not just a graphic design file — it is the digital spine of your company. That is why choosing a formally registered technology partner is essential.\n\n1. Legal Standing & BRELA Verification: Altraware Technologies is officially registered with the Business Registrations and Licensing Agency (BRELA) in Tanzania. When you transact with us, you are dealing with a recognized corporate entity with a verifiable physical presence in Dar es Salaam.\n\n2. Written SLA & Staged Contracts: We work in five transparent phases. You review and approve deliverables at each stage before billing the next. You receive a formal stamped agreement with clear delivery dates and agreed warranties.\n\n3. 100% Code & Database Sovereignty: Unlike providers who lock you into proprietary hosting traps, Altraware hands over full code repositories, database access keys, and administrative credentials upon delivery. You own your system entirely.\n\n4. Data Protection Compliance (PDPA 2022): We build with Tanzania's Personal Data Protection Act (No. 11 of 2022) at the core of our architecture. Customer phone numbers, patient notes, and financial records are encrypted and protected.",
+          "Software is not just a graphic design file — it is the digital spine of your company. That is why choosing a formally registered technology partner is essential.\n\n1. Legal Standing & BRELA Verification: Altraware Technology is officially registered with the Business Registrations and Licensing Agency (BRELA) in Tanzania. When you transact with us, you are dealing with a recognized corporate entity with a verifiable physical presence in Dar es Salaam.\n\n2. Written SLA & Staged Contracts: We work in five transparent phases. You review and approve deliverables at each stage before billing the next. You receive a formal stamped agreement with clear delivery dates and agreed warranties.\n\n3. 100% Code & Database Sovereignty: Unlike providers who lock you into proprietary hosting traps, Altraware hands over full code repositories, database access keys, and administrative credentials upon delivery. You own your system entirely.\n\n4. Data Protection Compliance (PDPA 2022): We build with Tanzania's Personal Data Protection Act (No. 11 of 2022) at the core of our architecture. Customer phone numbers, patient notes, and financial records are encrypted and protected.",
           "Building software should give you peace of mind, not operational anxiety. Working with an accountable, registered team ensures your investment remains secure for years to come.",
         ],
         published: true,
@@ -904,11 +904,11 @@ export const DEFAULT_CONTENT: SiteContent = {
     privacy: {
       updated: "1 October 2026",
       intro:
-        "Altraware Technologies (“we”, “us”, “our”) is a software company based in Dar es Salaam, Tanzania. This Privacy Policy explains what personal data we collect through this website and our platforms, why we collect it, and the choices you have. It is written in plain language, in the spirit of the Personal Data Protection Act, No. 11 of 2022 (PDPA) and international good practice.",
+        "Altraware Technology (“we”, “us”, “our”) is a software company based in Dar es Salaam, Tanzania. This Privacy Policy explains what personal data we collect through this website and our platforms, why we collect it, and the choices you have. It is written in plain language, in the spirit of the Personal Data Protection Act, No. 11 of 2022 (PDPA) and international good practice.",
       sections: [
         {
           title: "1. Who we are & how to reach us",
-          body: "Altraware Technologies Ltd, Dar es Salaam, Tanzania. Data controller contact: altrawaretechnology@gmail.com · +255 792 867 427 / +255 790 942 616. For anything about your data, write to us — we answer within one business day.",
+          body: "Altraware Technology Ltd, Dar es Salaam, Tanzania. Data controller contact: altrawaretechnology@gmail.com · +255 792 867 427 / +255 790 942 616. For anything about your data, write to us — we answer within one business day.",
         },
         {
           title: "2. Data we collect",
@@ -947,7 +947,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     terms: {
       updated: "1 October 2026",
       intro:
-        "These Terms & Conditions govern your use of the Altraware Technologies website and any software, platforms or services we deliver, unless replaced by a signed client agreement. By using this site or engaging us, you accept these terms.",
+        "These Terms & Conditions govern your use of the Altraware Technology website and any software, platforms or services we deliver, unless replaced by a signed client agreement. By using this site or engaging us, you accept these terms.",
       sections: [
         {
           title: "1. Services & agreements",
@@ -983,12 +983,12 @@ export const DEFAULT_CONTENT: SiteContent = {
         },
         {
           title: "9. Contact",
-          body: "Altraware Technologies Ltd · Dar es Salaam · altrawaretechnology@gmail.com · +255 792 867 427 / +255 790 942 616.",
+          body: "Altraware Technology Ltd · Dar es Salaam · altrawaretechnology@gmail.com · +255 792 867 427 / +255 790 942 616.",
         },
       ],
     },
     companyDetails: {
-      legalName: "Altraware Technologies Ltd",
+      legalName: "Altraware Technology Ltd",
       email: "altrawaretechnology@gmail.com",
       phonePrimary: "+255 792 867 427",
       phoneSecondary: "+255 790 942 616",

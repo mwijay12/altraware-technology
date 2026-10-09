@@ -5,7 +5,7 @@ import { DEFAULT_CONTENT } from "@/lib/content";
 export const metadata: Metadata = {
   title: "Terms & Conditions",
   description:
-    "The terms that govern engagements with Altraware Technologies — quotes, payment, IP handover, warranties and Tanzanian law.",
+    "The terms that govern engagements with Altraware Technology — quotes, payment, IP handover, warranties and Tanzanian law.",
 };
 
 export default function TermsPage() {

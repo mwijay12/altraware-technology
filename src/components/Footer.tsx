@@ -24,7 +24,7 @@ export default function Footer() {
                 <img src="/logo.png" alt="Altraware logo" className="w-full h-full object-contain" />
               </div>
               <div>
-                <div className="font-grotesk font-bold">ALTRAWARE TECHNOLOGIES</div>
+                <div className="font-grotesk font-bold">ALTRAWARE TECHNOLOGY</div>
                 <div className="text-[10px] tracking-[0.3em] text-white/40 font-grotesk">DAR ES SALAAM · TANZANIA</div>
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-[12px] text-white/35">
-          <div>© {new Date().getFullYear()} Altraware Technologies Ltd · Dar es Salaam, Tanzania · All rights reserved.</div>
+          <div>© {new Date().getFullYear()} Altraware Technology Ltd · Dar es Salaam, Tanzania · All rights reserved.</div>
           <div className="flex items-center gap-5">
             <TransitionLink href="/privacy" className="hover:text-white transition-colors">Privacy</TransitionLink>
             <TransitionLink href="/terms" className="hover:text-white transition-colors">Terms</TransitionLink>

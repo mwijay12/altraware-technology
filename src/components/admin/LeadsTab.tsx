@@ -216,7 +216,7 @@ export default function LeadsTab({
             const cleanPhone = inq.phone.replace(/[^0-9]/g, "");
             const waPhone = cleanPhone.startsWith("0") ? "255" + cleanPhone.slice(1) : cleanPhone;
             const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(
-              `Habari ${inq.name}! Nawasiliana kutoka Altraware Technologies kuhusu ombi lako la ${inq.type} (${inq.refCode || "Ref: #"}). Tunafurahi kukusaidia kufanikisha mfumo wako.`
+              `Habari ${inq.name}! Nawasiliana kutoka Altraware Technology kuhusu ombi lako la ${inq.type} (${inq.refCode || "Ref: #"}). Tunafurahi kukusaidia kufanikisha mfumo wako.`
             )}`;
 
             return (
@@ -370,7 +370,7 @@ export default function LeadsTab({
                     {/* EMAIL */}
                     {inq.email && (
                       <a
-                        href={`mailto:${inq.email}?subject=Altraware Technologies — ${encodeURIComponent(inq.type)}`}
+                        href={`mailto:${inq.email}?subject=Altraware Technology — ${encodeURIComponent(inq.type)}`}
                         className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                       >
                         <i className="fa-regular fa-envelope text-xs" /> Tuma Email
