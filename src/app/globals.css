@@ -124,63 +124,27 @@ body {
   will-change: transform;
 }
 
-/* ============ CURSOR ============ */
-#cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 10px;
-  height: 10px;
-  background: #7c3aed;
-  border-radius: 50%;
-  pointer-events: none !important;
-  z-index: 300;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: width 0.2s, height 0.2s, background 0.2s, opacity 0.2s;
+/* ============ MODAL INTERNAL SCROLLBAR (thin, dark, rounded) ============ */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.55) transparent;
 }
-#cursor.active {
-  opacity: 1;
+.modal-scroll::-webkit-scrollbar {
+  width: 8px;
 }
-#cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 36px;
-  height: 36px;
-  border: 1.5px solid rgba(124, 58, 237, 0.45);
-  border-radius: 50%;
-  pointer-events: none !important;
-  z-index: 299;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: width 0.25s, height 0.25s, border 0.25s, background 0.25s, opacity 0.2s;
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
-#cursor-ring.active {
-  opacity: 1;
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.55);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
-#cursor.hovering {
-  width: 6px;
-  height: 6px;
-  background: #7c3aed;
-}
-#cursor-ring.hovering {
-  width: 48px;
-  height: 48px;
-  background: rgba(124, 58, 237, 0.08);
-  border-color: rgba(124, 58, 237, 0.6);
-}
-@media (hover: none) {
-  #cursor,
-  #cursor-ring {
-    display: none !important;
-  }
-}
-
-/* Admin console: native cursor only */
-body.admin-no-cursor #cursor,
-body.admin-no-cursor #cursor-ring {
-  display: none !important;
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.85);
+  background-clip: content-box;
+  border: 2px solid transparent;
 }
 
 /* ============ CLEAN DOC PRINT (system documentation paper only) ============ */
@@ -730,4 +694,21 @@ textarea:focus {
 .admin-light .bg-viol .text-white,
 .admin-light .bg-violD .text-white {
   color: #ffffff !important;
+}
+
+/* Admin light mode: amber handover box must stay readable (dark amber on cream) */
+.admin-light .creds-box,
+.admin-light .bg-amber-500\/10 {
+  background-color: #fffbeb !important;
+  border-color: #fcd34d !important;
+}
+.admin-light .creds-box .text-amber-300,
+.admin-light .creds-box .text-amber-200,
+.admin-light .text-amber-300,
+.admin-light .text-amber-200 {
+  color: #92400e !important;
+}
+.admin-light .creds-box .bg-black\/40 {
+  background-color: #fef3c7 !important;
+  border: 1px solid #fcd34d;
 }

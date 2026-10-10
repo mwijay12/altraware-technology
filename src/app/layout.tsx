@@ -5,7 +5,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ContentProvider, NotifyProvider, Preloader, SmoothScroll, PageTransition } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { CustomCursor, FloatingAI } from "@/components/motion";
+import { FloatingAI } from "@/components/motion";
 import Logo from "@/components/Logo";
 
 const fraunces = Fraunces({
@@ -67,16 +67,36 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Altraware Technology",
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    image: [`${SITE_URL}/logo.jpg`, `${SITE_URL}/faidahq.png`],
+    description:
+      "Tanzanian software company in Dar es Salaam. Websites, web & mobile apps, POS systems (Faida POS), clinic systems (CareTrack) — Kiswahili & English, M-Pesa native, offline-first.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Dar es Salaam",
+      addressCountry: "TZ",
+    },
+    areaServed: ["Tanzania", "Kenya", "Uganda", "Worldwide"],
+    sameAs: ["https://github.com/mwijay12"],
+  };
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable} ${grotesk.variable}`}>
       <body className="antialiased font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
         <ContentProvider>
           <NotifyProvider>
             <SmoothScroll>
               <div className="grain" />
               <div className="grain-cine" />
               <Preloader />
-              <CustomCursor />
               <PageTransition />
               <Navbar />
               <main>{children}</main>

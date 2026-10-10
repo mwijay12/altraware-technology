@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard } from "@/components/motion";
 import { useContent, useNotify } from "@/components/providers";
-import { computeEstimate, formatTsh, formatK } from "@/lib/content";
+import { computeEstimate } from "@/lib/content";
+import { CurrencyToggle, useVisitorCurrency } from "@/lib/geo-pricing";
 import { TextEffect } from "@/components/ui/text-effect";
 
 import PricingSection from "@/components/ui/pricing-section";
@@ -25,6 +26,7 @@ export default function PricingPage() {
   const [includeVat, setIncludeVat] = useState(false);
   const [includeSupport, setIncludeSupport] = useState(false);
   const [supportPlanId, setSupportPlanId] = useState(pricing.supportPlans[0].id);
+  const geo = useVisitorCurrency();
 
   const estimate = useMemo(
     () =>
@@ -71,7 +73,10 @@ export default function PricingPage() {
       <PricingSection />
 
       {/* ============ SMART ESTIMATOR ============ */}
-      <section className="bg-white py-20 md:py-28 border-y border-line">
+      <section className="bg-white pt-10 pb-20 md:pb-28 border-y border-line">
+        <div className="max-w-[1320px] mx-auto px-5 md:px-8 mb-8 flex justify-center">
+          <CurrencyToggle pricing={geo} />
+        </div>
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 grid lg:grid-cols-[1fr_1fr] gap-6 items-start">
           {/* ESTIMATOR */}
           <Reveal className="bg-white border border-deep/10 rounded-3xl p-6 md:p-8 shadow-xl shadow-deep/5">
@@ -83,7 +88,7 @@ export default function PricingPage() {
                 Instant Estimator
               </div>
               <span className="text-[10px] font-bold bg-green-100 text-green-700 px-3 py-1.5 rounded-full tracking-widest">
-                LIVE · TSH
+                LIVE · {geo.currency === "USD" ? "USD" : "TSH"}
               </span>
             </div>
 
@@ -103,7 +108,7 @@ export default function PricingPage() {
                   </div>
                   <i className={`fa-solid ${t.icon} text-xl text-viol`} />
                   <div className="text-xs font-bold mt-1.5">{t.label}</div>
-                  <div className="text-[10px] text-deep/45 font-mono mt-0.5">from {formatK(t.base)}</div>
+                  <div className="text-[10px] text-deep/45 font-mono mt-0.5">from {geo.symbol} {geo.fmtK(t.base)}</div>
                 </button>
               ))}
             </div>
@@ -128,7 +133,7 @@ export default function PricingPage() {
                   </div>
                   <div>
                     <div className="text-xs font-bold">{f.label}</div>
-                    <div className="text-[10px] text-deep/45">+ TSh {formatK(f.cost)}</div>
+                    <div className="text-[10px] text-deep/45">+ {geo.symbol} {geo.fmtK(f.cost)}</div>
                   </div>
                 </button>
               ))}
@@ -158,7 +163,7 @@ export default function PricingPage() {
                       }`}
                       onClick={() => setSupportPlanId(p.id)}
                     >
-                      {p.price === "custom" ? p.name.split(" ")[0] : `TSh ${formatK(p.price)}/mo`}
+                      {p.price === "custom" ? p.name.split(" ")[0] : `${geo.fmtTag(p.price)}/mo`}
                     </button>
                   ))}
                 </div>
@@ -173,7 +178,7 @@ export default function PricingPage() {
               <div className="relative">
                 <div className="text-[11px] tracking-widest font-grotesk text-white/50">ESTIMATED INVESTMENT RANGE</div>
                 <div className="font-grotesk font-bold text-4xl mt-2">
-                  {estimate.lowDisplay} <span className="text-white/40">–</span> {estimate.highDisplay}
+                  {geo.fmtTag(estimate.subtotal)} <span className="text-white/40">–</span> {geo.fmtTag(estimate.highEnd)}
                 </div>
                 <div className="text-[13px] text-white/55 mt-2">
                   ⏱ ~{estimate.weeks[0]}–{estimate.weeks[1]} weeks · includes design + training
@@ -183,37 +188,37 @@ export default function PricingPage() {
                 <div className="mt-6 bg-white/5 border border-white/10 rounded-2xl p-5 text-sm space-y-2">
                   <div className="flex justify-between text-white/60">
                     <span>Base ({pricing.estimator.types.find((t) => t.id === typeId)?.label})</span>
-                    <span className="font-mono">{formatTsh(estimate.base)}</span>
+                    <span className="font-mono">{geo.fmt(estimate.base)}</span>
                   </div>
                   <div className="flex justify-between text-white/60">
                     <span>Features ({estimate.selectedFeatures.length}){featureIds.length >= 3 ? " −10% bundle" : ""}</span>
-                    <span className="font-mono">{formatTsh(estimate.featuresCost)}</span>
+                    <span className="font-mono">{geo.fmt(estimate.featuresCost)}</span>
                   </div>
                   <div className="flex justify-between text-white/60">
                     <span>Subtotal</span>
-                    <span className="font-mono">{formatTsh(estimate.subtotal)}</span>
+                    <span className="font-mono">{geo.fmt(estimate.subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-white/60">
                     <span>Contingency ({Math.round((estimate.highEnd - estimate.subtotal) / estimate.subtotal * 100)}% by complexity {estimate.complexity}/10)</span>
-                    <span className="font-mono">{formatTsh(estimate.contingency)}</span>
+                    <span className="font-mono">{geo.fmt(estimate.contingency)}</span>
                   </div>
                   {includeVat && (
                     <div className="flex justify-between text-white/60">
                       <span>VAT ({pricing.estimator.vatPercent}%)</span>
-                      <span className="font-mono">{formatTsh(estimate.vat)}</span>
+                      <span className="font-mono">{geo.fmt(estimate.vat)}</span>
                     </div>
                   )}
                   {includeSupport && (
                     <div className="flex justify-between text-white/60">
                       <span>Support plan / month</span>
                       <span className="font-mono">
-                        {estimate.supportMonthly === "custom" ? "Custom" : formatTsh(estimate.supportMonthly)}
+                        {estimate.supportMonthly === "custom" ? "Custom" : geo.fmt(estimate.supportMonthly)}
                       </span>
                     </div>
                   )}
                   <div className="border-t border-white/10 pt-3 flex justify-between font-grotesk font-bold text-xl">
                     <span>{includeVat ? "Total (incl. VAT)" : "Total"}</span>
-                    <span className="text-violL">{formatTsh(estimate.totalWithVat)}</span>
+                    <span className="text-violL">{geo.fmt(estimate.totalWithVat)}</span>
                   </div>
                 </div>
 
@@ -233,7 +238,7 @@ export default function PricingPage() {
 
                 <TransitionLink
                   href={`/contact?estimate=${encodeURIComponent(
-                    `I'm interested in a ${typeId} project (${estimate.lowDisplay} – ${estimate.highDisplay}). Features: ${estimate.selectedFeatures.join(", ") || "standard"}.`
+                    `I'm interested in a ${typeId} project (${geo.fmtTag(estimate.subtotal)} – ${geo.fmtTag(estimate.highEnd)}). Features: ${estimate.selectedFeatures.join(", ") || "standard"}.`
                   )}`}
                   className="mt-6 block text-center bg-viol hover:bg-violD transition-colors text-white text-sm font-bold py-4 rounded-xl shadow-lg shadow-viol/30"
                   onClick={() => notify("Estimate attached to your brief ✓")}
@@ -273,7 +278,7 @@ export default function PricingPage() {
                     {p.name.toUpperCase()}
                   </div>
                   <div className="font-grotesk font-bold text-3xl mt-2">
-                    {p.price === "custom" ? "Custom" : `TSh ${Math.round(p.price / 1000)}K`}
+                    {p.price === "custom" ? "Custom" : geo.fmtTag(p.price)}
                     {p.price !== "custom" && <span className={`text-sm font-sans font-normal ${p.popular ? "text-white/70" : "text-white/50"}`}>{p.unit}</span>}
                   </div>
                   <ul className={`text-sm mt-4 space-y-2.5 ${p.popular ? "text-white/85" : "text-white/65"}`}>

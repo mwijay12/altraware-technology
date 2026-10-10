@@ -6,10 +6,10 @@ import { Reveal, TiltCard, Counter, ImgReveal, Marquee, MediaBlock } from "@/com
 import { useContent, useNotify } from "@/components/providers";
 import { TextEffect } from "@/components/ui/text-effect";
 import { ScrollVelocity } from "@/components/ui/scroll-velocity";
-import LivePreviewFrame from "@/components/ui/LivePreviewFrame";
 import { Typewriter } from "@/components/ui/typewriter-text";
 import { TextGradientScroll } from "@/components/ui/text-gradient-scroll";
-import { formatPriceTag, type Project } from "@/lib/content";
+import { type Project } from "@/lib/content";
+import { useVisitorCurrency } from "@/lib/geo-pricing";
 import ProjectModal from "@/components/ui/ProjectModal";
 
 /* ============================================================
@@ -19,6 +19,7 @@ import ProjectModal from "@/components/ui/ProjectModal";
 export default function Home() {
   const { content } = useContent();
   const { notify } = useNotify();
+  const geo = useVisitorCurrency();
   const [heroReady, setHeroReady] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
 
@@ -149,7 +150,7 @@ export default function Home() {
           <div className={`hero-el relative hidden lg:block transition-all duration-700 delay-200 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             <TiltCard intensity={10} className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-deep/20 border-8 border-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={content.hero.image} alt={content.hero.imageCaption || "Dar es Salaam"} className="w-full h-[520px] object-cover" />
+              <img src={content.hero.image} alt={`${content.hero.imageCaption || "Dar es Salaam, Tanzania"} — Altraware Technology software company`} className="w-full h-[520px] object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-deep/15 to-transparent z-[3]" />
               <div className="absolute bottom-5 left-5 right-5 z-[4] flex items-end justify-between">
                 <div className="text-white">
@@ -298,8 +299,8 @@ export default function Home() {
             </Reveal>
             <div className="space-y-5">
               <Reveal className="grid grid-cols-2 gap-5">
-                <ImgReveal src={content.images.streetTz} alt="Tanzania street" className="rounded-2xl h-64" imgClassName="w-full h-full object-cover" />
-                <ImgReveal src={content.images.community} alt="Community" className="rounded-2xl h-64 mt-10" imgClassName="w-full h-full object-cover" />
+                <ImgReveal src={content.images.streetTz} alt="Dar es Salaam street Tanzania — local businesses Altraware builds offline-first software for" className="rounded-2xl h-64" imgClassName="w-full h-full object-cover" />
+                <ImgReveal src={content.images.community} alt="Tanzanian small business community using Faida POS retail system by Altraware" className="rounded-2xl h-64 mt-10" imgClassName="w-full h-full object-cover" />
               </Reveal>
               <Reveal delay={0.1}>
                 <TiltCard className="glass rounded-2xl p-6 relative overflow-hidden" intensity={6}>
@@ -309,7 +310,7 @@ export default function Home() {
                   </p>
                   <div className="flex items-center gap-3 mt-4">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={content.images.clientAvatar} className="w-10 h-10 rounded-full object-cover border-2 border-violL" alt="client" />
+                    <img src={content.images.clientAvatar} className="w-10 h-10 rounded-full object-cover border-2 border-violL" alt="Neema Mwakalinga, duka owner in Kariakoo Dar es Salaam — Faida POS client review" />
                     <div>
                       <div className="text-sm font-bold">Neema Mwakalinga</div>
                       <div className="text-xs text-white/50">Duka Owner · Kariakoo, Dar es Salaam</div>
@@ -350,24 +351,14 @@ export default function Home() {
               </div>
               <h2 className="display text-2xl sm:text-3xl md:text-5xl font-medium mt-2">
                 <TextEffect as="span" per="word" preset="fade" viewport={{ once: true }}>
-                  Uzoefu wa Moja kwa Moja · Interactive Live Preview
+                  Kazi Zetu · Systems in Motion
                 </TextEffect>
               </h2>
             </div>
             <p className="text-deep/60 text-xs md:text-sm max-w-md">
-              Kila mfumo na tovuti yetu inajaribiwa na kutumika hewani. Unaweza kuijaribu moja kwa moja hapa chini bila kuondoka kwenye tovuti!
+              Picha na video halisi za mifumo yetu — Faida POS, CareTrack na tovuti za biashara, moja kwa moja hewani.
             </p>
           </Reveal>
-
-          {/* Interactive Live Preview Frame (Faida POS web demo) */}
-          <div className="mb-6 md:mb-12">
-            <LivePreviewFrame
-              title="Faida POS (FaidaHQ) Web Demo"
-              liveUrl="https://faida-hq.vercel.app/"
-              posterImage="https://images.unsplash.com/photo-1556742049-0a67e557224f?q=80&w=1200&auto=format&fit=crop"
-              status="Live"
-            />
-          </div>
         </div>
 
         {/* Continuous Dynamic Marquee / ScrollVelocity Effect */}
@@ -707,7 +698,7 @@ export default function Home() {
                 {content.impact.sectors.map((s) => (
                   <div key={s.label} className="rounded-2xl overflow-hidden h-28 relative group">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={s.label} loading="lazy" />
+                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={`${s.label} software solutions in Tanzania by Altraware Technology`} loading="lazy" />
                     <div className="absolute inset-0 bg-deep/50 flex items-end p-3 text-white text-[11px] font-bold">{s.label}</div>
                   </div>
                 ))}
@@ -758,7 +749,7 @@ export default function Home() {
                       {p.name}
                     </div>
                     <div className="font-grotesk font-bold text-2xl mt-1.5">
-                      {formatPriceTag(p.price)}
+                      {geo.fmtTag(p.price)}
                     </div>
                     <div className={`text-[11px] mt-1 line-clamp-1 ${p.featured ? "text-white/70" : "text-deep/55"}`}>{p.tagline}</div>
                     <ul className={`text-[12px] mt-3 space-y-1.5 ${p.featured ? "text-white/85" : "text-deep/65"}`}>

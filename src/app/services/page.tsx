@@ -5,7 +5,7 @@ import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard, ImgReveal, MediaBlock } from "@/components/motion";
 import { useContent } from "@/components/providers";
 import { ServicesAccordion } from "@/app/page";
-import { formatTsh } from "@/lib/content";
+import { useVisitorCurrency } from "@/lib/geo-pricing";
 import { TextEffect } from "@/components/ui/text-effect";
 
 /* CRAFT / STACK section (shared with reference) */
@@ -20,6 +20,7 @@ const STACK = [
 
 export default function ServicesPage() {
   const { content } = useContent();
+  const geo = useVisitorCurrency();
 
   return (
     <div className="pt-[120px]">
@@ -75,7 +76,7 @@ export default function ServicesPage() {
                   {s.startingPrice && (
                     <div className="mt-6 inline-flex items-center gap-3 bg-deep text-white rounded-2xl px-5 py-4">
                       <span className="text-white/60 text-sm">Starting from</span>
-                      <span className="font-grotesk font-bold text-lg">{formatTsh(s.startingPrice)}</span>
+                      <span className="font-grotesk font-bold text-lg">{geo.fmt(s.startingPrice)}</span>
                     </div>
                   )}
                 </Reveal>

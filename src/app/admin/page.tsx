@@ -25,6 +25,7 @@ import ClientTrackerTab from "@/components/admin/ClientTrackerTab";
 import { uploadFileToCloudinary } from "@/lib/cloudinary";
 import type { SystemInquiry } from "@/lib/leads";
 import CloudinaryUploader from "@/components/ui/CloudinaryUploader";
+import WarmTooltip, { WarmTooltipGroup } from "@/components/ui/WarmTooltip";
 
 /* ============================================================
    Admin console — tabs:
@@ -55,22 +56,6 @@ export default function AdminPage() {
   // work on a draft copy; Save writes through to the provider
   const [draft, setDraft] = useState(content);
   useEffect(() => setDraft(content), [content]);
-
-  // Admin console: native cursor only — hide the global custom dot/ring here.
-  useEffect(() => {
-    document.body.classList.add("admin-no-cursor");
-    const c = document.getElementById("cursor");
-    const r = document.getElementById("cursor-ring");
-    const prevC = c?.style.display;
-    const prevR = r?.style.display;
-    if (c) c.style.display = "none";
-    if (r) r.style.display = "none";
-    return () => {
-      document.body.classList.remove("admin-no-cursor");
-      if (c && prevC !== undefined) c.style.display = prevC;
-      if (r && prevR !== undefined) r.style.display = prevR;
-    };
-  }, []);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(content), [draft, content]);
 
   const save = () => {
@@ -549,17 +534,19 @@ function MediaSlotsEditor({
                 onChange={(e) => setAt(mi, { url: e.target.value })}
               />
               {m.type === "image" && (
-                <button
-                  type="button"
-                  title="Fill with a temporary Picsum photo"
-                  onClick={() => {
-                    setAt(mi, { url: picsumUrl(`${seedPrefix}-${mi + 1}`) });
-                    notify(`Slot ${mi + 1} filled with Picsum — remember "Save changes"`, "info");
-                  }}
-                  className="px-2.5 py-1 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all text-xs shrink-0"
-                >
-                  🎲
-                </button>
+                <WarmTooltip content="Fill with a temporary sample photo" size="sm">
+                  <button
+                    type="button"
+                    title="Fill with a temporary Picsum photo"
+                    onClick={() => {
+                      setAt(mi, { url: picsumUrl(`${seedPrefix}-${mi + 1}`) });
+                      notify(`Slot ${mi + 1} filled with Picsum — remember "Save changes"`, "info");
+                    }}
+                    className="px-2.5 py-1 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all text-xs shrink-0"
+                  >
+                    🎲
+                  </button>
+                </WarmTooltip>
               )}
             </div>
             <input
@@ -571,15 +558,23 @@ function MediaSlotsEditor({
           </div>
 
           <div className="flex sm:flex-col gap-1 shrink-0">
-            <button onClick={() => move(mi, -1)} disabled={mi === 0} className="text-white/40 hover:text-white transition-colors p-1 disabled:opacity-20" aria-label="Move up" title="Move up">
-              <i className="fa-solid fa-chevron-up text-xs" />
-            </button>
-            <button onClick={() => move(mi, 1)} disabled={mi === media.length - 1} className="text-white/40 hover:text-white transition-colors p-1 disabled:opacity-20" aria-label="Move down" title="Move down">
-              <i className="fa-solid fa-chevron-down text-xs" />
-            </button>
-            <button onClick={() => removeAt(mi)} className="text-white/40 hover:text-red-400 transition-colors p-1" aria-label="Delete slot" title="Delete slot">
-              <i className="fa-solid fa-trash text-xs" />
-            </button>
+            <WarmTooltipGroup delay={350} warmWindow={300}>
+              <WarmTooltip content="Move slot up" size="sm">
+                <button onClick={() => move(mi, -1)} disabled={mi === 0} className="text-white/40 hover:text-white transition-colors p-1 disabled:opacity-20" aria-label="Move up" title="Move up">
+                  <i className="fa-solid fa-chevron-up text-xs" />
+                </button>
+              </WarmTooltip>
+              <WarmTooltip content="Move slot down" size="sm">
+                <button onClick={() => move(mi, 1)} disabled={mi === media.length - 1} className="text-white/40 hover:text-white transition-colors p-1 disabled:opacity-20" aria-label="Move down" title="Move down">
+                  <i className="fa-solid fa-chevron-down text-xs" />
+                </button>
+              </WarmTooltip>
+              <WarmTooltip content="Remove this slot" size="sm">
+                <button onClick={() => removeAt(mi)} className="text-white/40 hover:text-red-400 transition-colors p-1" aria-label="Delete slot" title="Delete slot">
+                  <i className="fa-solid fa-trash text-xs" />
+                </button>
+              </WarmTooltip>
+            </WarmTooltipGroup>
           </div>
         </div>
       ))}
@@ -1128,9 +1123,13 @@ function BlogTab({
           </Field>
         </div>
         <div className="flex items-center gap-4 mt-6">
-          <button onClick={savePost} className="bg-viol hover:bg-violD transition-colors text-white font-bold px-6 py-3 rounded-xl text-sm">
-            Save post
-          </button>
+          <WarmTooltipGroup delay={350} warmWindow={300}>
+            <WarmTooltip content="Save to draft — then press Save changes up top" size="sm">
+              <button onClick={savePost} className="bg-viol hover:bg-violD transition-colors text-white font-bold px-6 py-3 rounded-xl text-sm">
+                Save post
+              </button>
+            </WarmTooltip>
+          </WarmTooltipGroup>
           <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
             <input
               type="checkbox"
@@ -1139,6 +1138,11 @@ function BlogTab({
               onChange={(e) => setEditing({ ...editing, published: e.target.checked })}
             />
             Published
+            <WarmTooltip content="Only published posts appear on /blog" size="sm">
+              <span className="text-white/30 hover:text-violL transition-colors cursor-help">
+                <i className="fa-solid fa-circle-question text-xs" />
+              </span>
+            </WarmTooltip>
           </label>
         </div>
       </section>
@@ -1155,6 +1159,7 @@ function BlogTab({
           + New post
         </button>
       </div>
+      <WarmTooltipGroup delay={350} warmWindow={300}>
       <div className="space-y-3">
         {draft.blog.posts.map((post, i) => (
           <div key={post.id} className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 flex items-center gap-4">
@@ -1179,28 +1184,33 @@ function BlogTab({
             >
               {post.published ? "LIVE" : "DRAFT"}
             </span>
-            <button onClick={() => setEditing(post)} className="text-white/50 hover:text-white transition-colors" aria-label="Edit">
-              <i className="fa-solid fa-pen" />
-            </button>
-            <button
-              onClick={() => {
-                if (!canManageNow()) {
-                  notify("No permission — admin session expired. Please sign in again.", "error");
-                  return;
-                }
-                if (confirm(`Delete "${post.title}"?`)) {
-                  setB((b) => void b.posts.splice(i, 1));
-                  notify("Post deleted", "info");
-                }
-              }}
-              className="text-white/40 hover:text-red-400 transition-colors"
-              aria-label="Delete"
-            >
-              <i className="fa-solid fa-trash" />
-            </button>
+            <WarmTooltip content="Edit this post" size="sm">
+              <button onClick={() => setEditing(post)} className="text-white/50 hover:text-white transition-colors" aria-label="Edit">
+                <i className="fa-solid fa-pen" />
+              </button>
+            </WarmTooltip>
+            <WarmTooltip content="Delete this post forever" size="sm">
+              <button
+                onClick={() => {
+                  if (!canManageNow()) {
+                    notify("No permission — admin session expired. Please sign in again.", "error");
+                    return;
+                  }
+                  if (confirm(`Delete "${post.title}"?`)) {
+                    setB((b) => void b.posts.splice(i, 1));
+                    notify("Post deleted", "info");
+                  }
+                }}
+                className="text-white/40 hover:text-red-400 transition-colors"
+                aria-label="Delete"
+              >
+                <i className="fa-solid fa-trash" />
+              </button>
+            </WarmTooltip>
           </div>
         ))}
       </div>
+      </WarmTooltipGroup>
     </section>
   );
 }

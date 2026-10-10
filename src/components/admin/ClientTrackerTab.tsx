@@ -10,6 +10,7 @@ import {
   DEFAULT_MILESTONES,
 } from "@/lib/client-projects";
 import CloudinaryUploader from "@/components/ui/CloudinaryUploader";
+import WarmTooltip, { WarmTooltipGroup } from "@/components/ui/WarmTooltip";
 import { canManageNow } from "@/lib/admin-session";
 import { useLockBodyScroll } from "@/components/motion";
 import { downloadSystemDocPdf } from "@/lib/system-doc-pdf";
@@ -410,28 +411,28 @@ export default function ClientTrackerTab({
 
               {/* CREDENTIALS HANDOVER */}
               {activeProject.adminCredentials && (
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-2">
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-2 creds-box">
                   <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
                     <i className="fa-solid fa-key" /> Account Handover (Admin Credentials)
                   </div>
                   <div className="grid sm:grid-cols-3 gap-3 text-xs pt-1">
-                    <div>
+                    <div className="min-w-0">
                       <span className="text-white/40 block text-[10px]">Dashboard URL:</span>
-                      <span className="text-white font-mono">{activeProject.adminCredentials.portalUrl || "—"}</span>
+                      <span className="text-white font-mono block break-all">{activeProject.adminCredentials.portalUrl || "—"}</span>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <span className="text-white/40 block text-[10px]">Username:</span>
-                      <span className="text-white font-mono">{activeProject.adminCredentials.username || "—"}</span>
+                      <span className="text-white font-mono block break-all">{activeProject.adminCredentials.username || "—"}</span>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <span className="text-white/40 block text-[10px]">Temp Password:</span>
-                      <span className="text-amber-200 font-mono font-bold bg-black/40 px-2 py-0.5 rounded">
+                      <span className="text-amber-200 font-mono font-bold bg-black/40 px-2 py-0.5 rounded inline-block break-all">
                         {activeProject.adminCredentials.tempPassword || "—"}
                       </span>
                     </div>
                   </div>
                   {activeProject.adminCredentials.note && (
-                    <p className="text-[11px] text-amber-300/80 italic pt-1">
+                    <p className="text-[11px] text-amber-200 font-medium italic pt-1">
                       Note: {activeProject.adminCredentials.note}
                     </p>
                   )}
@@ -503,7 +504,7 @@ export default function ClientTrackerTab({
             role="dialog"
             aria-modal="true"
             aria-label={editingProject.clientName ? "Edit project and documentation" : "New client project"}
-            className="relative bg-[#0e101f] border border-white/15 rounded-3xl max-w-2xl w-full p-6 text-white shadow-2xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto overscroll-contain"
+            className="relative bg-[#0e101f] border border-white/15 rounded-3xl max-w-2xl w-full p-6 text-white shadow-2xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll"
             onWheel={(e) => e.stopPropagation()}
           >
             <button
@@ -521,6 +522,7 @@ export default function ClientTrackerTab({
               Enter the system details, delivery stage reached, handover credentials and the system guide.
             </p>
 
+            <WarmTooltipGroup delay={350} warmWindow={300}>
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
@@ -719,11 +721,23 @@ export default function ClientTrackerTab({
 
               {/* DOCUMENTATION EDITORS */}
               <div className="space-y-3 pt-2">
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-white/50 block">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-white/50 flex items-center gap-1.5">
                   System Documentation
+                  <WarmTooltip content="These texts appear on the client portal Docs tab and inside the PDF" size="sm">
+                    <span className="text-violL/70 hover:text-violL transition-colors cursor-help">
+                      <i className="fa-solid fa-circle-info text-[11px]" />
+                    </span>
+                  </WarmTooltip>
                 </span>
                 <div>
-                  <label className="text-[10px] text-white/50 block mb-1">1. System Overview</label>
+                  <label className="text-[10px] text-white/50 flex items-center gap-1.5 mb-1">
+                    1. System Overview
+                    <WarmTooltip content="What the system does — shown first in docs & PDF" size="sm">
+                      <span className="text-white/30 hover:text-violL transition-colors cursor-help">
+                        <i className="fa-solid fa-circle-question text-[10px]" />
+                      </span>
+                    </WarmTooltip>
+                  </label>
                   <textarea
                     rows={2}
                     value={editingProject.documentation.overview}
@@ -737,7 +751,14 @@ export default function ClientTrackerTab({
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/50 block mb-1">2. User Guide</label>
+                  <label className="text-[10px] text-white/50 flex items-center gap-1.5 mb-1">
+                    2. User Guide
+                    <WarmTooltip content="Step-by-step for client staff — keep it short & numbered" size="sm">
+                      <span className="text-white/30 hover:text-violL transition-colors cursor-help">
+                        <i className="fa-solid fa-circle-question text-[10px]" />
+                      </span>
+                    </WarmTooltip>
+                  </label>
                   <textarea
                     rows={3}
                     value={editingProject.documentation.userGuide}
@@ -751,7 +772,14 @@ export default function ClientTrackerTab({
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/50 block mb-1">3. Support &amp; SLA Terms</label>
+                  <label className="text-[10px] text-white/50 flex items-center gap-1.5 mb-1">
+                    3. Support &amp; SLA Terms
+                    <WarmTooltip content="Hotline hours & response promises — also printed in the PDF" size="sm">
+                      <span className="text-white/30 hover:text-violL transition-colors cursor-help">
+                        <i className="fa-solid fa-circle-question text-[10px]" />
+                      </span>
+                    </WarmTooltip>
+                  </label>
                   <textarea
                     rows={2}
                     value={editingProject.documentation.slaSupport}
@@ -774,14 +802,17 @@ export default function ClientTrackerTab({
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-viol hover:bg-violD text-white font-bold text-xs shadow-lg shadow-viol/20"
-                >
-                  Save Project &amp; Documentation
-                </button>
+                <WarmTooltip content="Save project & documentation" shortcut="↵" size="sm">
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl bg-viol hover:bg-violD text-white font-bold text-xs shadow-lg shadow-viol/20"
+                  >
+                    Save Project &amp; Documentation
+                  </button>
+                </WarmTooltip>
               </div>
             </form>
+            </WarmTooltipGroup>
           </div>
         </div>
       )}
@@ -799,7 +830,7 @@ export default function ClientTrackerTab({
             aria-modal="true"
             aria-label={`System documentation for ${printDocProject.systemName}`}
             onWheel={(e) => e.stopPropagation()}
-            className="relative bg-white text-deep rounded-3xl max-w-3xl w-full shadow-2xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto overscroll-contain"
+            className="relative bg-white text-deep rounded-3xl max-w-3xl w-full shadow-2xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto overscroll-contain modal-scroll"
           >
             {/* Toolbar — sticky so actions stay reachable while the paper scrolls */}
             <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-deep/10 px-6 sm:px-8 py-4 flex items-center justify-between gap-3">
@@ -814,20 +845,26 @@ export default function ClientTrackerTab({
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => void handleDownloadDocPdf(printDocProject)}
-                  disabled={downloadingPdf}
-                  className="bg-viol hover:bg-violD disabled:opacity-60 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5"
-                >
-                  <i className={`fa-solid ${downloadingPdf ? "fa-circle-notch fa-spin" : "fa-file-arrow-down"}`} />
-                  {downloadingPdf ? "Preparing…" : "Download PDF"}
-                </button>
-                <button
-                  onClick={() => window.print()}
-                  className="bg-deep/5 hover:bg-deep/10 border border-deep/15 text-deep text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5"
-                >
-                  <i className="fa-solid fa-print" /> Print
-                </button>
+                <WarmTooltipGroup delay={350} warmWindow={300}>
+                  <WarmTooltip content="Clean branded A4 handover document" size="sm">
+                    <button
+                      onClick={() => void handleDownloadDocPdf(printDocProject)}
+                      disabled={downloadingPdf}
+                      className="bg-viol hover:bg-violD disabled:opacity-60 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5"
+                    >
+                      <i className={`fa-solid ${downloadingPdf ? "fa-circle-notch fa-spin" : "fa-file-arrow-down"}`} />
+                      {downloadingPdf ? "Preparing…" : "Download PDF"}
+                    </button>
+                  </WarmTooltip>
+                  <WarmTooltip content="Print only the white paper" shortcut="⌘P" size="sm">
+                    <button
+                      onClick={() => window.print()}
+                      className="bg-deep/5 hover:bg-deep/10 border border-deep/15 text-deep text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5"
+                    >
+                      <i className="fa-solid fa-print" /> Print
+                    </button>
+                  </WarmTooltip>
+                </WarmTooltipGroup>
                 <button
                   onClick={() => setPrintDocProject(null)}
                   className="text-deep/40 hover:text-deep p-2"

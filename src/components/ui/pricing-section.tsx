@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { CurrencyToggle, tzsToUsd, useVisitorCurrency } from "@/lib/geo-pricing";
 
 interface PlanItem {
   id: string;
@@ -225,6 +226,7 @@ const CategorySwitch = ({ category, onChangeCategory }: PricingSwitchProps) => {
 export default function PricingSection() {
   const [category, setCategory] = useState<"websites" | "systems">("websites");
   const pricingRef = useRef<HTMLDivElement>(null);
+  const geo = useVisitorCurrency();
 
   const activePlans = category === "websites" ? websitePlans : systemPlans;
 
@@ -300,9 +302,10 @@ export default function PricingSection() {
         animationNum={3}
         timelineRef={pricingRef}
         customVariants={revealVariants}
-        className="relative z-10 mb-12"
+        className="relative z-10 mb-12 space-y-4"
       >
         <CategorySwitch category={category} onChangeCategory={setCategory} />
+        <CurrencyToggle pricing={geo} />
       </TimelineContent>
 
       <div className="grid md:grid-cols-3 max-w-7xl gap-6 mx-auto relative z-10">
@@ -340,11 +343,11 @@ export default function PricingSection() {
                 </p>
                 <div className="flex items-baseline pt-2 border-t border-deep/10">
                   <span className="text-xs font-bold text-deep/60 mr-1.5 font-grotesk">
-                    TSh
+                    {geo.symbol}
                   </span>
                   <span className="text-3xl sm:text-4xl font-extrabold text-deep font-grotesk tracking-tight">
                     <NumberFlow
-                      value={plan.price}
+                      value={geo.currency === "USD" ? tzsToUsd(plan.price) : plan.price}
                       format={{ useGrouping: true }}
                       className="text-3xl sm:text-4xl font-extrabold"
                     />
