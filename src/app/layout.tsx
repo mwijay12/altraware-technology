@@ -5,6 +5,13 @@ import { ContentProvider, NotifyProvider, Preloader, SmoothScroll, PageTransitio
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingAILazy from "@/components/FloatingAILazy";
+import { DEFAULT_CONTENT } from "@/lib/content";
+
+// Homepage is a Client Component, so the mobile hero <img> (the LCP
+// element on phones) is invisible to the server HTML — the browser only
+// discovers it after JS hydrates. Preload the default hero URL so the
+// image is already in flight during hydration (LCP 6.7s → down).
+const HERO_LCP_URL = DEFAULT_CONTENT.hero.image;
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -147,6 +154,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
+        {/* LCP preload: mobile hero image (see HERO_LCP_URL note above) */}
+        <link rel="preload" as="image" href={HERO_LCP_URL} fetchPriority="high" />
       </head>
       <body className="antialiased font-sans">
         <script

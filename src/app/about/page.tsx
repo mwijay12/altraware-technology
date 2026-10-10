@@ -22,13 +22,13 @@ export default function AboutPage() {
             </div>
             <h1 className="display text-5xl md:text-7xl font-medium leading-[1.05]">
               <span className="block">
-                <TextEffect per="char" preset="fade" delay={0.1}>
+                <TextEffect per="word" preset="fade" delay={0.1}>
                   From Dar es Salaam,
                 </TextEffect>
               </span>
               <span className="block mt-1">
                 <i className="text-viol inline-block">
-                  <TextEffect per="char" preset="slide" delay={0.4}>
+                  <TextEffect per="word" preset="slide" delay={0.4}>
                     to the world.
                   </TextEffect>
                 </i>

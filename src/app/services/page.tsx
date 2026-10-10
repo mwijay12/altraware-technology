@@ -45,7 +45,7 @@ export default function ServicesPage() {
                   </TextEffect>
                 </i>{" "}
                 <i className="text-viol">
-                  <TextEffect as="span" per="char" preset="blur" delay={0.4}>
+                  <TextEffect as="span" per="word" preset="blur" delay={0.4}>
                     excellent.
                   </TextEffect>
                 </i>

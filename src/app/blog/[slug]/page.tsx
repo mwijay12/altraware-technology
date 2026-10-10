@@ -87,7 +87,7 @@ export default function BlogPostPage() {
                     <div className="bg-cream border border-deep/10 rounded-3xl overflow-hidden group-hover:border-viol transition-colors">
                       <div className="h-40 overflow-hidden">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.cover} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                        <img src={p.cover} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" decoding="async" />
                       </div>
                       <div className="p-5">
                         <div className="font-grotesk font-bold text-lg leading-snug">{p.title}</div>

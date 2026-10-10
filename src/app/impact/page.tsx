@@ -40,7 +40,7 @@ export default function ImpactPage() {
                   </TextEffect>
                 </i>{" "}
                 <i>
-                  <TextEffect as="span" per="char" preset="blur" delay={0.35}>
+                  <TextEffect as="span" per="word" preset="blur" delay={0.35}>
                     jirani.
                   </TextEffect>
                 </i>
@@ -118,7 +118,7 @@ export default function ImpactPage() {
                             src={p.media[0].url}
                             alt={p.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                            loading="lazy"
+                            loading="lazy" decoding="async"
                             onError={(e) => {
                               e.currentTarget.style.display = "none";
                               e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]", "flex", "items-center", "justify-center");
@@ -164,7 +164,7 @@ export default function ImpactPage() {
                                 src={m.type === "image" ? m.url : undefined}
                                 alt=""
                                 className="w-12 h-9 rounded-lg object-cover border border-deep/10"
-                                loading="lazy"
+                                loading="lazy" decoding="async"
                               />
                             ))}
                           </div>
@@ -201,7 +201,7 @@ export default function ImpactPage() {
                 <Reveal key={s.label} delay={i * 0.08}>
                   <div className="rounded-2xl overflow-hidden h-32 relative group">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={s.label} loading="lazy" />
+                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={s.label} loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-deep/50 flex items-end p-3 text-white text-[11px] font-bold">{s.label}</div>
                   </div>
                 </Reveal>

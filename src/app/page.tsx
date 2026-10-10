@@ -489,7 +489,7 @@ export default function Home() {
                       src={m.url}
                       alt={m.caption}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      loading="lazy"
+                      loading="lazy" decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
                         e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-slate-900", "to-indigo-950");
@@ -588,7 +588,7 @@ export default function Home() {
                               src={p.media[0].url}
                               alt={p.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                              loading="lazy"
+                              loading="lazy" decoding="async"
                               onError={(e) => {
                                 e.currentTarget.style.display = "none";
                                 e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]", "flex", "items-center", "justify-center");
@@ -717,7 +717,7 @@ export default function Home() {
                   </TextEffect>
                 </i>{" "}
                 <i className="text-viol">
-                  <TextEffect as="span" per="char" preset="blur" delay={0.35} viewport={{ once: true }}>
+                  <TextEffect as="span" per="word" preset="blur" delay={0.35} viewport={{ once: true }}>
                     njia.
                   </TextEffect>
                 </i>
@@ -773,7 +773,7 @@ export default function Home() {
                     </TextEffect>
                   </i>{" "}
                   <i>
-                    <TextEffect as="span" per="char" preset="blur" delay={0.35} viewport={{ once: true }}>
+                    <TextEffect as="span" per="word" preset="blur" delay={0.35} viewport={{ once: true }}>
                       jirani.
                     </TextEffect>
                   </i>
@@ -800,7 +800,7 @@ export default function Home() {
                 {content.impact.sectors.map((s) => (
                   <div key={s.label} className="rounded-2xl overflow-hidden h-28 relative group">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={`${s.label} software solutions in Tanzania by Altraware Technology`} loading="lazy" />
+                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={`${s.label} software solutions in Tanzania by Altraware Technology`} loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-deep/50 flex items-end p-3 text-white text-[11px] font-bold">{s.label}</div>
                   </div>
                 ))}
@@ -956,7 +956,7 @@ export function ServicesAccordion({ preview = false }: { preview?: boolean }) {
                   </TextEffect>
                 </i>{" "}
                 <i className="text-viol">
-                  <TextEffect as="span" per="char" preset="blur" delay={0.4} viewport={{ once: true }}>
+                  <TextEffect as="span" per="word" preset="blur" delay={0.4} viewport={{ once: true }}>
                     excellent.
                   </TextEffect>
                 </i>

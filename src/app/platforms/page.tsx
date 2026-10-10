@@ -591,7 +591,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
                   onClick={() => toggle(i, k.n, k.g, on)}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={k.img} className={`w-11 h-11 rounded-full object-cover border-2 ${on ? "border-green-400" : "border-deep/10"}`} alt={k.n} loading="lazy" />
+                  <img src={k.img} className={`w-11 h-11 rounded-full object-cover border-2 ${on ? "border-green-400" : "border-deep/10"}`} alt={k.n} loading="lazy" decoding="async" />
                   <div className="flex-1 min-w-0">
                     <div className="text-[13px] font-bold truncate">{k.n}</div>
                     <div className="text-[11px] text-deep/45">{k.a} · {k.g}</div>

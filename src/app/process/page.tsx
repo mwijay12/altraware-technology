@@ -71,7 +71,7 @@ export default function ProcessPage() {
                   </TextEffect>
                 </i>{" "}
                 <i className="text-viol">
-                  <TextEffect as="span" per="char" preset="blur" delay={0.35}>
+                  <TextEffect as="span" per="word" preset="blur" delay={0.35}>
                     path.
                   </TextEffect>
                 </i>

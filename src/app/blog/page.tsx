@@ -57,7 +57,7 @@ export default function BlogPage() {
                   <TiltCard intensity={6} className="bg-white border border-deep/10 rounded-3xl overflow-hidden h-full hover:border-viol transition-colors">
                     <div className="relative h-48 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={p.cover} alt={p.title} className="w-full h-full object-cover" loading="lazy" />
+                      <img src={p.cover} alt={p.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                       <div className="absolute top-3 left-3 flex gap-1.5">
                         {p.tags.map((t) => (
                           <span key={t} className="bg-deep/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
