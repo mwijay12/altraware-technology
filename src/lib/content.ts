@@ -1023,8 +1023,9 @@ export async function fetchRemoteContent(): Promise<Partial<SiteContent> | null>
     if (snap.exists()) {
       return snap.data() as Partial<SiteContent>;
     }
-  } catch (err) {
-    console.warn("[content] Firestore fetch error:", err);
+  } catch {
+    // Silent: public reads need the Firestore rule below; until then
+    // (or offline) the local cache is the fallback. No console spam.
   }
   return null;
 }
@@ -1042,11 +1043,19 @@ export function subscribeRemoteContent(
       const { doc, onSnapshot } = await import("firebase/firestore");
       if (!active) return;
       const docRef = doc(db, "site_content", "main");
-      unsubscribe = onSnapshot(docRef, (snap) => {
-        if (snap.exists()) {
-          callback(snap.data() as Partial<SiteContent>);
-        }
-      });
+      // Error callback is required: without it a denied read becomes an
+      // UNCAUGHT exception ("Uncaught Error in snapshot listener") that
+      // spams every visitor's console. On error we simply stay on the
+      // local cache — silent by design.
+      unsubscribe = onSnapshot(
+        docRef,
+        (snap) => {
+          if (snap.exists()) {
+            callback(snap.data() as Partial<SiteContent>);
+          }
+        },
+        () => {}
+      );
     } catch (err) {
       console.warn("[content] Firestore subscription error:", err);
     }
@@ -1058,17 +1067,22 @@ export function subscribeRemoteContent(
   };
 }
 
-export async function saveRemoteContent(content: SiteContent): Promise<void> {
-  if (typeof window === "undefined") return;
+export async function saveRemoteContent(content: SiteContent): Promise<boolean> {
+  if (typeof window === "undefined") return false;
   try {
-    const { db } = await import("./firebase");
+    const { db, auth } = await import("./firebase");
+    // Writes require a Firebase-signed-in admin (see Firestore rules:
+    // public read, admin-email write). Visitors and master-passphrase
+    // sessions have no Firebase user — skip silently and keep the
+    // local save. Returning false (not throwing) keeps consoles clean.
+    if (!auth.currentUser) return false;
     const { doc, setDoc } = await import("firebase/firestore");
     const docRef = doc(db, "site_content", "main");
     const cleanContent = JSON.parse(JSON.stringify(content));
     await setDoc(docRef, cleanContent, { merge: true });
-  } catch (err) {
-    console.error("[content] Firestore save error:", err);
-    throw err;
+    return true;
+  } catch {
+    return false;
   }
 }
 

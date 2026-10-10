@@ -19,13 +19,13 @@ import {
 
 interface ContentCtx {
   content: SiteContent;
-  updateContent: (next: SiteContent) => void;
+  updateContent: (next: SiteContent) => Promise<boolean>;
   resetContent: () => void;
 }
 
 const ContentContext = createContext<ContentCtx>({
   content: DEFAULT_CONTENT,
-  updateContent: () => {},
+  updateContent: async () => false,
   resetContent: () => {},
 });
 export const useContent = () => useContext(ContentContext);
@@ -45,24 +45,22 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
     });
 
     // 3. Fallback sync: if Firestore is empty but this browser has local edits,
-    // automatically push them to Firestore so all other devices receive them!
+    // push them — saveRemoteContent no-ops silently unless a Firebase admin
+    // is signed in, so visitors never see console errors.
     fetchRemoteContent().then((remote) => {
       if (!remote && ov) {
-        saveRemoteContent({ ...DEFAULT_CONTENT, ...ov }).catch((err) =>
-          console.warn("[content] Initial sync to Firestore:", err)
-        );
+        saveRemoteContent({ ...DEFAULT_CONTENT, ...ov });
       }
     });
 
     return () => unsub();
   }, []);
 
-  const updateContent = useCallback((next: SiteContent) => {
+  const updateContent = useCallback(async (next: SiteContent) => {
     setContent(next);
     saveOverrides(next);
-    saveRemoteContent(next).catch((err) => {
-      console.error("[content] Firebase Firestore save failed:", err);
-    });
+    // true = synced to Firestore (all devices), false = local-only.
+    return saveRemoteContent(next);
   }, []);
 
   const resetContent = useCallback(() => {
@@ -71,9 +69,7 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.removeItem("altraware_content_v2");
       window.localStorage.removeItem("altraware_content_v1");
     }
-    saveRemoteContent(DEFAULT_CONTENT).catch((err) => {
-      console.error("[content] Firebase reset failed:", err);
-    });
+    saveRemoteContent(DEFAULT_CONTENT);
   }, []);
 
   const value = useMemo(() => ({ content, updateContent, resetContent }), [content, updateContent, resetContent]);

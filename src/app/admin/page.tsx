@@ -58,9 +58,14 @@ export default function AdminPage() {
   useEffect(() => setDraft(content), [content]);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(content), [draft, content]);
 
-  const save = () => {
-    updateContent(draft);
-    notify("Changes saved ✓ — synced live to Firebase on all devices!", "success");
+  const save = async () => {
+    const synced = await updateContent(draft);
+    notify(
+      synced
+        ? "Changes saved ✓ — synced live to Firebase on all devices!"
+        : "Saved on this device ✓ — sign in with Google to sync all devices.",
+      synced ? "success" : "info"
+    );
   };
 
   // Kitalu cha vitendo vya hatari (futa / reset) — lazima admin

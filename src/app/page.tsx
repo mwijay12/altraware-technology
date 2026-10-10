@@ -129,11 +129,8 @@ export default function Home() {
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot" /> DSM · LIVE
               </span>
               <span className="text-[12px] font-medium text-deep/70 min-h-[18px] inline-block">
-                {isMobile ? (
-                  // Mobile: static text — the looping Typewriter re-renders every
-                  // 70ms forever, draining TBT/INP and shifting layout (CLS).
-                  <span className="font-semibold text-deep">Tanzanian software studio</span>
-                ) : (
+                <span className="font-semibold text-deep md:hidden">Tanzanian software studio</span>
+                <span className="hidden md:inline">
                   <Typewriter
                     text={[
                       "Tanzanian software studio",
@@ -149,7 +146,7 @@ export default function Home() {
                     cursor="|"
                     className="font-semibold text-deep"
                   />
-                )}
+                </span>
               </span>
             </div>
 

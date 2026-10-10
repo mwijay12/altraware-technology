@@ -12,7 +12,6 @@
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@number-flow/react": "^0.6.2",
     "@radix-ui/react-slot": "^1.4.0",
-    "@types/three": "^0.186.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^13.0.0",
@@ -26,8 +25,7 @@
     "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "tailwind-merge": "^3.7.0",
-    "three": "^0.186.1"
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
