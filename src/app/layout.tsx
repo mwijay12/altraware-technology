@@ -1,23 +1,47 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ContentProvider, NotifyProvider, Preloader, SmoothScroll, PageTransition } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { FloatingAI } from "@/components/motion";
-import Logo from "@/components/Logo";
+import FloatingAILazy from "@/components/FloatingAILazy";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
   style: ["normal", "italic"],
-  weight: ["300", "400", "500", "600", "700"],
+  // Trimmed: display font only needs 2 weights on mobile (was 5).
+  weight: ["400", "600"],
   variable: "--font-fraunces",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: true,
 });
-const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-inter" });
-const grotesk = Space_Grotesk({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-space-grotesk" });
+const inter = Inter({
+  subsets: ["latin"],
+  // Body font: 3 essential weights (was 5).
+  weight: ["400", "500", "700"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+});
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: true,
+});
 
 const SITE_URL = "https://www.altraware.co.tz";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0A1735",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -86,6 +110,44 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable} ${grotesk.variable}`}>
+      <head>
+        {/* FontAwesome is ~100KB+ render-blocking CSS. Defer it: load async
+            via print-media swap so it never delays FCP/LCP on mobile.
+            Icons render with a fallback until it arrives. */}
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/fontawesome.min.css"
+          media="print"
+          // @ts-expect-error onLoad media swap is a standard non-blocking CSS pattern
+          onLoad="this.media='all'"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/solid.min.css"
+          media="print"
+          // @ts-expect-error onLoad media swap is a standard non-blocking CSS pattern
+          onLoad="this.media='all'"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/brands.min.css"
+          media="print"
+          // @ts-expect-error onLoad media swap is a standard non-blocking CSS pattern
+          onLoad="this.media='all'"
+        />
+        <noscript>
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+          />
+        </noscript>
+        {/* Early connections for LCP image + media hosts (mobile TTFB win) */}
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
+      </head>
       <body className="antialiased font-sans">
         <script
           type="application/ld+json"
@@ -101,7 +163,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Navbar />
               <main>{children}</main>
               <Footer />
-              <FloatingAI />
+              <FloatingAILazy />
             </SmoothScroll>
           </NotifyProvider>
         </ContentProvider>

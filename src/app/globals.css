@@ -589,6 +589,59 @@ textarea:focus {
   opacity: 1;
 }
 
+/* Below-fold sections skip layout/paint until near viewport.
+   Safe on all screens (desktop + mobile): saves Speed Index & TBT. */
+#roots,
+#services {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* ============ MOBILE LIGHTHOUSE GUARDS ============
+   Phones have weak GPUs + 360px viewports. These guards:
+   - kill fixed grain overlays (constant repaint cost)
+   - shrink giant blurs (560px blur(120px) = GPU meltdown)
+   - skip below-fold rendering until needed (content-visibility)
+   - respect reduced-motion users                          */
+@media (max-width: 767px) {
+  .grain {
+    display: none;
+  }
+  .grain-cine {
+    opacity: 0.15;
+  }
+  /* Giant blurred orbs: hide on mobile, keep gradients only */
+  #hero .blur-\[120px\] {
+    display: none;
+  }
+  #hero + .marquee {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+  /* Marquee never causes horizontal scroll on 360px screens */
+  .marquee {
+    overflow-x: clip;
+  }
+  /* Disable costly backdrop-blurs on small screens */
+  .glass,
+  .glass-white {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .float-anim,
+  .float-anim2,
+  .spin-slow {
+    animation: none !important;
+  }
+  .scroll-reveal {
+    opacity: 1 !important;
+  }
+}
+
 /* ============ ADMIN LIGHT & DARK THEME SYSTEM ============ */
 .admin-light {
   background-color: #f4f6fa !important;

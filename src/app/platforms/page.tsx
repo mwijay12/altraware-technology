@@ -272,7 +272,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
     setModal("processing");
     window.setTimeout(() => {
       setModal("success");
-      notify("Payment successful ✓ · SMS receipt sent", "success");
+      notify("Simulated payment ✓ · Demo receipt only, no real charge", "success");
     }, 3200);
   };
 
@@ -280,7 +280,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
     setModal(null);
     setCart({});
     setReceiptNo(Math.floor(8000 + Math.random() * 1999));
-    notify("Sale complete ✓ · New sale started");
+    notify("Demo sale complete ✓ · New sale started");
   };
 
   return (
@@ -425,12 +425,15 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
           <div className="relative bg-white text-deep rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
             {modal === "processing" ? (
               <div>
-                <div className="w-16 h-16 rounded-full bg-viol/10 mx-auto flex items-center justify-center">
+                <span className="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-300 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">
+                  <i className="fa-solid fa-flask" /> DEMO SIMULATION
+                </span>
+                <div className="w-16 h-16 rounded-full bg-viol/10 mx-auto flex items-center justify-center mt-3">
                   <div className="w-10 h-10 rounded-full border-4 border-viol/20 border-t-viol animate-spin" />
                 </div>
-                <div className="font-grotesk font-bold text-xl mt-4">Sending STK push...</div>
+                <div className="font-grotesk font-bold text-xl mt-4">Simulating STK push...</div>
                 <p className="text-sm text-deep/55 mt-2">
-                  Check <span className="font-mono font-bold">+255 7** *** 210</span> and enter your {finalMethod} PIN to pay{" "}
+                  Demo only — no real request is sent to <span className="font-mono font-bold">+255 7** *** 210</span>. In the live system you would enter your {finalMethod} PIN to pay{" "}
                   <span className="font-bold">{finalAmt}</span>
                 </p>
                 <div className="flex justify-center gap-2 mt-4">
@@ -441,11 +444,14 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
               </div>
             ) : (
               <div>
-                <div className="w-20 h-20 rounded-full bg-green-500 text-white flex items-center justify-center text-3xl mx-auto shadow-lg shadow-green-500/40">
+                <span className="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-300 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">
+                  <i className="fa-solid fa-flask" /> DEMO SIMULATION
+                </span>
+                <div className="w-20 h-20 rounded-full bg-green-500 text-white flex items-center justify-center text-3xl mx-auto shadow-lg shadow-green-500/40 mt-3">
                   <i className="fa-solid fa-check" />
                 </div>
-                <div className="font-grotesk font-bold text-2xl mt-4">Payment successful! ✓</div>
-                <p className="text-sm text-deep/55 mt-2">Receipt #FD-{receiptNo} · SMS sent to customer</p>
+                <div className="font-grotesk font-bold text-2xl mt-4">Simulated payment successful! ✓</div>
+                <p className="text-sm text-deep/55 mt-2">Demo receipt #FD-{receiptNo} · No money moved, no SMS sent</p>
                 <button className="mt-4 w-full bg-deep text-white font-bold py-3.5 rounded-xl hover:bg-viol transition-colors" onClick={done}>
                   New sale
                 </button>
@@ -480,7 +486,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
       else next.add(i);
       return next;
     });
-    if (!wasPresent) notify(`SMS → ${guardian}: ${name} amefika ✓`, "success");
+    if (!wasPresent) notify(`Demo SMS → ${guardian}: ${name} amefika ✓ (not actually sent)`, "success");
   };
 
   const filtered = KIDS.filter((k) => k.n.toLowerCase().includes(search.toLowerCase()));

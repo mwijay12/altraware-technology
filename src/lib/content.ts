@@ -221,13 +221,13 @@ export const DEFAULT_CONTENT: SiteContent = {
         name: "David Mwijage",
         role: "Co-founder · Engineering & Architecture",
         bio: "Leads system architecture, core engineering practice and offline-first product development.",
-        photo: "https://res.cloudinary.com/oc8018um/image/upload/v1791497527/david.jpg",
+        photo: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_400/v1791497527/david.jpg",
       },
       {
         name: "Clemence Ng'unda",
         role: "Co-founder · Product & Business Operations",
         bio: "Leads client engagement, product direction and operational delivery for businesses.",
-        photo: "https://res.cloudinary.com/oc8018um/image/upload/v1791497528/Clemence.png",
+        photo: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_400/v1791497528/Clemence.png",
       },
     ],
     values: [
@@ -639,7 +639,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["SaaS", "Retail POS", "Flutter", "AI Advisor", "M-Pesa", "Offline-first"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497492/faidahq.png", caption: "Faida POS — Profit Headquarters Terminal & Dashboard" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497492/faidahq.png", caption: "Faida POS — Profit Headquarters Terminal & Dashboard" },
         { type: "video", url: "https://media.w3.org/2010/05/bunny/movie.mp4", caption: "Faida POS live walkthrough demo" },
       ],
     },
@@ -654,8 +654,8 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Next.js", "Campus Portal", "Education", "Admissions", "Referrals"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497518/uautconnect.png", caption: "UAUT Connect — Student Portal & Campus Gateway" },
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497516/2uautconnect.png", caption: "UAUT Connect — Programs & Admissions Matrix" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497518/uautconnect.png", caption: "UAUT Connect — Student Portal & Campus Gateway" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497516/2uautconnect.png", caption: "UAUT Connect — Programs & Admissions Matrix" },
       ],
     },
     {
@@ -669,7 +669,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["E-commerce", "Next.js", "Streetwear", "Sneakers", "M-Pesa"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497526/niketz_web.png", caption: "Nike TZ — Sneaker & Streetwear E-commerce Store" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497526/niketz_web.png", caption: "Nike TZ — Sneaker & Streetwear E-commerce Store" },
       ],
     },
     {
@@ -683,7 +683,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Portfolio", "AI Architecture", "Next.js", "Lead Architect"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497566/mwijayportfolio.png", caption: "Mwijay Portfolio — Based in Kongowe, Dreaming Global" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497566/mwijayportfolio.png", caption: "Mwijay Portfolio — Based in Kongowe, Dreaming Global" },
       ],
     },
     {
@@ -697,7 +697,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Next.js", "Membership", "Non-profit", "AI"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497521/aymi.png", caption: "AYMI Africa — Youth Platform & Programs" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497521/aymi.png", caption: "AYMI Africa — Youth Platform & Programs" },
       ],
     },
     {
@@ -711,7 +711,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Next.js", "Booking", "Registry", "Fleet"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497522/voltarentals.png", caption: "Volta Rentals — Luxury Fleet Booking & Trip Calculator" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497522/voltarentals.png", caption: "Volta Rentals — Luxury Fleet Booking & Trip Calculator" },
       ],
     },
     {
@@ -725,7 +725,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Food-tech", "AI", "Ordering", "Kiswahili"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497525/bongofoodie.png", caption: "Bongo Foodie — Swahili Dishes & Chef AI" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497525/bongofoodie.png", caption: "Bongo Foodie — Swahili Dishes & Chef AI" },
       ],
     },
     {
@@ -739,7 +739,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Branding", "Web", "AI Tools", "Portfolio"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497523/mwijaystudio.png", caption: "Mwijay Studio — Brand Architecture & Free AI Tools" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497523/mwijaystudio.png", caption: "Mwijay Studio — Brand Architecture & Free AI Tools" },
       ],
     },
     {
@@ -753,7 +753,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["E-commerce", "AI Assistant", "Audio", "SW/EN"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/v1791497524/audenic.png", caption: "Audenic — Hand-Tuned Audio & Auden AI" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497524/audenic.png", caption: "Audenic — Hand-Tuned Audio & Auden AI" },
       ],
     },
     {
@@ -890,7 +890,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
   },
   images: {
-    liveDemoPoster: "https://res.cloudinary.com/oc8018um/image/upload/v1791497492/faidahq.png",
+    liveDemoPoster: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_900/v1791497492/faidahq.png",
     heroDar: "https://images.unsplash.com/photo-1609198092458-38a293c7ac4b?q=80&w=900&auto=format&fit=crop",
     streetTz: "https://images.unsplash.com/photo-1523805009345-7448845a9e53?q=80&w=700&auto=format&fit=crop",
     mediaBanner: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop",

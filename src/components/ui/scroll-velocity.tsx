@@ -57,6 +57,8 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
     const isPaused = React.useRef<boolean>(false);
     const scrollThreshold = React.useRef<number>(5);
     const [isMobile, setIsMobile] = React.useState<boolean>(false);
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+    const inView = React.useRef<boolean>(true);
 
     React.useEffect(() => {
       const checkMobile = () => {
@@ -67,8 +69,25 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
       return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
+    // MOBILE PERF: pause the 60fps animation loop when the marquee is
+    // off-screen (was always running, even below the fold).
+    React.useEffect(() => {
+      const el = containerRef.current;
+      if (!el || typeof IntersectionObserver === "undefined") return;
+      const obs = new IntersectionObserver(
+        (entries) => {
+          inView.current = entries[0].isIntersecting;
+        },
+        { threshold: 0 }
+      );
+      obs.observe(el);
+      return () => obs.disconnect();
+    }, []);
+
     useAnimationFrame((t, delta) => {
-      if (isPaused.current) return;
+      if (isPaused.current || !inView.current) return;
+      // Respect users who asked for less motion — static row, no JS work.
+      if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       // Always move — one fixed direction. No scroll-direction flip, no bounce.
       if (movable) {
         move(delta);
@@ -91,22 +110,34 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
     }
 
     // Render duplicates to guarantee a smooth, continuous seamless infinite loop
+    // MOBILE PERF: cap duplicates at 2 (was 4) — halves DOM nodes + images.
     const renderContent = () => {
+      const effectiveRepeat = isMobile ? Math.min(repeat, 2) : repeat;
       if (typeof children === "string") {
-        return Array.from({ length: repeat * 2 }).map((_, idx) => (
+        return Array.from({ length: effectiveRepeat * 2 }).map((_, idx) => (
           <span key={idx} className="inline-block mr-6 md:mr-8">
             {children}
           </span>
         ));
       }
-      return Array.from({ length: repeat }).map((_, repeatIdx) => (
+      return Array.from({ length: effectiveRepeat }).map((_, repeatIdx) => (
         <React.Fragment key={repeatIdx}>{children}</React.Fragment>
       ));
     };
 
+    // Merge outer ref (from forwardRef) with our in-view observer ref.
+    const setRefs = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        containerRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      },
+      [ref]
+    );
+
     return (
       <div
-        ref={ref}
+        ref={setRefs}
         onPointerEnter={(e) => {
           // Pause on hover only for mouse — never pause on touch scroll (mobile bounce fix)
           if (e.pointerType === "mouse") isPaused.current = true;

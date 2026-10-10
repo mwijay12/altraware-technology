@@ -23,6 +23,30 @@ export function Reveal({
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // MOBILE PERF: GSAP + ScrollTrigger per Reveal instance = dozens of
+    // scroll listeners + dynamic imports on phones. Use a single cheap
+    // IntersectionObserver + CSS transition instead (no JS animation lib).
+    const isMobile =
+      window.innerWidth < 768 ||
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isMobile) {
+      const obs = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            window.setTimeout(() => el.classList.add("revealed"), delay * 1000);
+            obs.disconnect();
+          }
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+      );
+      // CSS handles the fade (see .scroll-reveal.revealed + transition)
+      el.style.transition = `opacity .6s ease ${delay}s, transform .6s ease ${delay}s`;
+      obs.observe(el);
+      return () => obs.disconnect();
+    }
     let killed = false;
     (async () => {
       const { gsap } = await import("gsap");
@@ -179,7 +203,7 @@ export function ImgReveal({
   return (
     <div ref={ref} className={`img-reveal ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} loading="lazy" className={imgClassName} />
+      <img src={src} alt={alt} loading="lazy" decoding="async" className={imgClassName} />
     </div>
   );
 }
@@ -276,5 +300,7 @@ export function useLockBodyScroll(active: boolean) {
   }, [active]);
 }
 
-/* Re-export so layout can import everything motion-related from one module */
-export { default as FloatingAI } from "@/components/FloatingAI";
+/* NOTE: FloatingAI is intentionally NOT re-exported here.
+   Importing it via motion.tsx would bundle the chat widget into
+   every page that only needs Reveal/TiltCard. Import it directly
+   via next/dynamic in layout instead. */

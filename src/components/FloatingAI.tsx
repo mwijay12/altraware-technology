@@ -72,10 +72,22 @@ export default function FloatingAI() {
   const [typing, setTyping] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
-
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
+  // MOBILE PERF: defer the floating button until the browser is idle so it
+  // never competes with LCP/FCP. Content is SSR'd underneath meanwhile.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const show = () => setMounted(true);
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof w.requestIdleCallback === "function") {
+      const id = w.requestIdleCallback(show, { timeout: 2500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(show, 1800);
+    return () => window.clearTimeout(t);
+  }, []);
 
   // greeting on first open
   useEffect(() => {
@@ -94,6 +106,12 @@ export default function FloatingAI() {
   useEffect(() => {
     bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: "smooth" });
   }, [msgs, typing]);
+
+  // Early returns AFTER all hooks (rules-of-hooks + deferred mount).
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+  if (!mounted) return null;
 
   const send = async (text: string) => {
     const q = text.trim();

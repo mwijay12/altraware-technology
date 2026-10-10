@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard, Counter, ImgReveal, Marquee, MediaBlock } from "@/components/motion";
 import { useContent, useNotify } from "@/components/providers";
@@ -12,6 +13,71 @@ import { type Project } from "@/lib/content";
 import { useVisitorCurrency } from "@/lib/geo-pricing";
 import ProjectModal from "@/components/ui/ProjectModal";
 
+/* Mobile Lighthouse: avoid downloading the desktop hero visual on phones
+   and avoid infinite typewriter re-renders. These hooks gate heavy UI. */
+function useIsDesktop() {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return desktop;
+}
+
+function useIsMobile() {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return mobile;
+}
+
+/* MarqueeVideo — the demo reels (bunny/sintel ~MBs) must not download on
+   initial page load on ANY viewport. The src is attached only when the card
+   scrolls near the viewport, then it autoplays muted as before. */
+function MarqueeVideo({ src }: { src: string }) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setActive(true);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setActive(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <video
+      ref={ref}
+      muted
+      loop
+      playsInline
+      preload="none"
+      disablePictureInPicture
+      autoPlay={active}
+      src={active ? src : undefined}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+    />
+  );
+}
+
 /* ============================================================
    HOME — the full reference experience, linking to dedicated pages
    ============================================================ */
@@ -22,6 +88,8 @@ export default function Home() {
   const geo = useVisitorCurrency();
   const [heroReady, setHeroReady] = useState(false);
   const [modalProject, setModalProject] = useState<Project | null>(null);
+  const isDesktop = useIsDesktop();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const t = window.setTimeout(() => setHeroReady(true), 300);
@@ -36,20 +104,33 @@ export default function Home() {
     <>
       {/* ============ HERO ============ */}
       <section id="hero" className="relative min-h-screen pt-[120px] pb-14 overflow-hidden grid-bg flex flex-col justify-center">
-        {/* Mobile Rich Hero Background Layer — image sits beneath text with high-contrast scrim */}
-        <div
-          className="lg:hidden absolute inset-0 bg-cover bg-center pointer-events-none transition-all duration-700"
-          style={{ backgroundImage: `url(${content.hero.image})` }}
-        />
+        {/* Mobile LCP image — single discoverable <img> with fetchpriority.
+            Desktop ambient layer below is gated behind isDesktop so phones
+            never download the hero twice (was 2x backgroundImage). */}
+        <div className="lg:hidden absolute inset-0 pointer-events-none" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={content.hero.image}
+            alt=""
+            fetchPriority="high"
+            decoding="async"
+            className="w-full h-full object-cover"
+          />
+        </div>
         {/* Mobile readability scrim: soft gradient preserving light theme text clarity */}
-        <div className="lg:hidden absolute inset-0 bg-gradient-to-b from-[#faf8f5]/90 via-[#faf8f5]/85 to-[#faf8f5] pointer-events-none backdrop-blur-[2px]" />
+        <div className="lg:hidden absolute inset-0 bg-gradient-to-b from-[#faf8f5]/90 via-[#faf8f5]/85 to-[#faf8f5] pointer-events-none" />
 
-        {/* Desktop ambient subtle background */}
-        <div
-          className="hidden lg:block absolute inset-0 bg-cover bg-center pointer-events-none opacity-[0.035] transition-all duration-700"
-          style={{ backgroundImage: `url(${content.hero.image})` }}
-        />
-        <div className="hidden lg:block absolute inset-0 bg-gradient-to-b from-[#faf8f5]/80 via-transparent to-[#faf8f5] pointer-events-none" />
+        {/* Desktop ambient subtle background — client-gated, never fetched on mobile */}
+        {isDesktop && (
+          <>
+            <div
+              className="absolute inset-0 bg-cover bg-center pointer-events-none opacity-[0.035]"
+              style={{ backgroundImage: `url(${content.hero.image})` }}
+              aria-hidden="true"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#faf8f5]/80 via-transparent to-[#faf8f5] pointer-events-none" aria-hidden="true" />
+          </>
+        )}
 
         <div className="absolute top-0 right-0 w-[55%] h-full bg-gradient-to-l from-viol/[0.06] to-transparent pointer-events-none" />
         <div className="absolute -top-32 -right-32 w-[560px] h-[560px] rounded-full bg-viol/10 blur-[120px] pointer-events-none" />
@@ -65,22 +146,28 @@ export default function Home() {
               <span className="flex items-center gap-1.5 bg-deep text-white text-[10px] font-grotesk font-bold px-2.5 py-1 rounded-full tracking-widest">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot" /> DSM · LIVE
               </span>
-              <span className="text-[12px] font-medium text-deep/70">
-                <Typewriter
-                  text={[
-                    "Tanzanian software studio",
-                    "Websites starting from TSh 350,000",
-                    "Web & mobile apps from TSh 800,000",
-                    "Business systems from TSh 1,200,000",
-                    "M-Pesa native & offline-first systems",
-                  ]}
-                  speed={70}
-                  deleteSpeed={35}
-                  delay={2400}
-                  loop={true}
-                  cursor="|"
-                  className="font-semibold text-deep"
-                />
+              <span className="text-[12px] font-medium text-deep/70 min-h-[18px] inline-block">
+                {isMobile ? (
+                  // Mobile: static text — the looping Typewriter re-renders every
+                  // 70ms forever, draining TBT/INP and shifting layout (CLS).
+                  <span className="font-semibold text-deep">Tanzanian software studio</span>
+                ) : (
+                  <Typewriter
+                    text={[
+                      "Tanzanian software studio",
+                      "Websites starting from TSh 350,000",
+                      "Web & mobile apps from TSh 800,000",
+                      "Business systems from TSh 1,200,000",
+                      "M-Pesa native & offline-first systems",
+                    ]}
+                    speed={70}
+                    deleteSpeed={35}
+                    delay={2400}
+                    loop={true}
+                    cursor="|"
+                    className="font-semibold text-deep"
+                  />
+                )}
               </span>
             </div>
 
@@ -146,11 +233,22 @@ export default function Home() {
             </div>
           </div>
 
-          {/* HERO VISUAL — visible on PC (lg+), hidden on mobile to keep clean background layout */}
-          <div className={`hero-el relative hidden lg:block transition-all duration-700 delay-200 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+          {/* HERO VISUAL — desktop only, client-gated so mobile never
+              downloads the 520px image + floating cards (was hidden lg:block
+              which still fetched on phones). */}
+          {isDesktop && (
+          <div className={`hero-el relative transition-all duration-700 delay-200 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             <TiltCard intensity={10} className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-deep/20 border-8 border-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={content.hero.image} alt={`${content.hero.imageCaption || "Dar es Salaam, Tanzania"} — Altraware Technology software company`} className="w-full h-[520px] object-cover" />
+              <Image
+                src={content.hero.image}
+                alt={`${content.hero.imageCaption || "Dar es Salaam, Tanzania"} — Altraware Technology software company`}
+                width={800}
+                height={520}
+                sizes="(min-width: 1024px) 40vw, 0px"
+                loading="eager"
+                decoding="async"
+                className="w-full h-[520px] object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-deep/15 to-transparent z-[3]" />
               <div className="absolute bottom-5 left-5 right-5 z-[4] flex items-end justify-between">
                 <div className="text-white">
@@ -229,6 +327,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          )}
         </div>
 
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 mt-12 flex items-center gap-4">
@@ -243,8 +342,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MARQUEE */}
-      <div className="bg-deep text-white py-5 marquee border-y border-white/10 relative z-10 -rotate-[0.6deg] scale-[1.01]">
+      {/* MARQUEE — rotation removed on mobile (was -rotate causing
+          horizontal overflow + CLS on 360px screens) */}
+      <div className="bg-deep text-white py-5 marquee border-y border-white/10 relative z-10 md:-rotate-[0.6deg] md:scale-[1.01]">
         <Marquee>
           <span className="text-base md:text-xl font-grotesk font-bold tracking-wider inline-flex items-center">
             TOVUTI ZA BIASHARA <span className="text-violL px-6">✦</span> FAIDA POS OFFLINE <span className="text-violL px-6">✦</span> CARETRACK CLINIC{" "}
@@ -363,7 +463,8 @@ export default function Home() {
 
         {/* Continuous Dynamic Marquee / ScrollVelocity Effect */}
         <div className="space-y-3 md:space-y-6 pt-1 md:pt-2">
-          {/* Track 1: Media Showcase Cards */}
+          {/* Track 1: Media Showcase Cards — mobile renders poster images only.
+              Autoplay videos on phones burn data + CPU and tank Lighthouse. */}
           <ScrollVelocity velocity={0.9} repeat={4}>
             {content.services
               .flatMap((s) => s.media ?? [])
@@ -372,15 +473,16 @@ export default function Home() {
                   key={idx}
                   className="relative h-40 w-64 md:h-56 md:w-96 rounded-xl md:rounded-2xl overflow-hidden border-2 border-deep/10 shadow-md shrink-0 bg-deep/5 group mr-4 md:mr-6"
                 >
-                  {m.type === "video" ? (
-                    <video
-                      src={m.url}
-                      muted
-                      loop
-                      autoPlay
-                      playsInline
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                  {m.type === "video" && !isMobile ? (
+                    <MarqueeVideo src={m.url} />
+                  ) : m.type === "video" ? (
+                    // Mobile poster: no download until tapped (saves MBs on 3G)
+                    <div className="w-full h-full bg-gradient-to-br from-[#0A1735] to-[#1E1B4B] flex flex-col items-center justify-center gap-2 text-white/80">
+                      <span className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                        <i className="fa-solid fa-play text-xs" />
+                      </span>
+                      <span className="text-[10px] font-mono px-3 text-center text-white/50">Video — tap Projects to watch</span>
+                    </div>
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img

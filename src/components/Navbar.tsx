@@ -181,7 +181,7 @@ export default function Navbar() {
             <TransitionLink href="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-xl relative overflow-hidden border border-deep/10 p-1 bg-white/10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="Altraware logo" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
+                <img src="/logo.png" alt="Altraware logo" width={40} height={40} decoding="async" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
               </div>
               <div className="leading-none">
                 <div className="font-grotesk font-bold tracking-tight text-[15px]">ALTRAWARE</div>

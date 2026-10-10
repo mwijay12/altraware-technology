@@ -138,6 +138,17 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // MOBILE PERF: Lenis + GSAP ticker costs ~60fps main-thread work and
+    // hurts INP/TBT on phones. Use native scroll on touch / small screens,
+    // save-data, or prefers-reduced-motion. Desktop keeps the smooth feel.
+    if (typeof window === "undefined") return;
+    const isCoarse = window.matchMedia("(hover: none)").matches;
+    const isSmall = window.innerWidth < 768;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // @ts-expect-error saveData is Chromium-only
+    const saveData = navigator?.connection?.saveData === true;
+    if (isCoarse || isSmall || reduced || saveData) return;
+
     let killed = false;
     let lenis: import("lenis").default | null = null;
 
@@ -175,7 +186,23 @@ export function Preloader() {
       setDone(true);
       return;
     }
+    // MOBILE PERF: the preloader covers the screen with an opaque div until
+    // fake progress finishes (~2.5s) — that single-handedly kills FCP/LCP
+    // on phones. On small/touch screens finish in ≤700ms with no word
+    // rotation; desktop keeps the full brand sequence.
+    const isMobile =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 || window.matchMedia("(hover: none)").matches);
+    if (isMobile) {
+      const fast = window.setTimeout(() => {
+        sessionStorage.setItem(sessionKey, "1");
+        setDone(true);
+      }, 650);
+      return () => window.clearTimeout(fast);
+    }
     let cancelled = false;
+    let wInt: number | undefined;
+    let int: number | undefined;
     (async () => {
       const { gsap } = await import("gsap");
       if (cancelled) return;
@@ -185,35 +212,37 @@ export function Preloader() {
       const pct = document.getElementById("loaderPct");
       let p = 0;
       let wi = 0;
-      const wInt = window.setInterval(() => {
+      wInt = window.setInterval(() => {
         wi = (wi + 1) % words.length;
         if (wEl) {
           gsap.fromTo(wEl, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 });
           wEl.textContent = words[wi];
         }
       }, 650);
-      const int = window.setInterval(() => {
-        p += Math.random() * 14 + 4;
+      int = window.setInterval(() => {
+        p += Math.random() * 16 + 6;
         if (p >= 100) {
           p = 100;
-          clearInterval(int);
-          clearInterval(wInt);
+          if (int) clearInterval(int);
+          if (wInt) clearInterval(wInt);
           sessionStorage.setItem(sessionKey, "1");
           gsap.to("#preloader", {
             yPercent: -100,
-            duration: 1,
+            duration: 0.7,
             ease: "power4.inOut",
-            delay: 0.3,
+            delay: 0.15,
             onComplete: () => setDone(true),
           });
-          gsap.to("#preloader > *", { y: -20, opacity: 0, duration: 0.4, stagger: 0.05 });
+          gsap.to("#preloader > *", { y: -20, opacity: 0, duration: 0.35, stagger: 0.05 });
         }
         if (bar) bar.style.width = p + "%";
         if (pct) pct.textContent = Math.floor(p) + "%";
-      }, 140);
+      }, 110);
     })();
     return () => {
       cancelled = true;
+      if (wInt) clearInterval(wInt);
+      if (int) clearInterval(int);
     };
   }, []);
 
