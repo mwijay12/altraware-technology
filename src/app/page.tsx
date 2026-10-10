@@ -40,11 +40,14 @@ function useIsMobile() {
 }
 
 /* MarqueeVideo — the demo reels (bunny/sintel ~MBs) must not download on
-   initial page load on ANY viewport. The src is attached only when the card
-   scrolls near the viewport, then it autoplays muted as before. */
-function MarqueeVideo({ src }: { src: string }) {
+   initial page load on ANY viewport. A poster image (the service's own
+   screenshot, already cached as a sibling card) shows instantly so the card
+   never looks dead; the video src attaches when the card nears the viewport
+   and fades in once it can actually play. */
+function MarqueeVideo({ src, poster, caption }: { src: string; poster?: string; caption?: string }) {
   const ref = useRef<HTMLVideoElement | null>(null);
   const [active, setActive] = useState(false);
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") {
@@ -64,17 +67,30 @@ function MarqueeVideo({ src }: { src: string }) {
     return () => obs.disconnect();
   }, []);
   return (
-    <video
-      ref={ref}
-      muted
-      loop
-      playsInline
-      preload="none"
-      disablePictureInPicture
-      autoPlay={active}
-      src={active ? src : undefined}
-      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-    />
+    <>
+      {poster && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={poster}
+          alt={caption ?? ""}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+      <video
+        ref={ref}
+        muted
+        loop
+        playsInline
+        preload="none"
+        disablePictureInPicture
+        autoPlay={active}
+        src={active ? src : undefined}
+        onCanPlay={() => setReady(true)}
+        className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+      />
+    </>
   );
 }
 
@@ -446,14 +462,17 @@ export default function Home() {
               Autoplay videos on phones burn data + CPU and tank Lighthouse. */}
           <ScrollVelocity velocity={0.9} repeat={4}>
             {content.services
-              .flatMap((s) => s.media ?? [])
+              .flatMap((s) => (s.media ?? []).map((m) => ({
+                ...m,
+                poster: (s.media ?? []).find((x) => x.type === "image")?.url,
+              })))
               .map((m, idx) => (
                 <div
                   key={idx}
                   className="relative h-40 w-64 md:h-56 md:w-96 rounded-xl md:rounded-2xl overflow-hidden border-2 border-deep/10 shadow-md shrink-0 bg-deep/5 group mr-4 md:mr-6"
                 >
                   {m.type === "video" && !isMobile ? (
-                    <MarqueeVideo src={m.url} />
+                    <MarqueeVideo src={m.url} poster={m.poster} caption={m.caption} />
                   ) : m.type === "video" ? (
                     // Mobile poster: no download until tapped (saves MBs on 3G)
                     <div className="w-full h-full bg-gradient-to-br from-[#0A1735] to-[#1E1B4B] flex flex-col items-center justify-center gap-2 text-white/80">

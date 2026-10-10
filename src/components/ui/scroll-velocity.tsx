@@ -98,9 +98,10 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
     });
 
     function move(delta: number) {
-      // Calibrated calm, elegant speed for both desktop and mobile.
-      // Base speed uses |velocity| so sign only controls direction (locked above).
-      const speedMultiplier = isMobile ? 0.22 : 0.38;
+      // Visible but calm: desktop ~0.6, mobile ~0.4 (was 0.38/0.22 — so slow
+      // the row read as frozen). Base speed uses |velocity| so sign only
+      // controls direction (locked above).
+      const speedMultiplier = isMobile ? 0.4 : 0.6;
       const baseSpeed = Math.abs(velocity) * speedMultiplier;
       // Subtle speed-up when user scrolls fast — magnitude only, never reverses.
       const boost = Math.min(1.5, Math.abs(velocityFactor.get())) * 0.25;
