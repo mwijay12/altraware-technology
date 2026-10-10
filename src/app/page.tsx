@@ -86,16 +86,14 @@ export default function Home() {
   const { content } = useContent();
   const { notify } = useNotify();
   const geo = useVisitorCurrency();
-  const [heroReady, setHeroReady] = useState(false);
+  const [heroReady] = useState(true);
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const isDesktop = useIsDesktop();
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const t = window.setTimeout(() => setHeroReady(true), 300);
     const welcome = window.setTimeout(() => notify("Karibu Altraware ✓ — explore what we build"), 5000);
     return () => {
-      clearTimeout(t);
       clearTimeout(welcome);
     };
   }, [notify]);
@@ -104,22 +102,6 @@ export default function Home() {
     <>
       {/* ============ HERO ============ */}
       <section id="hero" className="relative min-h-screen pt-[120px] pb-14 overflow-hidden grid-bg flex flex-col justify-center">
-        {/* Mobile LCP image — single discoverable <img> with fetchpriority.
-            Desktop ambient layer below is gated behind isDesktop so phones
-            never download the hero twice (was 2x backgroundImage). */}
-        <div className="lg:hidden absolute inset-0 pointer-events-none" aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={content.hero.image}
-            alt=""
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        {/* Mobile readability scrim: soft gradient preserving light theme text clarity */}
-        <div className="lg:hidden absolute inset-0 bg-gradient-to-b from-[#faf8f5]/90 via-[#faf8f5]/85 to-[#faf8f5] pointer-events-none" />
-
         {/* Desktop ambient subtle background — client-gated, never fetched on mobile */}
         {isDesktop && (
           <>

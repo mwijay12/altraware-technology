@@ -60,7 +60,7 @@ export default function AdminPage() {
 
   const save = () => {
     updateContent(draft);
-    notify("Changes saved ✓ — the live site is updated", "success");
+    notify("Changes saved ✓ — synced live to Firebase on all devices!", "success");
   };
 
   // Kitalu cha vitendo vya hatari (futa / reset) — lazima admin

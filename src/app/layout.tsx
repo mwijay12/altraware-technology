@@ -1,17 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { ContentProvider, NotifyProvider, Preloader, SmoothScroll, PageTransition } from "@/components/providers";
+import { ContentProvider, NotifyProvider, SmoothScroll, PageTransition } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingAILazy from "@/components/FloatingAILazy";
-import { DEFAULT_CONTENT } from "@/lib/content";
-
-// Homepage is a Client Component, so the mobile hero <img> (the LCP
-// element on phones) is invisible to the server HTML — the browser only
-// discovers it after JS hydrates. Preload the default hero URL so the
-// image is already in flight during hydration (LCP 6.7s → down).
-const HERO_LCP_URL = DEFAULT_CONTENT.hero.image;
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -142,13 +135,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <link rel="stylesheet" href="/fa/regular.min.css" />
           <link rel="stylesheet" href="/fa/brands.min.css" />
         </noscript>
-        {/* Early connections for LCP image + media hosts (mobile TTFB win) */}
+        {/* Early connections for media hosts */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        {/* LCP preload: mobile hero image (see HERO_LCP_URL note above) */}
-        <link rel="preload" as="image" href={HERO_LCP_URL} fetchPriority="high" />
       </head>
       <body className="antialiased font-sans">
         <script
@@ -160,7 +151,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SmoothScroll>
               <div className="grain" />
               <div className="grain-cine" />
-              <Preloader />
               <PageTransition />
               <Navbar />
               <main>{children}</main>

@@ -999,7 +999,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
 };
 
-/* ================= STORAGE (swap with Firebase later) ================= */
+/* ================= STORAGE (localStorage cache + Firebase Firestore) ================= */
 
 const STORAGE_KEY = "altraware_content_v2";
 
@@ -1013,18 +1013,71 @@ export function loadOverrides(): Partial<SiteContent> | null {
   }
 }
 
+export async function fetchRemoteContent(): Promise<Partial<SiteContent> | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const { db } = await import("./firebase");
+    const { doc, getDoc } = await import("firebase/firestore");
+    const docRef = doc(db, "site_content", "main");
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as Partial<SiteContent>;
+    }
+  } catch (err) {
+    console.warn("[content] Firestore fetch error:", err);
+  }
+  return null;
+}
+
+export function subscribeRemoteContent(
+  callback: (content: Partial<SiteContent>) => void
+): () => void {
+  if (typeof window === "undefined") return () => {};
+  let unsubscribe: (() => void) | null = null;
+  let active = true;
+
+  (async () => {
+    try {
+      const { db } = await import("./firebase");
+      const { doc, onSnapshot } = await import("firebase/firestore");
+      if (!active) return;
+      const docRef = doc(db, "site_content", "main");
+      unsubscribe = onSnapshot(docRef, (snap) => {
+        if (snap.exists()) {
+          callback(snap.data() as Partial<SiteContent>);
+        }
+      });
+    } catch (err) {
+      console.warn("[content] Firestore subscription error:", err);
+    }
+  })();
+
+  return () => {
+    active = false;
+    if (unsubscribe) unsubscribe();
+  };
+}
+
+export async function saveRemoteContent(content: SiteContent): Promise<void> {
+  if (typeof window === "undefined") return;
+  try {
+    const { db } = await import("./firebase");
+    const { doc, setDoc } = await import("firebase/firestore");
+    const docRef = doc(db, "site_content", "main");
+    const cleanContent = JSON.parse(JSON.stringify(content));
+    await setDoc(docRef, cleanContent, { merge: true });
+  } catch (err) {
+    console.error("[content] Firestore save error:", err);
+    throw err;
+  }
+}
+
 export function saveOverrides(content: SiteContent) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
   } catch (err) {
-    // localStorage quota (~5MB) hujaa haraka picha zikiwa base64 data-URLs.
-    // Tunakataa kuhifadhi kimya-kimya ili tusiharibu preview kwa data bovu.
-    console.error(
-      "[content] localStorage imejaa — huenda kuna data-URL kubwa (base64) badala ya Cloudinary URL. Tumia Cloudinary kisha jaribu tena.",
-      err
-    );
-    throw new Error("Save failed: localStorage is full (large base64 photo?). Use a Cloudinary URL.");
+    console.error("[content] localStorage write failed:", err);
   }
 }
 

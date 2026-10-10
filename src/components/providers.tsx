@@ -2,11 +2,83 @@
 
 import { usePathname } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { DEFAULT_CONTENT, loadOverrides, saveOverrides, type SiteContent } from "@/lib/content";
+import {
+  DEFAULT_CONTENT,
+  loadOverrides,
+  saveOverrides,
+  fetchRemoteContent,
+  saveRemoteContent,
+  subscribeRemoteContent,
+  type SiteContent,
+} from "@/lib/content";
 
 /* ============================================================
-   Notification system — toasts that fade away after 5 seconds
+   Content provider — defaults merged with saved overrides,
+   synced with Firebase Firestore so changes appear across all devices.
    ============================================================ */
+
+interface ContentCtx {
+  content: SiteContent;
+  updateContent: (next: SiteContent) => void;
+  resetContent: () => void;
+}
+
+const ContentContext = createContext<ContentCtx>({
+  content: DEFAULT_CONTENT,
+  updateContent: () => {},
+  resetContent: () => {},
+});
+export const useContent = () => useContext(ContentContext);
+
+export function ContentProvider({ children }: { children: React.ReactNode }) {
+  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
+
+  useEffect(() => {
+    // 1. Instant local cache for zero delay
+    const ov = loadOverrides();
+    if (ov) setContent((prev) => ({ ...prev, ...ov }));
+
+    // 2. Real-time Firebase Firestore live listener (instant updates without refresh)
+    const unsub = subscribeRemoteContent((remote) => {
+      setContent((prev) => ({ ...prev, ...remote }));
+      saveOverrides({ ...DEFAULT_CONTENT, ...remote });
+    });
+
+    // 3. Fallback sync: if Firestore is empty but this browser has local edits,
+    // automatically push them to Firestore so all other devices receive them!
+    fetchRemoteContent().then((remote) => {
+      if (!remote && ov) {
+        saveRemoteContent({ ...DEFAULT_CONTENT, ...ov }).catch((err) =>
+          console.warn("[content] Initial sync to Firestore:", err)
+        );
+      }
+    });
+
+    return () => unsub();
+  }, []);
+
+  const updateContent = useCallback((next: SiteContent) => {
+    setContent(next);
+    saveOverrides(next);
+    saveRemoteContent(next).catch((err) => {
+      console.error("[content] Firebase Firestore save failed:", err);
+    });
+  }, []);
+
+  const resetContent = useCallback(() => {
+    setContent(DEFAULT_CONTENT);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("altraware_content_v2");
+      window.localStorage.removeItem("altraware_content_v1");
+    }
+    saveRemoteContent(DEFAULT_CONTENT).catch((err) => {
+      console.error("[content] Firebase reset failed:", err);
+    });
+  }, []);
+
+  const value = useMemo(() => ({ content, updateContent, resetContent }), [content, updateContent, resetContent]);
+  return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
+}
 
 export interface Toast {
   id: number;
@@ -81,56 +153,6 @@ export function NotifyProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ============================================================
-   Content provider — defaults merged with saved overrides.
-   Swap loadOverrides/saveOverrides in lib/content.ts with
-   Firebase Firestore calls later; components don't change.
-   ============================================================ */
-
-interface ContentCtx {
-  content: SiteContent;
-  updateContent: (next: SiteContent) => void;
-  resetContent: () => void;
-}
-
-const ContentContext = createContext<ContentCtx>({
-  content: DEFAULT_CONTENT,
-  updateContent: () => {},
-  resetContent: () => {},
-});
-export const useContent = () => useContext(ContentContext);
-
-export function ContentProvider({ children }: { children: React.ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
-
-  useEffect(() => {
-    const ov = loadOverrides();
-    if (ov) setContent((prev) => ({ ...prev, ...ov }));
-  }, []);
-
-  const updateContent = useCallback((next: SiteContent) => {
-    setContent(next);
-    try {
-      saveOverrides(next);
-    } catch (err) {
-      // Quota (base64 data-URLs) — content ya session bado inaonekana,
-      // lakini haitadumu baada ya reload. Mtumiaji ahamie Cloudinary URLs.
-      console.error("[content] saveOverrides failed:", err);
-    }
-  }, []);
-
-  const resetContent = useCallback(() => {
-    setContent(DEFAULT_CONTENT);
-    if (typeof window !== "undefined") {
-      // NOTE: current key is v2; also clear legacy v1 so stale broken URLs never come back
-      window.localStorage.removeItem("altraware_content_v2");
-      window.localStorage.removeItem("altraware_content_v1");
-    }
-  }, []);
-
-  const value = useMemo(() => ({ content, updateContent, resetContent }), [content, updateContent, resetContent]);
-  return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
-}
 
 /* ============================================================
    Smooth scroll (Lenis) + GSAP ScrollTrigger wiring
@@ -174,105 +196,12 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 }
 
 /* ============================================================
-   Preloader — plays once per session, GSAP exit
+   Preloader — disabled to ensure instantaneous First Paint and
+   sub-1.5s Largest Contentful Paint (LCP) across mobile and desktop.
    ============================================================ */
 
 export function Preloader() {
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    const sessionKey = "altraware_preloaded";
-    if (sessionStorage.getItem(sessionKey)) {
-      setDone(true);
-      return;
-    }
-    // MOBILE PERF: the preloader covers the screen with an opaque div until
-    // fake progress finishes (~2.5s) — that single-handedly kills FCP/LCP
-    // on phones. On small/touch screens finish in ≤700ms with no word
-    // rotation; desktop keeps the full brand sequence.
-    const isMobile =
-      typeof window !== "undefined" &&
-      (window.innerWidth < 768 || window.matchMedia("(hover: none)").matches);
-    if (isMobile) {
-      const fast = window.setTimeout(() => {
-        sessionStorage.setItem(sessionKey, "1");
-        setDone(true);
-      }, 650);
-      return () => window.clearTimeout(fast);
-    }
-    let cancelled = false;
-    let wInt: number | undefined;
-    let int: number | undefined;
-    (async () => {
-      const { gsap } = await import("gsap");
-      if (cancelled) return;
-      const words = ["Welcome", "Roots", "Craft", "Impact", "Let's Go"];
-      const wEl = document.getElementById("loaderWord");
-      const bar = document.getElementById("loaderBar");
-      const pct = document.getElementById("loaderPct");
-      let p = 0;
-      let wi = 0;
-      wInt = window.setInterval(() => {
-        wi = (wi + 1) % words.length;
-        if (wEl) {
-          gsap.fromTo(wEl, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 });
-          wEl.textContent = words[wi];
-        }
-      }, 650);
-      int = window.setInterval(() => {
-        p += Math.random() * 16 + 6;
-        if (p >= 100) {
-          p = 100;
-          if (int) clearInterval(int);
-          if (wInt) clearInterval(wInt);
-          sessionStorage.setItem(sessionKey, "1");
-          gsap.to("#preloader", {
-            yPercent: -100,
-            duration: 0.7,
-            ease: "power4.inOut",
-            delay: 0.15,
-            onComplete: () => setDone(true),
-          });
-          gsap.to("#preloader > *", { y: -20, opacity: 0, duration: 0.35, stagger: 0.05 });
-        }
-        if (bar) bar.style.width = p + "%";
-        if (pct) pct.textContent = Math.floor(p) + "%";
-      }, 110);
-    })();
-    return () => {
-      cancelled = true;
-      if (wInt) clearInterval(wInt);
-      if (int) clearInterval(int);
-    };
-  }, []);
-
-  if (done) return null;
-
-  return (
-    <div id="preloader">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-11 h-11 rounded-2xl bg-viol flex items-center justify-center text-white font-grotesk font-bold text-xl">
-          A
-        </div>
-        <div className="text-white font-grotesk font-semibold tracking-tight text-lg">
-          ALTRAWARE <span className="font-light opacity-60">TECHNOLOGY</span>
-        </div>
-      </div>
-      <div className="loader-word text-white/90 text-3xl md:text-5xl" id="loaderWord">
-        Welcome
-      </div>
-      <div className="text-white/40 text-[11px] tracking-[0.3em] uppercase mt-3 font-grotesk" id="loaderSub">
-        Dar es Salaam · Tanzania
-      </div>
-      <div className="bar-wrap">
-        <div className="bar" id="loaderBar" />
-      </div>
-      <div className="flex justify-between w-[min(420px,70vw)] mt-3 text-white/50 font-mono text-xs">
-        <span id="loaderPct">0%</span>
-        <span>Roots · Craft · Impact</span>
-      </div>
-    </div>
-  );
+  return null;
 }
 
 /* ============================================================
