@@ -177,6 +177,35 @@ body {
   }
 }
 
+/* Admin console: native cursor only */
+body.admin-no-cursor #cursor,
+body.admin-no-cursor #cursor-ring {
+  display: none !important;
+}
+
+/* ============ CLEAN DOC PRINT (system documentation paper only) ============ */
+@media print {
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #system-doc-paper,
+  #system-doc-paper * {
+    visibility: visible;
+  }
+  #system-doc-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 12mm 10mm !important;
+    box-shadow: none !important;
+  }
+}
+
 /* ============ TYPOGRAPHY HELPERS ============ */
 .eyebrow {
   font-family: var(--font-space-grotesk), sans-serif;

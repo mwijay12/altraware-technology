@@ -13,7 +13,7 @@ export function getCloudinaryConfig(): { cloudName: string; preset: string } {
   const preset = (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "").trim();
   if (!cloudName || !preset) {
     throw new Error(
-      "Cloudinary haijasanidiwa: weka NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME na NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET kwenye .env.local kisha restart `next dev`."
+      "Cloudinary is not configured: set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in .env.local, then restart `next dev`."
     );
   }
   return { cloudName, preset };
@@ -26,7 +26,7 @@ export async function uploadFileToCloudinary(file: File): Promise<string> {
   const limit = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
   if (file.size > limit) {
     throw new Error(
-      `Faili ni kubwa mno (${(file.size / 1048576).toFixed(1)} MB). Kikomo ni ${limit / 1048576} MB — punguza ukubwa au tumia link ya URL.`
+      `File is too large (${(file.size / 1048576).toFixed(1)} MB). Limit is ${limit / 1048576} MB — shrink it or paste a URL instead.`
     );
   }
 
@@ -45,19 +45,19 @@ export async function uploadFileToCloudinary(file: File): Promise<string> {
       body: formData,
     });
   } catch {
-    throw new Error("Imeshindwa kuwasiliana na Cloudinary — hakikisha una mtandao kisha jaribu tena.");
+    throw new Error("Could not reach Cloudinary — check your connection and try again.");
   }
 
   if (!response.ok) {
     const errText = await response.text().catch(() => "");
     throw new Error(
-      `Cloudinary upload imeshindwa (${response.status}). Hakikisha preset "${preset}" ni UNSIGNED na ipo kwenye cloud "${cloudName}".${errText ? " Maelezo: " + errText.slice(0, 200) : ""}`
+      `Cloudinary upload failed (${response.status}). Make sure preset "${preset}" is UNSIGNED on cloud "${cloudName}".${errText ? " Details: " + errText.slice(0, 200) : ""}`
     );
   }
 
   const data = await response.json().catch(() => null);
   if (!data?.secure_url) {
-    throw new Error("Cloudinary haikurudisha secure_url — jaribu tena au tumia URL ya mkono.");
+    throw new Error("Cloudinary did not return a secure_url — try again or paste a URL manually.");
   }
   return data.secure_url as string;
 }

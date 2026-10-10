@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useContent } from "@/components/providers";
 
 type DemoItem = {
   id: string;
@@ -32,10 +33,14 @@ type Props = {
 
 export default function LivePreviewFrame({
   liveUrl: initialUrl = "https://faida-hq.vercel.app/",
+  posterImage,
   title = "Faida POS (FaidaHQ) Web Demo",
   status = "Live",
 }: Props) {
   const [selectedDemo] = useState<DemoItem>(DEMOS[0]);
+  // Admin-editable cover: Content → Images → liveDemoPoster (inaangukia prop, kisha default)
+  const { content } = useContent();
+  const poster = content.images?.liveDemoPoster || posterImage || selectedDemo.posterImage;
   const [mode, setMode] = useState<"poster" | "live">("poster");
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [showBlockedHint, setShowBlockedHint] = useState(false);
@@ -110,7 +115,7 @@ export default function LivePreviewFrame({
           {/* Background Screenshot */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={selectedDemo.posterImage}
+            src={poster}
             alt={selectedDemo.name}
             className="absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-luminosity scale-100 group-hover:scale-105 transition-transform duration-700"
           />

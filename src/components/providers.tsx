@@ -179,7 +179,7 @@ export function Preloader() {
     (async () => {
       const { gsap } = await import("gsap");
       if (cancelled) return;
-      const words = ["Karibu", "Mizizi", "Ufundi", "Athari", "Twende"];
+      const words = ["Welcome", "Roots", "Craft", "Impact", "Let's Go"];
       const wEl = document.getElementById("loaderWord");
       const bar = document.getElementById("loaderBar");
       const pct = document.getElementById("loaderPct");
@@ -230,7 +230,7 @@ export function Preloader() {
         </div>
       </div>
       <div className="loader-word text-white/90 text-3xl md:text-5xl" id="loaderWord">
-        Karibu
+        Welcome
       </div>
       <div className="text-white/40 text-[11px] tracking-[0.3em] uppercase mt-3 font-grotesk" id="loaderSub">
         Dar es Salaam · Tanzania
@@ -240,7 +240,7 @@ export function Preloader() {
       </div>
       <div className="flex justify-between w-[min(420px,70vw)] mt-3 text-white/50 font-mono text-xs">
         <span id="loaderPct">0%</span>
-        <span>Mizizi · Ufundi · Athari</span>
+        <span>Roots · Craft · Impact</span>
       </div>
     </div>
   );
@@ -289,7 +289,7 @@ export function PageTransition() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="Altraware" className="w-14 h-14 object-contain mb-3 drop-shadow-md brightness-110" />
         <span id="transitionWord" className="font-serif italic text-white text-3xl md:text-5xl font-light tracking-wide">
-          Twende
+          Let&apos;s Go
         </span>
         <span className="text-violet-300/70 font-mono text-xs uppercase tracking-[0.25em] mt-2">
           Altraware Technology

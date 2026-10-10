@@ -55,6 +55,22 @@ export default function AdminPage() {
   // work on a draft copy; Save writes through to the provider
   const [draft, setDraft] = useState(content);
   useEffect(() => setDraft(content), [content]);
+
+  // Admin console: native cursor only — hide the global custom dot/ring here.
+  useEffect(() => {
+    document.body.classList.add("admin-no-cursor");
+    const c = document.getElementById("cursor");
+    const r = document.getElementById("cursor-ring");
+    const prevC = c?.style.display;
+    const prevR = r?.style.display;
+    if (c) c.style.display = "none";
+    if (r) r.style.display = "none";
+    return () => {
+      document.body.classList.remove("admin-no-cursor");
+      if (c && prevC !== undefined) c.style.display = prevC;
+      if (r && prevR !== undefined) r.style.display = prevR;
+    };
+  }, []);
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(content), [draft, content]);
 
   const save = () => {
@@ -66,14 +82,14 @@ export default function AdminPage() {
   // awe verified SASA HIVI, si "alishawahi kuingia". True = zuia.
   const denyIfLocked = (): boolean => {
     if (!canManageNow()) {
-      notify("Huna ruhusa — session ya admin imeisha. Ingia tena.", "error");
+      notify("No permission — admin session expired. Please sign in again.", "error");
       return true;
     }
     return false;
   };
 
   const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: "leads", label: "Maombi & Leads", icon: "fa-inbox" },
+    { id: "leads", label: "Leads & Inquiries", icon: "fa-inbox" },
     { id: "tracker", label: "Projects & Docs", icon: "fa-diagram-project" },
     { id: "pricing", label: "Pricing", icon: "fa-tags" },
     { id: "blog", label: "Blog", icon: "fa-pen-nib" },
@@ -98,7 +114,7 @@ export default function AdminPage() {
     if (typeof window !== "undefined") {
       localStorage.setItem("altraware_admin_theme", next);
     }
-    notify(next === "light" ? "Light Mode imewashwa ☀️" : "Dark Mode imewashwa 🌙", "info");
+    notify(next === "light" ? "Light mode on ☀️" : "Dark mode on 🌙", "info");
   };
 
   return (
@@ -196,7 +212,7 @@ export default function AdminPage() {
               type="button"
               onClick={toggleTheme}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold transition-all"
-              title="Badili kati ya Light na Dark mode"
+              title="Switch between Light and Dark mode"
             >
               <i className={`fa-solid ${theme === "dark" ? "fa-sun text-yellow-400" : "fa-moon text-viol"} text-xs`} />
               <span>{theme === "dark" ? "Light" : "Dark"}</span>
@@ -223,7 +239,7 @@ export default function AdminPage() {
                 window.location.href = "/";
               }}
               className="text-red-400/80 hover:text-red-300 flex items-center gap-1 transition-colors"
-              title="Toka kwenye mfumo na urudi Homepage"
+              title="Sign out of the console and return to Homepage"
             >
               <i className="fa-solid fa-arrow-right-from-bracket text-[10px]" />
               <span>Log out</span>
@@ -276,7 +292,7 @@ export default function AdminPage() {
               type="button"
               onClick={toggleTheme}
               className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl border border-white/15 hover:border-viol/60 hover:bg-white/5 text-xs font-bold transition-all"
-              title={theme === "dark" ? "Badili kuwa Light Mode" : "Badili kuwa Dark Mode"}
+              title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               <i className={`fa-solid ${theme === "dark" ? "fa-sun text-yellow-400" : "fa-moon text-viol"} text-xs`} />
               <span className="hidden sm:inline">{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
@@ -286,7 +302,7 @@ export default function AdminPage() {
             {session && (
               <span
                 className="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                title="Aina ya session + muda uliobaki kabla hujatolewa kiotomatiki"
+                title="Session type + time left before auto sign-out"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 {session.method === "master" ? "Master" : "Google"} · {formatRemainingSw(remainingMs)}
@@ -318,7 +334,7 @@ export default function AdminPage() {
                   systemName: lead.type,
                 });
                 setTab("tracker");
-                notify(`Ombi la ${lead.name} limehamishiwa kwenye Project Tracker ✓`, "info");
+                notify(`Inquiry from ${lead.name} moved to the Project Tracker ✓`, "info");
               }}
             />
           )}
@@ -329,10 +345,378 @@ export default function AdminPage() {
           {tab === "content" && <ContentTab draft={draft} setDraft={setDraft} notify={notify} />}
           {tab === "images" && <ImagesTab draft={draft} setDraft={setDraft} notify={notify} />}
         </div>
+
+        {/* Sticky save bar — inaonekana mabadiliko yakisubiri kuhifadhiwa */}
+        {dirty && (
+          <div className="sticky bottom-4 z-40 mx-4 sm:mx-6 lg:mx-8 mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-viol border border-white/25 rounded-2xl px-4 py-3 shadow-2xl shadow-viol/40">
+              <span className="text-xs font-bold text-white flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
+                Unsaved changes — press Save to publish them live
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setDraft(content);
+                    notify("Changes discarded — back to the saved version", "info");
+                  }}
+                  className="text-xs font-bold px-4 py-2 rounded-xl border border-white/40 text-white hover:bg-white/10 transition-all"
+                >
+                  Discard
+                </button>
+                <button
+                  onClick={save}
+                  className="text-xs font-bold px-5 py-2 rounded-xl bg-white text-viol hover:bg-white/90 transition-all shadow"
+                >
+                  <i className="fa-solid fa-floppy-disk mr-1.5" /> Save changes ✓
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <AdminAuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} notify={notify} />
     </div>
+  );
+}
+
+/* ================= MEDIA HELPERS (picsum + where-used) ================= */
+
+type NotifyFn = (msg: string, type: "success" | "error" | "info") => void;
+type MediaItem = SiteContent["projects"][number]["media"][number];
+
+/** Picsum placeholder: https://picsum.photos/seed/<seed>/900/600 */
+export function picsumUrl(seed: string, w = 900, h = 600): string {
+  const clean =
+    seed
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "altraware";
+  return `https://picsum.photos/seed/${clean}/${w}/${h}`;
+}
+
+/** Ramani: kila key ya image registry inaonekana WAPI kwenye site. */
+const IMAGE_LOCATIONS: Record<string, string> = {
+  liveDemoPoster: "📍 🏠 Homepage → Faida sandbox cover (Live Demo)",
+  heroDar: "⚠️ Legacy — not used anywhere (editing it changes nothing)",
+  streetTz: "📍 🏠 Homepage → Roots collage · 📄 /about → photo strip",
+  mediaBanner: "⚠️ Legacy — not used anywhere (editing it changes nothing)",
+  community: "📍 🏠 Homepage → Roots collage · 📄 /about → photo strip",
+  clientAvatar: "📍 🏠 Homepage → testimonial avatar (Roots)",
+  webPreview: "📍 📄 /about → photo strip · 📄 /services → collage",
+  sectorSchool: "📍 📄 /about → photo strip · 📄 /services → collage",
+  sectorRetail: "📍 📄 /services → collage",
+  sectorNgo: "⚠️ Legacy — not used (sector cards read Impact → Sectors below)",
+};
+
+/** 📍 Mstari unaoeleza picha/content inaonekana WAPI kwenye site. */
+function Spot({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-1.5 text-[11px] font-mono text-violL/90 bg-viol/10 border border-viol/25 rounded-xl px-3 py-2 leading-relaxed">
+      <i className="fa-solid fa-location-dot mt-0.5 shrink-0" />
+      <span>{children}</span>
+    </div>
+  );
+}
+
+/** ⚠️ Beji ya field ambayo HAIJATUMIKA popote — kuibadilisha hakutaonyesha tofauti. */
+function LegacyBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-1 rounded-md border border-amber-500/40 bg-amber-500/10 text-amber-300">
+      <i className="fa-solid fa-triangle-exclamation" />
+      <span>{children}</span>
+    </span>
+  );
+}
+
+/* ================= MEDIA SLOTS EDITOR ([Image 1] [Video 2] …) ================= */
+
+function MediaSlotsEditor({
+  media,
+  onChange,
+  notify,
+  seedPrefix,
+}: {
+  media: MediaItem[];
+  onChange: (next: MediaItem[]) => void;
+  notify: NotifyFn;
+  seedPrefix: string;
+}) {
+  const move = (from: number, dir: -1 | 1) => {
+    const to = from + dir;
+    if (to < 0 || to >= media.length) return;
+    const next = [...media];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    onChange(next);
+  };
+
+  const removeAt = (idx: number) => {
+    onChange(media.filter((_, k) => k !== idx));
+  };
+
+  const setAt = (idx: number, patch: Partial<MediaItem>) => {
+    onChange(media.map((m, k) => (k === idx ? { ...m, ...patch } : m)));
+  };
+
+  const handleUpload = async (file: File | undefined, kind: "image" | "video") => {
+    if (!file) return;
+    notify(`Uploading ${kind === "video" ? "a video" : "a photo"} from PC to Cloudinary...`, "info");
+    try {
+      const url = await uploadFileToCloudinary(file);
+      onChange([...media, { type: kind, url, caption: file.name }]);
+      notify(`${kind === "video" ? "Video" : "Photo"} uploaded ✓ — remember to press "Save changes"`, "success");
+    } catch (err) {
+      notify(err instanceof Error ? err.message : "Upload failed", "error");
+    }
+  };
+
+  return (
+    <div className="space-y-2.5">
+      <div className="flex flex-wrap gap-2">
+        <label className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-viol/40 bg-viol/20 text-violL hover:bg-viol hover:text-white transition-all cursor-pointer flex items-center gap-1">
+          <i className="fa-solid fa-cloud-arrow-up text-[9px]" />
+          <span>+ Photo (PC)</span>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
+              void handleUpload(f, "image");
+            }}
+          />
+        </label>
+        <label className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-teal-500/40 bg-teal-500/20 text-teal-300 hover:bg-teal-500 hover:text-white transition-all cursor-pointer flex items-center gap-1">
+          <i className="fa-solid fa-video text-[9px]" />
+          <span>+ Video (PC)</span>
+          <input
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
+              void handleUpload(f, "video");
+            }}
+          />
+        </label>
+        <button
+          onClick={() => onChange([...media, { type: "image", url: "", caption: "" }])}
+          className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all"
+        >
+          + Image URL
+        </button>
+        <button
+          onClick={() => onChange([...media, { type: "video", url: "", caption: "" }])}
+          className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all"
+        >
+          + Video URL
+        </button>
+      </div>
+
+      {media.map((m, mi) => (
+        <div key={mi} className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
+          {/* Thumbnail */}
+          <div className="w-full sm:w-20 h-14 rounded-lg overflow-hidden border border-white/15 bg-black/50 shrink-0 flex items-center justify-center relative">
+            {m.url ? (
+              m.type === "video" ? (
+                <div className="relative w-full h-full bg-slate-900 flex items-center justify-center">
+                  <i className="fa-solid fa-play text-violL text-sm" />
+                </div>
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={m.url} alt={m.caption || `Slot ${mi + 1}`} className="w-full h-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.opacity = "0.3")} />
+              )
+            ) : (
+              <span className="text-[10px] text-white/30">Empty</span>
+            )}
+          </div>
+
+          {/* Numbered slot badge */}
+          <span className={`text-[10px] font-bold px-2 py-1 rounded-md shrink-0 whitespace-nowrap ${m.type === "video" ? "bg-teal-500/20 text-teal-300" : "bg-viol/20 text-violL"}`}>
+            {m.type === "video" ? `[Video ${mi + 1}]` : `[Image ${mi + 1}]`}
+          </span>
+
+          <div className="flex-1 min-w-0 space-y-1.5">
+            <div className="flex gap-1.5">
+              <input
+                className={inputCls + " flex-1"}
+                placeholder={m.type === "video" ? "https://... .mp4 or Cloudinary video URL" : "https://... image URL"}
+                value={m.url}
+                onChange={(e) => setAt(mi, { url: e.target.value })}
+              />
+              {m.type === "image" && (
+                <button
+                  type="button"
+                  title="Fill with a temporary Picsum photo"
+                  onClick={() => {
+                    setAt(mi, { url: picsumUrl(`${seedPrefix}-${mi + 1}`) });
+                    notify(`Slot ${mi + 1} filled with Picsum — remember "Save changes"`, "info");
+                  }}
+                  className="px-2.5 py-1 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all text-xs shrink-0"
+                >
+                  🎲
+                </button>
+              )}
+            </div>
+            <input
+              className={inputCls}
+              placeholder="Caption under the photo (e.g. Team dashboards & systems)"
+              value={m.caption}
+              onChange={(e) => setAt(mi, { caption: e.target.value })}
+            />
+          </div>
+
+          <div className="flex sm:flex-col gap-1 shrink-0">
+            <button onClick={() => move(mi, -1)} disabled={mi === 0} className="text-white/40 hover:text-white transition-colors p-1 disabled:opacity-20" aria-label="Move up" title="Move up">
+              <i className="fa-solid fa-chevron-up text-xs" />
+            </button>
+            <button onClick={() => move(mi, 1)} disabled={mi === media.length - 1} className="text-white/40 hover:text-white transition-colors p-1 disabled:opacity-20" aria-label="Move down" title="Move down">
+              <i className="fa-solid fa-chevron-down text-xs" />
+            </button>
+            <button onClick={() => removeAt(mi)} className="text-white/40 hover:text-red-400 transition-colors p-1" aria-label="Delete slot" title="Delete slot">
+              <i className="fa-solid fa-trash text-xs" />
+            </button>
+          </div>
+        </div>
+      ))}
+      {media.length === 0 && (
+        <div className="text-[11px] text-white/25 py-2">No media yet — add a photo or video above. The order here is the order on the site.</div>
+      )}
+    </div>
+  );
+}
+
+/* ================= SERVICES EDITOR (HUDUMA + MEDIA) ================= */
+
+function ServicesEditor({
+  draft,
+  setDraft,
+  notify,
+}: {
+  draft: SiteContent;
+  setDraft: (d: SiteContent) => void;
+  notify: NotifyFn;
+}) {
+  const setS = (fn: (sv: SiteContent["services"]) => void) => {
+    const next = structuredClone(draft.services);
+    fn(next);
+    setDraft({ ...draft, services: next });
+  };
+
+  return (
+    <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40">
+          SERVICES &amp; MEDIA ({draft.services.length})
+        </div>
+      </div>
+      <div className="space-y-2 mb-6">
+        <Spot>
+          These are the 3 cards of the marquee strip (parallel scroll) on the Homepage — the photos/videos below are exactly what scrolls by, each with its own caption.
+        </Spot>
+      </div>
+      <div className="space-y-4">
+        {draft.services.map((s, si) => (
+          <div key={s.id} className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2.5">
+                <span className="w-9 h-9 rounded-full bg-deep text-white flex items-center justify-center font-grotesk font-bold text-xs border border-white/10">
+                  {s.num}
+                </span>
+                <div>
+                  <div className="font-bold text-white text-sm">{s.title}</div>
+                  <div className="text-[10px] text-white/40 font-mono">id: {s.id}</div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <a href="/#services" className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all">
+                  View Homepage ↗
+                </a>
+                <a href={`/services#${s.id}`} className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all">
+                  View /services ↗
+                </a>
+              </div>
+            </div>
+
+            <Spot>
+              Shown on: 🏠 Homepage → Accordion + Marquee strip · 📄 /services#{s.id}
+              {s.id === "systems" && " · 📄 /process strip · 📄 /about motion (first media item only)"}
+            </Spot>
+
+            <div className="grid md:grid-cols-3 gap-4 mt-4">
+              <Field label="Title">
+                <TextInput value={s.title} onChange={(v) => setS((x) => void (x[si].title = v))} />
+              </Field>
+              <Field label="Title (Swahili)">
+                <TextInput value={s.titleSw ?? ""} onChange={(v) => setS((x) => void (x[si].titleSw = v))} placeholder="Websites / Apps / Systems" />
+              </Field>
+              <Field label="Starting price (TSh)">
+                <NumInput value={s.startingPrice ?? 0} onChange={(n) => setS((x) => void (x[si].startingPrice = n))} suffix="TSh" />
+              </Field>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4 mt-4">
+              <Field label="Subtitle">
+                <TextInput value={s.subtitle} onChange={(v) => setS((x) => void (x[si].subtitle = v))} />
+              </Field>
+              <Field label="Tags (comma)">
+                <TextInput
+                  value={s.tags.join(", ")}
+                  onChange={(v) => setS((x) => void (x[si].tags = v.split(",").map((t) => t.trim()).filter(Boolean)))}
+                />
+              </Field>
+            </div>
+            <div className="mt-4">
+              <Field label="Description">
+                <AreaInput value={s.description} onChange={(v) => setS((x) => void (x[si].description = v))} rows={2} />
+              </Field>
+            </div>
+
+            {/* Highlights */}
+            <div className="mt-4">
+              <div className="text-[10px] font-grotesk font-bold tracking-[0.2em] text-white/35 mb-2">
+                HIGHLIGHT CARDS ({s.highlights.length})
+              </div>
+              <div className="space-y-2">
+                {s.highlights.map((h, hi) => (
+                  <div key={hi} className="grid md:grid-cols-[1fr_1.4fr_1fr] gap-2">
+                    <TextInput value={h.title} onChange={(v) => setS((x) => void (x[si].highlights[hi].title = v))} placeholder="Heading" />
+                    <TextInput value={h.body} onChange={(v) => setS((x) => void (x[si].highlights[hi].body = v))} placeholder="Details" />
+                    <TextInput value={h.proof} onChange={(v) => setS((x) => void (x[si].highlights[hi].proof = v))} placeholder="Proof (e.g. 1.4s load on 3G)" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* previewImage — legacy, haijatumika */}
+            <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+              <div className="flex-1">
+                <Field label="Cover (previewImage)">
+                  <TextInput value={s.previewImage ?? ""} onChange={(v) => setS((x) => void (x[si].previewImage = v))} placeholder="https://..." />
+                </Field>
+              </div>
+              <LegacyBadge>not used anywhere yet — the media below is what appears</LegacyBadge>
+            </div>
+
+            {/* Media slots */}
+            <div className="mt-4">
+              <div className="text-[10px] font-grotesk font-bold tracking-[0.2em] text-white/35 mb-2">
+                MEDIA — MARQUEE PHOTOS &amp; VIDEOS ({(s.media ?? []).length})
+              </div>
+              <MediaSlotsEditor
+                media={s.media ?? []}
+                onChange={(next) => setS((x) => void (x[si].media = next))}
+                notify={notify}
+                seedPrefix={s.id}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -394,7 +778,7 @@ function PricingTab({ draft, setDraft }: { draft: typeof import("@/lib/content")
       {/* PACKAGES */}
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">
-          PACKAGES — FURUSHA ({p.packages.length})
+          PACKAGES ({p.packages.length})
         </div>
         <div className="space-y-4">
           {p.packages.map((pkg, i) => (
@@ -479,7 +863,7 @@ function PricingTab({ draft, setDraft }: { draft: typeof import("@/lib/content")
       {/* ESTIMATOR */}
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">
-          ESTIMATOR — MAKADIRIO
+          ESTIMATOR
         </div>
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           {p.estimator.types.map((t, i) => (
@@ -536,7 +920,7 @@ function PricingTab({ draft, setDraft }: { draft: typeof import("@/lib/content")
       {/* SUPPORT PLANS */}
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">
-          SUPPORT PLANS — MPANGO WA MATENGENEZO
+          SUPPORT PLANS
         </div>
         <div className="space-y-4">
           {p.supportPlans.map((plan, i) => (
@@ -597,7 +981,7 @@ function PricingTab({ draft, setDraft }: { draft: typeof import("@/lib/content")
 
       {/* FAQ */}
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
-        <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">FAQ — MASWALI</div>
+        <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">FAQ</div>
         <div className="space-y-4">
           {p.faqs.map((f, i) => (
             <div key={i} className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
@@ -716,9 +1100,9 @@ function BlogTab({
           </Field>
         </div>
         <div className="mt-4 space-y-2">
-          <Field label="Cover image (Cloudinary Upload / URL)">
+          <Field label="Cover image — 📄 /blog cards + post page (Cloudinary Upload / URL)">
             <div className="flex flex-col sm:flex-row gap-2.5 items-start sm:items-center">
-              <TextInput value={editing.cover} onChange={(v) => setEditing({ ...editing, cover: v })} placeholder="https://res.cloudinary.com/... au chagua faili kutoka PC" className="flex-1" />
+              <TextInput value={editing.cover} onChange={(v) => setEditing({ ...editing, cover: v })} placeholder="https://res.cloudinary.com/... or choose a file from your PC" className="flex-1" />
               <CloudinaryUploader value={editing.cover} onChange={(url) => setEditing({ ...editing, cover: url })} compact />
             </div>
           </Field>
@@ -765,7 +1149,7 @@ function BlogTab({
     <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40">
-          POSTS — MAKALA ({draft.blog.posts.length})
+          POSTS ({draft.blog.posts.length})
         </div>
         <button onClick={() => setEditing(newPost())} className="bg-viol hover:bg-violD transition-colors text-white font-bold px-4 py-2 rounded-xl text-xs">
           + New post
@@ -801,7 +1185,7 @@ function BlogTab({
             <button
               onClick={() => {
                 if (!canManageNow()) {
-                  notify("Huna ruhusa — session ya admin imeisha. Ingia tena.", "error");
+                  notify("No permission — admin session expired. Please sign in again.", "error");
                   return;
                 }
                 if (confirm(`Delete "${post.title}"?`)) {
@@ -942,7 +1326,7 @@ function InvoicesTab({ notify, content }: { notify: (m: string, k?: "info" | "su
         {/* items */}
         <div className="mt-6">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40">ITEMS — BIDHAA</div>
+            <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40">ITEMS</div>
             <button
               onClick={() => setEditing({ ...editing, items: [...editing.items, { desc: "", qty: 1, unitPrice: 0 }] })}
               className="text-xs font-bold px-3.5 py-2 rounded-lg border border-dashed border-white/25 text-white/60 hover:border-viol hover:text-violL transition-all"
@@ -1043,7 +1427,7 @@ function InvoicesTab({ notify, content }: { notify: (m: string, k?: "info" | "su
     <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40">
-          INVOICES — RISITI ZA BIASHARA ({invoices.length})
+          INVOICES ({invoices.length})
         </div>
         <button onClick={() => setEditing(blank())} className="bg-viol hover:bg-violD transition-colors text-white font-bold px-4 py-2 rounded-xl text-xs">
           + New invoice
@@ -1110,11 +1494,11 @@ function InvoicesTab({ notify, content }: { notify: (m: string, k?: "info" | "su
                 </button>
                 <button
                   onClick={() => {
-                    if (!canManageNow()) {
-                      notify("Huna ruhusa — session ya admin imeisha. Ingia tena.", "error");
-                      return;
-                    }
-                    if (confirm(`Delete ${inv.number}?`)) {
+                if (!canManageNow()) {
+                    notify("No permission — admin session expired. Please sign in again.", "error");
+                    return;
+                  }
+                  if (confirm(`Delete ${inv.number}?`)) {
                       persist(invoices.filter((x) => x.id !== inv.id));
                       notify("Invoice deleted", "info");
                     }
@@ -1149,17 +1533,17 @@ function VideoUploaderField({
   const handleFile = async (file: File) => {
     if (!file) return;
     if (!file.type.startsWith("video/")) {
-      notify("Tafadhali chagua faili la video (MP4, WebM, QuickTime)", "error");
+      notify("Please choose a video file (MP4, WebM, QuickTime)", "error");
       return;
     }
     setUploading(true);
-    notify("Inapakia video kwenda Cloudinary... subiri kidogo", "info");
+    notify("Uploading video to Cloudinary... please wait", "info");
     try {
       const url = await uploadFileToCloudinary(file);
       onChange(url);
-      notify("Video imepakiwa kikamilifu ✓", "success");
+      notify("Video uploaded ✓ — remember to press Save changes", "success");
     } catch (err: any) {
-      notify(err.message || "Imeshindwa kupakia video", "error");
+      notify(err instanceof Error ? err.message : "Video upload failed", "error");
     } finally {
       setUploading(false);
     }
@@ -1171,7 +1555,7 @@ function VideoUploaderField({
         <TextInput
           value={value}
           onChange={onChange}
-          placeholder="https://... au pakia video kutoka PC hapa chini"
+          placeholder="https://... or upload a video from your PC below"
           className="flex-1"
         />
         {value && (
@@ -1179,7 +1563,7 @@ function VideoUploaderField({
             type="button"
             onClick={() => onChange("")}
             className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-xs font-bold transition-colors"
-            title="Ondoa video"
+            title="Remove video"
           >
             <i className="fa-solid fa-trash" />
           </button>
@@ -1220,8 +1604,8 @@ function VideoUploaderField({
         {uploading ? (
           <div className="flex flex-col items-center justify-center py-4">
             <i className="fa-solid fa-circle-notch fa-spin text-2xl text-viol mb-2" />
-            <span className="text-xs font-grotesk font-bold text-white">Inapakia video Cloudinary...</span>
-            <span className="text-[11px] text-white/40 mt-1">Tafadhali subiri wakati video inaboreshwa na kuhifadhiwa.</span>
+            <span className="text-xs font-grotesk font-bold text-white">Uploading to Cloudinary...</span>
+            <span className="text-[11px] text-white/40 mt-1">Please wait while the video uploads and saves.</span>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-2">
@@ -1229,10 +1613,10 @@ function VideoUploaderField({
               <i className="fa-solid fa-cloud-arrow-up text-lg" />
             </div>
             <p className="text-xs font-bold text-white">
-              Bofya hapa au buruta video kutoka PC / Simu
+              Click here or drag a video from PC / phone
             </p>
             <p className="text-[11px] text-white/40 mt-1">
-              Inakubali MP4, WebM, MOV · Hifadhi ya moja kwa moja Cloudinary
+              MP4, WebM, MOV · Direct Cloudinary storage
             </p>
           </div>
         )}
@@ -1251,7 +1635,7 @@ function VideoUploaderField({
               rel="noopener noreferrer"
               className="text-[11px] text-violL hover:underline font-mono"
             >
-              Fungua link ↗
+              Open link ↗
             </a>
           </div>
           <video
@@ -1282,7 +1666,8 @@ function ContentTab({
     <div className="space-y-6">
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">HERO COPY &amp; MEDIA</div>
-        <div className="space-y-4">
+        <Spot>🏠 Homepage → Hero (mobile background + desktop card) plus the caption below it.</Spot>
+        <div className="space-y-4 mt-4">
           <div className="grid md:grid-cols-2 gap-4">
             <Field label="Badge text">
               <TextInput value={draft.hero.badge} onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, badge: v } })} />
@@ -1298,7 +1683,7 @@ function ContentTab({
           {/* HERO IMAGE (PC / MOBILE CLOUDINARY UPLOADER) */}
           <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-grotesk font-bold text-white">HERO BACKGROUND &amp; CARD PHOTO (Nyumbani / Tanzania)</span>
+              <span className="text-xs font-grotesk font-bold text-white">HERO BACKGROUND &amp; CARD PHOTO (Dar es Salaam, Tanzania)</span>
               {draft.hero.image && (
                 <span className="text-[10px] text-green-400 font-mono flex items-center gap-1">
                   <i className="fa-solid fa-check" /> Active
@@ -1316,23 +1701,23 @@ function ContentTab({
               </div>
               <div className="space-y-2">
                 <CloudinaryUploader
-                  label="Pakia Picha ya Hero kutoka PC / Simu (Cloudinary)"
+                  label="Upload Hero photo from PC / phone (Cloudinary)"
                   value={draft.hero.image}
                   onChange={(url: string) => {
                     setDraft({ ...draft, hero: { ...draft.hero, image: url } });
-                    notify("Picha ya Hero imesasishwa kikamilifu ✓", "success");
+                    notify("Hero photo updated ✓", "success");
                   }}
                 />
                 <TextInput
                   value={draft.hero.imageCaption || ""}
-                  placeholder="Caption ya picha (mfano: Dar es Salaam au Kariakoo Workshop)"
+                  placeholder="Photo caption (e.g. Dar es Salaam or Kariakoo Workshop)"
                   onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, imageCaption: v } })}
                 />
               </div>
             </div>
           </div>
 
-          <Field label="Hero video (Upload from PC or link)">
+          <Field label="Hero video — not used anywhere yet">
             <VideoUploaderField
               value={draft.hero.heroVideo}
               onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, heroVideo: v } })}
@@ -1367,9 +1752,10 @@ function ContentTab({
           {/* FOUNDERS PHOTOS & PROFILES */}
           <div className="pt-2">
             <div className="text-[10px] font-grotesk font-bold tracking-[0.2em] text-white/40 uppercase mb-3">
-              Waanzilishi / Founders Photos (Upload halisi toka PC/Simu)
+              Founders Photos (real upload from PC/phone)
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <Spot>📄 /about → Founders section (round photos of David and Clemence).</Spot>
+            <div className="grid md:grid-cols-2 gap-4 mt-3">
               {draft.about.founders.map((f, fi) => (
                 <div key={fi} className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center gap-3">
@@ -1383,18 +1769,18 @@ function ContentTab({
                     </div>
                   </div>
                   <CloudinaryUploader
-                    label={`Pakia picha ya ${f.name.split(" ")[0]} (PC)`}
+                    label={`Upload ${f.name.split(" ")[0]}'s photo (PC)`}
                     value={f.photo}
                     onChange={(url: string) => {
                       const nextFounders = structuredClone(draft.about.founders);
                       nextFounders[fi].photo = url;
                       setDraft({ ...draft, about: { ...draft.about, founders: nextFounders } });
-                      notify(`Picha ya ${f.name} imesasishwa ✓`, "success");
+                      notify(`${f.name}'s photo updated ✓`, "success");
                     }}
                   />
                   <TextInput
                     value={f.name}
-                    placeholder="Jina kamili"
+                    placeholder="Full name"
                     onChange={(v) => {
                       const next = structuredClone(draft.about.founders);
                       next[fi].name = v;
@@ -1403,7 +1789,7 @@ function ContentTab({
                   />
                   <TextInput
                     value={f.role}
-                    placeholder="Nafasi / Cheo"
+                    placeholder="Role / Title"
                     onChange={(v) => {
                       const next = structuredClone(draft.about.founders);
                       next[fi].role = v;
@@ -1421,7 +1807,7 @@ function ContentTab({
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-2">SECTORS &amp; IMPACT MEDIA</div>
         <p className="text-xs text-white/40 mb-4">
-          Picha zinazoonekana kwenye kadi za Sekta (Schools, Retail, NGOs) — weka picha halisi za Kitanzania badala ya picha za wazungu.
+          Photos on the sector cards (Schools, Retail, NGOs) — 🏠 Homepage → Impact grid · 📄 /impact → Sectors.
         </p>
         <div className="grid md:grid-cols-3 gap-4">
           {draft.impact.sectors.map((sec, si) => (
@@ -1432,13 +1818,13 @@ function ContentTab({
               </div>
               <div className="text-xs font-bold text-white uppercase tracking-wider">{sec.label}</div>
               <CloudinaryUploader
-                label={`Badili picha ya ${sec.label} (PC)`}
+                label={`Change ${sec.label} photo (PC)`}
                 value={sec.image}
                 onChange={(url: string) => {
                   const nextSectors = structuredClone(draft.impact.sectors);
                   nextSectors[si].image = url;
                   setDraft({ ...draft, impact: { ...draft.impact, sectors: nextSectors } });
-                  notify(`Picha ya ${sec.label} imesasishwa ✓`, "success");
+                      notify(`${sec.label} photo updated ✓`, "success");
                 }}
               />
             </div>
@@ -1447,6 +1833,8 @@ function ContentTab({
       </section>
 
       <ProjectsEditor draft={draft} setDraft={setDraft} notify={notify} />
+
+      <ServicesEditor draft={draft} setDraft={setDraft} notify={notify} />
 
       <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-5">CONTACT</div>
@@ -1504,7 +1892,7 @@ function ProjectsEditor({
     <section className="bg-white/[0.04] border border-white/10 rounded-3xl p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40">
-          PORTFOLIO PROJECTS — MIRADI ({draft.projects.length})
+          PORTFOLIO PROJECTS ({draft.projects.length})
         </div>
         <button
           onClick={() =>
@@ -1527,10 +1915,13 @@ function ProjectsEditor({
           + Add project
         </button>
       </div>
-      <p className="text-xs text-white/40 mb-6">
+      <p className="text-xs text-white/40 mb-4">
         Live links power the public showcase. Media items (images &amp; playable videos) show on the project cards —
         replace any URL, or paste Cloudinary links when connected.
       </p>
+      <Spot>
+        🏠 Homepage → Work grid (6 featured) · 📄 /impact → Portfolio · 🪟 Modal (click a card) · 📄 /about motion (Faida media). The [Image 1] number is the cover shown on cards.
+      </Spot>
       <div className="space-y-4">
         {draft.projects.map((pr, i) => (
           <div key={pr.id} className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
@@ -1570,7 +1961,7 @@ function ProjectsEditor({
                 <div className="flex flex-wrap gap-2">
                   <label className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-viol/40 bg-viol/20 text-violL hover:bg-viol hover:text-white transition-all cursor-pointer flex items-center gap-1">
                     <i className="fa-solid fa-cloud-arrow-up text-[9px]" />
-                    <span>+ Picha (PC)</span>
+                    <span>+ Photo (PC)</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -1578,13 +1969,13 @@ function ProjectsEditor({
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        notify("Inapakia picha kutoka PC kwenda Cloudinary...", "info");
+                        notify("Uploading project photo from PC to Cloudinary...", "info");
                         try {
                           const url = await uploadFileToCloudinary(file);
                           setMedia(i, (m) => void m.push({ type: "image", url, caption: file.name }));
-                          notify("Picha ya mradi imepakiwa kikamilifu ✓", "success");
+                          notify("Project photo uploaded ✓ — remember to press Save changes", "success");
                         } catch {
-                          notify("Imeshindikana kupakia picha", "error");
+                          notify("Photo upload failed", "error");
                         }
                       }}
                     />
@@ -1599,13 +1990,13 @@ function ProjectsEditor({
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        notify("Inapakia video ya mradi kutoka PC kwenda Cloudinary...", "info");
+                        notify("Uploading project video from PC to Cloudinary...", "info");
                         try {
                           const url = await uploadFileToCloudinary(file);
                           setMedia(i, (m) => void m.push({ type: "video", url, caption: file.name }));
-                          notify("Video ya mradi imepakiwa kikamilifu ✓", "success");
+                          notify("Project video uploaded ✓ — remember to press Save changes", "success");
                         } catch {
-                          notify("Imeshindikana kupakia video", "error");
+                          notify("Video upload failed", "error");
                         }
                       }}
                     />
@@ -1614,13 +2005,13 @@ function ProjectsEditor({
                     onClick={() => setMedia(i, (m) => void m.push({ type: "image", url: "", caption: "" }))}
                     className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all"
                   >
-                    + URL ya Picha
+                    + Image URL
                   </button>
                   <button
                     onClick={() => setMedia(i, (m) => void m.push({ type: "video", url: "", caption: "" }))}
                     className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-white/15 text-white/50 hover:border-viol hover:text-violL transition-all"
                   >
-                    + URL ya Video
+                    + Video URL
                   </button>
                 </div>
               </div>
@@ -1643,8 +2034,8 @@ function ProjectsEditor({
                       )}
                     </div>
 
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-md shrink-0 ${m.type === "video" ? "bg-teal-500/20 text-teal-300" : "bg-viol/20 text-violL"}`}>
-                      {m.type === "video" ? "VIDEO" : "IMG"}
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-md shrink-0 whitespace-nowrap ${m.type === "video" ? "bg-teal-500/20 text-teal-300" : "bg-viol/20 text-violL"}`}>
+                      {m.type === "video" ? `[Video ${mi + 1}]` : `[Image ${mi + 1}]`}
                     </span>
                     <input
                       className={inputCls + " flex-1"}
@@ -1658,6 +2049,50 @@ function ProjectsEditor({
                       value={m.caption}
                       onChange={(e) => setMedia(i, (mm) => void (mm[mi].caption = e.target.value))}
                     />
+                    {m.type === "image" && (
+                      <button
+                        type="button"
+                  title="Fill with a temporary Picsum photo"
+                        onClick={() => {
+                          setMedia(i, (mm) => void (mm[mi].url = picsumUrl(`${pr.id}-${mi + 1}`)));
+                          notify(`Slot ${mi + 1} filled with Picsum — remember "Save changes"`, "info");
+                        }}
+                        className="text-white/40 hover:text-violL transition-colors shrink-0 p-1.5"
+                        aria-label="Fill Picsum"
+                      >
+                        🎲
+                      </button>
+                    )}
+                    <button
+                      onClick={() =>
+                        setMedia(i, (mm) => {
+                          if (mi === 0) return;
+                          const [it] = mm.splice(mi, 1);
+                          mm.splice(mi - 1, 0, it);
+                        })
+                      }
+                      disabled={mi === 0}
+                      className="text-white/40 hover:text-white transition-colors shrink-0 p-1.5 disabled:opacity-20"
+                      aria-label="Move up"
+                      title="Move up"
+                    >
+                      <i className="fa-solid fa-chevron-up text-xs" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setMedia(i, (mm) => {
+                          if (mi >= mm.length - 1) return;
+                          const [it] = mm.splice(mi, 1);
+                          mm.splice(mi + 1, 0, it);
+                        })
+                      }
+                      disabled={mi >= (pr.media ?? []).length - 1}
+                      className="text-white/40 hover:text-white transition-colors shrink-0 p-1.5 disabled:opacity-20"
+                      aria-label="Move down"
+                      title="Move down"
+                    >
+                      <i className="fa-solid fa-chevron-down text-xs" />
+                    </button>
                     <button
                       onClick={() => setMedia(i, (mm) => void mm.splice(mi, 1))}
                       className="text-white/40 hover:text-red-400 transition-colors shrink-0 p-1.5"
@@ -1685,7 +2120,7 @@ function ProjectsEditor({
               <button
                 onClick={() => {
                   if (!canManageNow()) {
-                    notify("Huna ruhusa — session ya admin imeisha. Ingia tena.", "error");
+                    notify("No permission — admin session expired. Please sign in again.", "error");
                     return;
                   }
                   setP((x) => void x.splice(i, 1));
@@ -1720,13 +2155,13 @@ function ImagesTab({
   const handleFileUpload = async (key: string, file: File | undefined) => {
     if (!file) return;
     setUploadingKey(key);
-    notify(`Inapakia faili ya ${file.name} kwenda Cloudinary...`, "info");
+    notify(`Uploading ${file.name} to Cloudinary...`, "info");
     try {
       const url = await uploadFileToCloudinary(file);
       setDraft({ ...draft, images: { ...draft.images, [key]: url } });
-      notify(`Picha (${key}) imepakiwa kutoka kwenye PC kwa mafanikio ✓`, "success");
+      notify(`Photo (${key}) uploaded from PC ✓ — remember to press Save changes`, "success");
     } catch {
-      notify("Imeshindikana kupakia picha kwenye Cloudinary", "error");
+      notify("Cloudinary photo upload failed", "error");
     } finally {
       setUploadingKey(null);
     }
@@ -1739,9 +2174,12 @@ function ImagesTab({
           <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-1">
             IMAGE REGISTRY — CLOUDINARY MEDIA
           </div>
-          <h2 className="text-xl font-bold font-grotesk text-white">Mkusanyiko wa Picha na Nembo</h2>
+          <h2 className="text-xl font-bold font-grotesk text-white">Photo &amp; Asset Collection</h2>
           <p className="text-xs text-white/50 mt-1">
-            Chagua faili kutoka kwenye PC yako (desktop/laptop) kupakia moja kwa moja kwenye Cloudinary, au weka URL kwa mkono.
+            Choose a file from your PC (desktop/laptop) to upload straight to Cloudinary, or paste a URL — or press 🎲 for a temporary Picsum fill.
+          </p>
+          <p className="text-[11px] font-mono text-amber-300/90 mt-2">
+            ⚠️ The Homepage marquee strip (scrolling photos) does NOT read from here — edit Content → Services → Media. Every key below is labeled with where it appears.
           </p>
         </div>
 
@@ -1765,7 +2203,7 @@ function ImagesTab({
               className="w-24 h-16 rounded-xl object-cover shrink-0 cursor-pointer border border-white/10 bg-black/40 hover:scale-105 transition-transform"
               onClick={() => setPreview(url)}
               onError={(e) => ((e.target as HTMLImageElement).style.opacity = "0.3")}
-              title="Bofya kuona kwa ukubwa zaidi"
+                title="Click to enlarge"
             />
 
             <div className="flex-1 min-w-0 space-y-1.5">
@@ -1773,23 +2211,38 @@ function ImagesTab({
                 <span className="text-xs font-mono text-violL font-bold">{key}</span>
                 {uploadingKey === key && (
                   <span className="text-xs text-amber-300 font-mono flex items-center gap-1.5 animate-pulse">
-                    <i className="fa-solid fa-spinner fa-spin" /> Inapakia kutoka PC...
+                    <i className="fa-solid fa-spinner fa-spin" /> Uploading from PC...
                   </span>
                 )}
+              </div>
+              <div className="text-[10px] font-mono text-white/45">
+                {IMAGE_LOCATIONS[key] ?? "📍 —"}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   className={inputCls + " flex-1"}
                   value={url}
-                  placeholder="https://... au bofya kitufe cha kulia kupakia kutoka PC"
+                  placeholder="https://... or press the button on the right to upload from PC"
                   onChange={(e) => setDraft({ ...draft, images: { ...draft.images, [key]: e.target.value } })}
                 />
 
-                {/* PC FILE INPUT */}
+                {/* PICUM FILL + PC FILE INPUT */}
+                <button
+                  type="button"
+                  title="Fill with a temporary Picsum photo"
+                  onClick={() => {
+                    setDraft({ ...draft, images: { ...draft.images, [key]: picsumUrl(key, 900, 600) } });
+                    notify(`(${key}) filled with Picsum — remember "Save changes"`, "info");
+                  }}
+                  disabled={uploadingKey === key}
+                  className="px-3 py-2.5 rounded-xl border border-white/15 text-white/60 hover:border-viol hover:text-violL transition-all text-sm shrink-0"
+                >
+                  🎲
+                </button>
                 <label className="cursor-pointer bg-viol hover:bg-violD text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shrink-0 transition-all shadow-md shadow-viol/20">
                   <i className="fa-solid fa-cloud-arrow-up" />
-                  <span>Chagua Faili (PC)</span>
+                  <span>Choose File (PC)</span>
                   <input
                     type="file"
                     accept="image/*"

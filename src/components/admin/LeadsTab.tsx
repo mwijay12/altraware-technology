@@ -9,16 +9,17 @@ import {
   createInquiry,
 } from "@/lib/leads";
 import { canManageNow } from "@/lib/admin-session";
+import { useLockBodyScroll } from "@/components/motion";
 
 const STATUS_CONFIG: Record<
   SystemInquiry["status"],
   { label: string; bg: string; text: string; border: string }
 > = {
-  new: { label: "MPYA (New)", bg: "bg-emerald-500/15", text: "text-emerald-400", border: "border-emerald-500/30" },
-  contacted: { label: "Amepewa Jibu (Contacted)", bg: "bg-blue-500/15", text: "text-blue-400", border: "border-blue-500/30" },
-  in_progress: { label: "Inashughulikiwa (In Progress)", bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/30" },
-  converted: { label: "Imekuwa Mradi (Converted)", bg: "bg-purple-500/15", text: "text-purple-400", border: "border-purple-500/30" },
-  closed: { label: "Imefungwa (Closed)", bg: "bg-slate-500/15", text: "text-slate-400", border: "border-slate-500/30" },
+  new: { label: "New", bg: "bg-emerald-500/15", text: "text-emerald-400", border: "border-emerald-500/30" },
+  contacted: { label: "Contacted", bg: "bg-blue-500/15", text: "text-blue-400", border: "border-blue-500/30" },
+  in_progress: { label: "In Progress", bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/30" },
+  converted: { label: "Converted", bg: "bg-purple-500/15", text: "text-purple-400", border: "border-purple-500/30" },
+  closed: { label: "Closed", bg: "bg-slate-500/15", text: "text-slate-400", border: "border-slate-500/30" },
 };
 
 export default function LeadsTab({
@@ -35,6 +36,9 @@ export default function LeadsTab({
   const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+
+  // Lock background scroll while the add-lead modal is open
+  useLockBodyScroll(showAddModal);
 
   // New Lead Form State
   const [newLead, setNewLead] = useState({
@@ -67,32 +71,32 @@ export default function LeadsTab({
   const handleStatusChange = async (id: string, status: SystemInquiry["status"]) => {
     const updated = await updateInquiry(id, { status });
     setInquiries(updated);
-    notify(`Hali ya ombi imebadilishwa kuwa: ${STATUS_CONFIG[status].label} ✓`, "success");
+    notify(`Inquiry status updated to: ${STATUS_CONFIG[status].label} ✓`, "success");
   };
 
   const handleSaveNotes = async (id: string) => {
     const updated = await updateInquiry(id, { notes: noteDraft });
     setInquiries(updated);
     setEditingNotesId(null);
-    notify("Maelezo ya ndani yamehifadhiwa ✓", "success");
+    notify("Internal notes saved ✓", "success");
   };
 
   const handleDelete = async (id: string) => {
     if (!canManageNow()) {
-      notify("Huna ruhusa — session ya admin imeisha. Ingia tena.", "error");
+      notify("No permission — admin session expired. Please sign in again.", "error");
       return;
     }
-    if (confirm("Je, una uhakika unataka kufuta ombi hili?")) {
+    if (confirm("Are you sure you want to delete this inquiry?")) {
       const updated = await removeInquiry(id);
       setInquiries(updated);
-      notify("Ombi limefutwa ✓", "info");
+      notify("Inquiry deleted ✓", "info");
     }
   };
 
   const handleManualAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newLead.name || !newLead.phone) {
-      notify("Weka angalau Jina na Namba ya Simu", "error");
+      notify("Enter at least Name and Phone Number", "error");
       return;
     }
     const created = await createInquiry({
@@ -111,7 +115,7 @@ export default function LeadsTab({
       budget: "",
       timeline: "",
     });
-    notify("Ombi jipya limeongezwa kwa mafanikio ✓", "success");
+    notify("New inquiry added ✓", "success");
   };
 
   const filtered = inquiries.filter((inq) => {
@@ -135,15 +139,15 @@ export default function LeadsTab({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold font-grotesk text-white">Maombi &amp; Wateja Wapya (Leads)</h2>
+            <h2 className="text-xl font-bold font-grotesk text-white">Inquiries &amp; New Leads</h2>
             {newCount > 0 && (
               <span className="bg-emerald-500 text-deep text-xs font-bold px-2.5 py-0.5 rounded-full animate-pulse">
-                {newCount} Mpya
+                {newCount} New
               </span>
             )}
           </div>
           <p className="text-xs text-white/50 mt-1">
-            Ufuatiliaji wa maombi ya mifumo (Faida POS, CareTrack, Tovuti) yanayotumwa kutoka fomu ya mawasiliano au estimator.
+            System inquiries (Faida POS, CareTrack, Websites) sent from the contact form or estimator.
           </p>
         </div>
 
@@ -159,7 +163,7 @@ export default function LeadsTab({
             onClick={() => setShowAddModal(true)}
             className="bg-viol hover:bg-violD text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-viol/20 flex items-center gap-2"
           >
-            <i className="fa-solid fa-plus" /> Weka Ombi kwa Mkono
+            <i className="fa-solid fa-plus" /> Add Lead Manually
           </button>
         </div>
       </div>
@@ -169,12 +173,12 @@ export default function LeadsTab({
         <div className="flex gap-2 flex-wrap">
           {(
             [
-              { id: "all", label: `Zote (${inquiries.length})` },
-              { id: "new", label: `Mpya (${inquiries.filter((x) => x.status === "new").length})` },
-              { id: "contacted", label: "Amepewa Jibu" },
-              { id: "in_progress", label: "Inashughulikiwa" },
-              { id: "converted", label: "Mradi" },
-              { id: "closed", label: "Zilizo Funga" },
+              { id: "all", label: `All (${inquiries.length})` },
+              { id: "new", label: `New (${inquiries.filter((x) => x.status === "new").length})` },
+              { id: "contacted", label: "Contacted" },
+              { id: "in_progress", label: "In Progress" },
+              { id: "converted", label: "Converted" },
+              { id: "closed", label: "Closed" },
             ] as const
           ).map((btn) => (
             <button
@@ -197,7 +201,7 @@ export default function LeadsTab({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tafuta jina, simu, mfumo..."
+            placeholder="Search name, phone, system..."
             className="w-full bg-white/[0.05] border border-white/15 rounded-xl pl-9 pr-3.5 py-1.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-viol"
           />
         </div>
@@ -207,7 +211,7 @@ export default function LeadsTab({
       {filtered.length === 0 ? (
         <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl">
           <i className="fa-regular fa-folder-open text-3xl text-white/20 mb-3" />
-          <p className="text-sm text-white/40">Hakuna maombi yanayolingana na vigezo ulivyoweka.</p>
+          <p className="text-sm text-white/40">No inquiries match your filters.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -245,7 +249,7 @@ export default function LeadsTab({
                     <div className="flex items-center gap-4 text-xs text-white/50 mt-1 flex-wrap">
                       <span>
                         <i className="fa-regular fa-clock mr-1" />
-                        {new Date(inq.createdAt).toLocaleDateString("sw-TZ", {
+                        {new Date(inq.createdAt).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
@@ -280,11 +284,11 @@ export default function LeadsTab({
                       onChange={(e) => handleStatusChange(inq.id, e.target.value as SystemInquiry["status"])}
                       className="bg-[#0e101f] border border-white/20 rounded-lg text-xs text-white px-2 py-1 focus:outline-none focus:border-viol"
                     >
-                      <option value="new">Weka Mpya</option>
-                      <option value="contacted">Weka Amepewa Jibu</option>
-                      <option value="in_progress">Weka Inashughulikiwa</option>
-                      <option value="converted">Weka Imekuwa Mradi</option>
-                      <option value="closed">Weka Imefungwa</option>
+                      <option value="new">Mark New</option>
+                      <option value="contacted">Mark Contacted</option>
+                      <option value="in_progress">Mark In Progress</option>
+                      <option value="converted">Mark Converted</option>
+                      <option value="closed">Mark Closed</option>
                     </select>
                   </div>
                 </div>
@@ -298,7 +302,7 @@ export default function LeadsTab({
                 <div className="bg-white/[0.02] border border-white/10 rounded-xl p-3 text-xs">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="font-mono font-bold text-white/40 tracking-wider uppercase text-[10px]">
-                      Maelezo ya Ndani (Admin Notes)
+                      Internal Notes
                     </span>
                     {editingNotesId !== inq.id && (
                       <button
@@ -309,7 +313,7 @@ export default function LeadsTab({
                         className="text-[11px] text-violL hover:underline"
                       >
                         <i className="fa-solid fa-pen mr-1" />
-                        {inq.notes ? "Hariri maelezo" : "+ Ongeza maelezo"}
+                        {inq.notes ? "Edit notes" : "+ Add notes"}
                       </button>
                     )}
                   </div>
@@ -319,7 +323,7 @@ export default function LeadsTab({
                       <textarea
                         value={noteDraft}
                         onChange={(e) => setNoteDraft(e.target.value)}
-                        placeholder="Andika maelezo ya mazungumzo, makubaliano ya bei, au ratiba ya demo..."
+                        placeholder="Write call notes, price agreements, or demo schedule..."
                         rows={2}
                         className="w-full bg-[#0a0c18] border border-white/20 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-viol"
                       />
@@ -328,20 +332,20 @@ export default function LeadsTab({
                           onClick={() => setEditingNotesId(null)}
                           className="px-2.5 py-1 rounded bg-white/10 text-white/60 hover:text-white text-[11px]"
                         >
-                          Ghairi
+                          Cancel
                         </button>
                         <button
                           onClick={() => handleSaveNotes(inq.id)}
                           className="px-3 py-1 rounded bg-viol hover:bg-violD text-white font-bold text-[11px]"
                         >
-                          Hifadhi
+                          Save
                         </button>
                       </div>
                     </div>
                   ) : inq.notes ? (
                     <p className="text-white/70 italic">&ldquo;{inq.notes}&rdquo;</p>
                   ) : (
-                    <p className="text-white/30 italic">Hakuna maelezo ya ndani yaliyowekwa bado.</p>
+                    <p className="text-white/30 italic">No internal notes yet.</p>
                   )}
                 </div>
 
@@ -364,7 +368,7 @@ export default function LeadsTab({
                       href={`tel:${inq.phone}`}
                       className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                     >
-                      <i className="fa-solid fa-phone text-xs" /> Piga Simu
+                      <i className="fa-solid fa-phone text-xs" /> Call
                     </a>
 
                     {/* EMAIL */}
@@ -373,7 +377,7 @@ export default function LeadsTab({
                         href={`mailto:${inq.email}?subject=Altraware Technology — ${encodeURIComponent(inq.type)}`}
                         className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                       >
-                        <i className="fa-regular fa-envelope text-xs" /> Tuma Email
+                        <i className="fa-regular fa-envelope text-xs" /> Email
                       </a>
                     )}
                   </div>
@@ -383,16 +387,16 @@ export default function LeadsTab({
                       <button
                         onClick={() => onConvertToProject(inq)}
                         className="text-xs font-bold text-violL hover:text-viol flex items-center gap-1.5 transition-colors"
-                        title="Anzisha mradi katika Project Tracker"
+                        title="Start a project in the Project Tracker"
                       >
-                        <i className="fa-solid fa-rocket" /> Unda Mradi Rasmi →
+                        <i className="fa-solid fa-rocket" /> Convert to Project →
                       </button>
                     )}
 
                     <button
                       onClick={() => handleDelete(inq.id)}
                       className="text-xs text-white/30 hover:text-red-400 transition-colors"
-                      title="Futa ombi hili"
+                      title="Delete this inquiry"
                     >
                       <i className="fa-solid fa-trash" />
                     </button>
@@ -406,8 +410,9 @@ export default function LeadsTab({
 
       {/* MODAL YA KUONGEZA OMBI KWA MKONO */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-deep/80 backdrop-blur-md">
-          <div className="bg-[#0e101f] border border-white/15 rounded-3xl max-w-lg w-full p-6 text-white shadow-2xl relative">
+        <div className="fixed inset-0 z-[200] overflow-y-auto bg-deep/80 backdrop-blur-md">
+          <div className="min-h-full flex items-center justify-center p-4">
+          <div className="bg-[#0e101f] border border-white/15 rounded-3xl max-w-lg w-full p-6 text-white shadow-2xl relative my-8">
             <button
               onClick={() => setShowAddModal(false)}
               className="absolute top-5 right-5 text-white/40 hover:text-white"
@@ -415,31 +420,31 @@ export default function LeadsTab({
               <i className="fa-solid fa-xmark text-lg" />
             </button>
 
-            <h3 className="text-lg font-bold font-grotesk mb-1">Ongeza Ombi la Mteja kwa Mkono</h3>
+            <h3 className="text-lg font-bold font-grotesk mb-1">Add Client Inquiry Manually</h3>
             <p className="text-xs text-white/50 mb-5">
-              Hifadhi mawasiliano na mahitaji ya mteja aliyepiga simu au kufika ofisini.
+              Save contact details and requirements of a client who called or visited the office.
             </p>
 
             <form onSubmit={handleManualAdd} className="space-y-3.5">
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-white/60 block mb-1">Jina la Mteja *</label>
+                  <label className="text-[11px] font-bold text-white/60 block mb-1">Client Name *</label>
                   <input
                     type="text"
                     value={newLead.name}
                     onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
                     required
-                    placeholder="mf. Michael Sanga"
+                    placeholder="e.g. Michael Sanga"
                     className="w-full bg-white/[0.05] border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-viol"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-white/60 block mb-1">Kampuni / Taasisi</label>
+                  <label className="text-[11px] font-bold text-white/60 block mb-1">Company / Organization</label>
                   <input
                     type="text"
                     value={newLead.org}
                     onChange={(e) => setNewLead({ ...newLead, org: e.target.value })}
-                    placeholder="mf. Sanga Pharmacy"
+                    placeholder="e.g. Sanga Pharmacy"
                     className="w-full bg-white/[0.05] border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-viol"
                   />
                 </div>
@@ -447,18 +452,18 @@ export default function LeadsTab({
 
               <div className="grid sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-white/60 block mb-1">Namba ya Simu *</label>
+                  <label className="text-[11px] font-bold text-white/60 block mb-1">Phone Number *</label>
                   <input
                     type="text"
                     value={newLead.phone}
                     onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
                     required
-                    placeholder="mf. +255 712 345 678"
+                    placeholder="e.g. +255 712 345 678"
                     className="w-full bg-white/[0.05] border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-viol"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-white/60 block mb-1">Barua Pepe (Email)</label>
+                  <label className="text-[11px] font-bold text-white/60 block mb-1">Email</label>
                   <input
                     type="email"
                     value={newLead.email}
@@ -471,7 +476,7 @@ export default function LeadsTab({
 
               <div className="grid sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-white/60 block mb-1">Aina ya Mfumo</label>
+                  <label className="text-[11px] font-bold text-white/60 block mb-1">System Type</label>
                   <select
                     value={newLead.type}
                     onChange={(e) => setNewLead({ ...newLead, type: e.target.value })}
@@ -501,19 +506,19 @@ export default function LeadsTab({
                     type="text"
                     value={newLead.timeline}
                     onChange={(e) => setNewLead({ ...newLead, timeline: e.target.value })}
-                    placeholder="mf. Wiki 2"
+                    placeholder="e.g. 2 weeks"
                     className="w-full bg-white/[0.05] border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-viol"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-white/60 block mb-1">Ujumbe / Mahitaji ya Mteja</label>
+                <label className="text-[11px] font-bold text-white/60 block mb-1">Client Message / Requirements</label>
                 <textarea
                   value={newLead.message}
                   onChange={(e) => setNewLead({ ...newLead, message: e.target.value })}
                   rows={3}
-                  placeholder="Eleza kile mteja anachotaka mfumo umfanyie..."
+                  placeholder="Describe what the client wants the system to do..."
                   className="w-full bg-white/[0.05] border border-white/15 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-viol"
                 />
               </div>
@@ -524,16 +529,17 @@ export default function LeadsTab({
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl bg-white/10 text-white/70 hover:text-white text-xs font-semibold"
                 >
-                  Ghairi
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-viol hover:bg-violD text-white font-bold text-xs"
                 >
-                  Hifadhi Ombi
+                  Save Inquiry
                 </button>
               </div>
             </form>
+          </div>
           </div>
         </div>
       )}

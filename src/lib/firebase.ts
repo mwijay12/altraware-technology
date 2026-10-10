@@ -23,9 +23,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-// NOTE: Hakuna secret iliyo-hardcoded hapa. Thamani zote zinatoka kwenye
-// env (.env.local). Firebase web API key si siri kubwa, lakini usiweke
-// fallback ya key halisi kwenye code — tumia env pekee.
+// NOTE: No secrets are hardcoded here. All values come from env
+// (.env.local). Never put a real key fallback in code — env only.
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
@@ -42,7 +41,7 @@ if (typeof window !== "undefined") {
     .map(([k]) => k);
   if (missing.length > 0) {
     console.warn(
-      `[firebase] Env zinakosekana (${missing.join(", ")}). Weka kwenye .env.local kisha restart dev server.`
+      `[firebase] Missing env (${missing.join(", ")}). Add them to .env.local, then restart the dev server.`
     );
   }
 }
@@ -75,7 +74,7 @@ export async function loginWithGoogle(): Promise<User> {
   if (!isAuthorizedAdmin(result.user.email)) {
     await signOut(auth);
     throw new Error(
-      `Anuani ya "${result.user.email}" haina mamlaka ya kiutawala (Admin rights). Wasiliana na msimamizi.`
+      `"${result.user.email}" has no admin rights. Contact your administrator.`
     );
   }
   return result.user;
@@ -84,7 +83,7 @@ export async function loginWithGoogle(): Promise<User> {
 export async function loginWithEmail(email: string, pass: string): Promise<User> {
   if (!isAuthorizedAdmin(email)) {
     throw new Error(
-      `Anuani ya "${email}" haina mamlaka ya kiutawala (Admin rights).`
+      `"${email}" has no admin rights.`
     );
   }
   const result = await signInWithEmailAndPassword(auth, email, pass);
@@ -94,7 +93,7 @@ export async function loginWithEmail(email: string, pass: string): Promise<User>
 export async function registerWithEmail(email: string, pass: string): Promise<User> {
   if (!isAuthorizedAdmin(email)) {
     throw new Error(
-      `Usajili unaruhusiwa tu kwa barua pepe rasmi za Altraware.`
+      `Registration is allowed only for official Altraware emails.`
     );
   }
   const result = await createUserWithEmailAndPassword(auth, email, pass);

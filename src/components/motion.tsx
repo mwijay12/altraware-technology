@@ -264,6 +264,8 @@ export function CustomCursor() {
     const c = document.getElementById("cursor");
     const r = document.getElementById("cursor-ring");
     if (!c || !r) return;
+    // Admin console uses the native cursor only — never show the custom dot/ring there.
+    const isAdminRoute = () => window.location.pathname.startsWith("/admin");
     let mx = -100;
     let my = -100;
     let rx = mx;
@@ -283,6 +285,11 @@ export function CustomCursor() {
     };
 
     const move = (e: MouseEvent) => {
+      // Admin console: native cursor only
+      if (isAdminRoute()) {
+        setVisibility(false);
+        return;
+      }
       // Check if mouse is over an iframe or preview container
       const target = e.target as HTMLElement | null;
       if (target?.closest("iframe, .no-custom-cursor, [data-no-cursor]")) {
@@ -318,6 +325,10 @@ export function CustomCursor() {
     };
 
     const over = (e: MouseEvent) => {
+      if (isAdminRoute()) {
+        setVisibility(false);
+        return;
+      }
       const target = e.target as HTMLElement | null;
       if (target?.closest("iframe, .no-custom-cursor, [data-no-cursor]")) {
         setVisibility(false);
@@ -366,6 +377,28 @@ export function CustomCursor() {
       <div id="cursor-ring" aria-hidden="true" />
     </>
   );
+}
+
+/* ============================================================
+   useLockBodyScroll — locks background page scroll while a modal
+   is open, so the wheel only moves the dialog (top stays reachable).
+   ============================================================ */
+
+export function useLockBodyScroll(active: boolean) {
+  useEffect(() => {
+    if (!active) return;
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, [active]);
 }
 
 /* Re-export so layout can import everything motion-related from one module */

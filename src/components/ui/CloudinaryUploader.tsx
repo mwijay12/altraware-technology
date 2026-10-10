@@ -46,12 +46,12 @@ export default function CloudinaryUploader({
           {loading ? (
             <>
               <i className="fa-solid fa-spinner fa-spin text-xs" />
-              <span>Inapakia...</span>
+              <span>Uploading...</span>
             </>
           ) : (
             <>
               <i className="fa-solid fa-cloud-arrow-up text-xs" />
-              <span>{fileName ? "Badilisha (PC/Mobile)" : "Chagua Picha (PC)"}</span>
+              <span>{fileName ? "Change (PC/Mobile)" : "Choose Photo (PC)"}</span>
             </>
           )}
           <input
@@ -87,7 +87,7 @@ export default function CloudinaryUploader({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={value} alt="Preview" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs font-bold">
-                Bofya kubadilisha
+                Click to change
               </div>
             </div>
           ) : (
@@ -108,7 +108,7 @@ export default function CloudinaryUploader({
           )}
 
           <p className="text-xs font-bold text-white/90">{label}</p>
-          <p className="text-[10px] text-white/40 mt-1">PNG, JPG au WebP kwenda Cloudinary</p>
+          <p className="text-[10px] text-white/40 mt-1">PNG, JPG or WebP to Cloudinary</p>
         </label>
 
         {/* Footer bar */}
@@ -119,11 +119,11 @@ export default function CloudinaryUploader({
           <div className="flex items-center gap-2 min-w-0">
             <i className="fa-solid fa-file-image text-viol text-sm shrink-0" />
             <span className="text-xs font-medium text-white/70 truncate">
-              {loading ? "Inapakia..." : fileName || (value ? "Picha imechaguliwa" : "Hakuna faili lililochaguliwa")}
+              {loading ? "Uploading..." : fileName || (value ? "Photo selected" : "No file selected")}
             </span>
           </div>
           <span className="text-[10px] bg-viol text-white font-bold px-2.5 py-1 rounded-lg shrink-0">
-            {loading ? "..." : "Tafuta (PC)"}
+            {loading ? "..." : "Browse (PC)"}
           </span>
         </label>
 

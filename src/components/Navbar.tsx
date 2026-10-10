@@ -10,15 +10,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
    ============================================================ */
 
 const TRANS_WORDS: Record<string, string> = {
-  "/": "Karibu",
-  "/about": "Mizizi",
-  "/services": "Ufundi",
-  "/platforms": "Mifumo",
-  "/process": "Njia",
-  "/impact": "Athari",
-  "/pricing": "Bei",
-  "/blog": "Makala",
-  "/contact": "Twende",
+  "/": "Welcome",
+  "/about": "Roots",
+  "/services": "Craft",
+  "/platforms": "Platforms",
+  "/process": "Process",
+  "/impact": "Impact",
+  "/pricing": "Pricing",
+  "/blog": "Journal",
+  "/contact": "Let's Build",
 };
 
 export function TransitionLink({
@@ -46,7 +46,7 @@ export function TransitionLink({
       busy.current = true;
       const overlay = document.getElementById("page-transition");
       const word = document.getElementById("transitionWord");
-      if (word) word.textContent = TRANS_WORDS[href] ?? "Twende";
+      if (word) word.textContent = TRANS_WORDS[href] ?? "Let's Go";
       overlay?.classList.add("active");
       import("gsap").then(({ gsap }) => {
         const tl = gsap.timeline();

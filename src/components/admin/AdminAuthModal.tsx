@@ -11,6 +11,7 @@ import {
   type User,
 } from "@/lib/firebase";
 import { clearAdminSession } from "@/lib/admin-session";
+import { useLockBodyScroll } from "@/components/motion";
 
 export function useAdminAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -102,6 +103,9 @@ export function AdminAuthModal({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Lock background scroll while the auth dialog is open
+  useLockBodyScroll(isOpen);
+
   if (!isOpen) return null;
 
   const handleGoogleLogin = async () => {
@@ -147,8 +151,9 @@ export function AdminAuthModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-deep/80 backdrop-blur-md">
-      <div className="bg-[#0e101f] border border-white/15 rounded-3xl max-w-md w-full p-7 text-white shadow-2xl relative">
+    <div className="fixed inset-0 z-[200] overflow-y-auto bg-deep/80 backdrop-blur-md">
+      <div className="min-h-full flex items-center justify-center p-4">
+      <div className="bg-[#0e101f] border border-white/15 rounded-3xl max-w-md w-full p-7 text-white shadow-2xl relative my-8">
         <button
           onClick={onClose}
           className="absolute top-5 right-5 text-white/40 hover:text-white transition-colors"
@@ -201,7 +206,7 @@ export function AdminAuthModal({
 
         <div className="flex items-center gap-3 my-4">
           <div className="flex-1 h-px bg-white/10" />
-          <span className="text-[11px] text-white/40 uppercase font-mono">Au Barua Pepe</span>
+          <span className="text-[11px] text-white/40 uppercase font-mono">Or Email</span>
           <div className="flex-1 h-px bg-white/10" />
         </div>
 
@@ -219,7 +224,7 @@ export function AdminAuthModal({
             />
           </div>
           <div>
-            <label className="text-[11px] font-bold text-white/60 uppercase tracking-wider block mb-1">Nenosiri / Password</label>
+            <label className="text-[11px] font-bold text-white/60 uppercase tracking-wider block mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -235,7 +240,7 @@ export function AdminAuthModal({
             disabled={loading}
             className="w-full bg-viol hover:bg-violD text-white font-bold py-2.5 rounded-xl transition-all text-sm mt-2 disabled:opacity-50"
           >
-            {loading ? "Inashughulikia..." : mode === "login" ? "Ingia kwenye Dashibodi" : "Sajili Akaunti Mpya"}
+            {loading ? "Working..." : mode === "login" ? "Sign In to Dashboard" : "Register New Account"}
           </button>
         </form>
 
@@ -245,9 +250,10 @@ export function AdminAuthModal({
             onClick={() => setMode(mode === "login" ? "register" : "login")}
             className="text-xs text-violL hover:underline"
           >
-            {mode === "login" ? "Huna akaunti? Jisajili hapa" : "Una akaunti tayari? Ingia hapa"}
+            {mode === "login" ? "No account yet? Register here" : "Already have an account? Sign in here"}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

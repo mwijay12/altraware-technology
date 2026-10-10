@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleMasterLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pass) {
-      setError("Tafadhali weka master passphrase.");
+      setError("Please enter the master passphrase.");
       return;
     }
     setError("");
@@ -51,12 +51,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setError("");
         refresh();
       } else if (res.status === 503) {
-        setError("Master key haijawekwa kwenye server — tumia Google au Email kuingia.");
+        setError("Master key is not set on the server — use Google or Email.");
       } else {
-        setError("Nenosiri si sahihi — jaribu tena.");
+        setError("Incorrect passphrase — try again.");
       }
     } catch {
-      setError("Mtandao una shida — jaribu tena.");
+      setError("Network issue — try again.");
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       await loginWithGoogle();
       refresh();
     } catch (err: unknown) {
-      setError(errMsg(err, "Imeshindwa kuingia na Google."));
+      setError(errMsg(err, "Google sign-in failed."));
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !pass) {
-      setError("Tafadhali jaza barua pepe na nenosiri.");
+      setError("Please enter your email and password.");
       return;
     }
     setError("");
@@ -88,7 +88,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setPass("");
       refresh();
     } catch (err: unknown) {
-      setError(errMsg(err, "Taarifa za kuingia si sahihi."));
+      setError(errMsg(err, "Invalid sign-in details."));
     } finally {
       setLoading(false);
     }
@@ -115,19 +115,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <p className="text-xs text-white/60 mb-5 leading-relaxed">
-            Tovuti salama ya usimamizi wa miradi ya wateja, maombi ya mifumo (leads), ankara, na maudhui.
+            Secure console for client projects, system inquiries (leads), invoices, and site content.
           </p>
 
           {status === "expired" && (
             <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs p-3 rounded-xl mb-4 flex items-start gap-2">
               <i className="fa-solid fa-clock mt-0.5" />
-              <span>Kipindi cha admin kimeisha (muda umeisha) — umetolewa kiotomatiki. Ingia tena kuendelea.</span>
+              <span>Admin session expired (time limit reached) — you were signed out automatically. Sign in again to continue.</span>
             </div>
           )}
 
           {rejectedEmail && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-xs p-3 rounded-xl mb-4">
-              Anuani ya &quot;{rejectedEmail}&quot; haina ruhusa ya Admin. Wasiliana na Altraware.
+              &quot;{rejectedEmail}&quot; has no admin access. Contact Altraware.
             </div>
           )}
 
@@ -155,13 +155,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.59l4.04 3.15c.95-2.84 3.6-4.99 6.72-4.99z"
               />
             </svg>
-            <span>{loading ? "Inathibitisha..." : "Ingia kama Admin (Google)"}</span>
+            <span>{loading ? "Verifying..." : "Sign In as Admin (Google)"}</span>
           </button>
 
           {/* DIVIDER */}
           <div className="my-4 flex items-center gap-3">
             <span className="flex-1 h-[1px] bg-white/10" />
-            <span className="text-[10px] font-mono text-white/40 uppercase">AU KWA NENOSIRI</span>
+            <span className="text-[10px] font-mono text-white/40 uppercase">OR WITH PASSWORD</span>
             <span className="flex-1 h-[1px] bg-white/10" />
           </div>
 
@@ -169,7 +169,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             /* EMAIL & PASSWORD FORM */
             <form onSubmit={handleEmailAuth} className="space-y-3">
               <div>
-                <label className="text-[10px] font-mono font-bold text-white/50 block mb-1">EMAIL YA ADMIN</label>
+                <label className="text-[10px] font-mono font-bold text-white/50 block mb-1">ADMIN EMAIL</label>
                 <input
                   type="email"
                   placeholder="admin@altraware.co.tz"
@@ -179,7 +179,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 />
               </div>
               <div>
-                <label className="text-[10px] font-mono font-bold text-white/50 block mb-1">NENOSIRI</label>
+                <label className="text-[10px] font-mono font-bold text-white/50 block mb-1">PASSWORD</label>
                 <input
                   type="password"
                   placeholder="••••••••"
@@ -196,7 +196,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 disabled={loading}
                 className="mt-3 w-full bg-viol hover:bg-violD text-white font-bold py-3 rounded-xl text-xs transition-colors shadow-lg shadow-viol/20"
               >
-                Thibitisha &amp; Ingia <i className="fa-solid fa-arrow-right ml-1.5 text-[10px]" />
+                Verify &amp; Sign In <i className="fa-solid fa-arrow-right ml-1.5 text-[10px]" />
               </button>
 
               <button
@@ -204,7 +204,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => setShowEmailLogin(false)}
                 className="text-[11px] text-white/40 hover:text-white block text-center w-full pt-1"
               >
-                Rudi kwenye Master Passphrase
+                Back to master passphrase
               </button>
             </form>
           ) : (
@@ -229,7 +229,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 disabled={loading}
                 className="w-full bg-viol hover:bg-violD text-white font-bold py-3 rounded-xl text-xs transition-colors shadow-lg shadow-viol/20 flex items-center justify-center gap-2"
               >
-                <span>{loading ? "Inathibitisha..." : "Fungua Console"}</span>
+                <span>{loading ? "Verifying..." : "Open Console"}</span>
                 <i className="fa-solid fa-arrow-right text-[10px]" />
               </button>
 
@@ -239,7 +239,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   onClick={() => setShowEmailLogin(true)}
                   className="text-violL hover:underline font-mono"
                 >
-                  Ingia kwa Email &amp; Password
+                  Sign in with Email &amp; Password
                 </button>
                 <span className="text-white/30 font-mono">v2.4 (Prod)</span>
               </div>
@@ -247,7 +247,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           )}
 
           <p className="text-[10px] text-white/30 mt-5 text-center font-mono">
-            Session hudumu max masaa 8 · hujitoa baada ya dakika 30 za ukimya.
+            Sessions last max 8h · auto sign-out after 30 min idle.
           </p>
         </div>
       </div>

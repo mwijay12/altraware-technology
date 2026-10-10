@@ -47,9 +47,15 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
 
     const x = useTransform(baseX, (v) => `${wrap(0, -50, v)}%`);
 
-    const directionFactor = React.useRef<number>(1);
-    const scrollThreshold = React.useRef<number>(5);
+    // ONE-DIRECTION lock: direction comes ONLY from the `velocity` prop.
+    // Positive velocity -> moves right, negative velocity -> moves left.
+    // Vertical page scroll NEVER reverses direction — it only adds a subtle speed boost.
+    const lockedDirection = React.useRef<number>(velocity >= 0 ? 1 : -1);
+    React.useEffect(() => {
+      lockedDirection.current = velocity >= 0 ? 1 : -1;
+    }, [velocity]);
     const isPaused = React.useRef<boolean>(false);
+    const scrollThreshold = React.useRef<number>(5);
     const [isMobile, setIsMobile] = React.useState<boolean>(false);
 
     React.useEffect(() => {
@@ -63,29 +69,24 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
 
     useAnimationFrame((t, delta) => {
       if (isPaused.current) return;
-
+      // Always move — one fixed direction. No scroll-direction flip, no bounce.
       if (movable) {
         move(delta);
-      } else {
-        if (Math.abs(scrollVelocity.get()) >= scrollThreshold.current) {
-          move(delta);
-        }
+      } else if (Math.abs(scrollVelocity.get()) >= scrollThreshold.current) {
+        // movable=false: still locked to one direction, only moves while page scrolls
+        move(delta);
       }
     });
 
     function move(delta: number) {
-      // Calibrated calm, elegant speed for both desktop and mobile
+      // Calibrated calm, elegant speed for both desktop and mobile.
+      // Base speed uses |velocity| so sign only controls direction (locked above).
       const speedMultiplier = isMobile ? 0.22 : 0.38;
-      let moveBy = directionFactor.current * (velocity * speedMultiplier) * (delta / 1000);
-
-      if (velocityFactor.get() < 0) {
-        directionFactor.current = -1;
-      } else if (velocityFactor.get() > 0) {
-        directionFactor.current = 1;
-      }
-      // Gentle, subtle velocity response without whipping or rushing
+      const baseSpeed = Math.abs(velocity) * speedMultiplier;
+      // Subtle speed-up when user scrolls fast — magnitude only, never reverses.
       const boost = Math.min(1.5, Math.abs(velocityFactor.get())) * 0.25;
-      moveBy += directionFactor.current * moveBy * boost;
+      const moveBy =
+        lockedDirection.current * baseSpeed * (1 + boost) * (delta / 1000);
       baseX.set(baseX.get() + moveBy);
     }
 
@@ -106,16 +107,11 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
     return (
       <div
         ref={ref}
-        onPointerEnter={() => {
-          isPaused.current = true;
+        onPointerEnter={(e) => {
+          // Pause on hover only for mouse — never pause on touch scroll (mobile bounce fix)
+          if (e.pointerType === "mouse") isPaused.current = true;
         }}
         onPointerLeave={() => {
-          isPaused.current = false;
-        }}
-        onTouchStart={() => {
-          isPaused.current = true;
-        }}
-        onTouchEnd={() => {
           isPaused.current = false;
         }}
         className={cn(

@@ -890,6 +890,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
   },
   images: {
+    liveDemoPoster: "https://res.cloudinary.com/oc8018um/image/upload/v1791497492/faidahq.png",
     heroDar: "https://images.unsplash.com/photo-1609198092458-38a293c7ac4b?q=80&w=900&auto=format&fit=crop",
     streetTz: "https://images.unsplash.com/photo-1523805009345-7448845a9e53?q=80&w=700&auto=format&fit=crop",
     mediaBanner: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop",
@@ -1023,7 +1024,7 @@ export function saveOverrides(content: SiteContent) {
       "[content] localStorage imejaa — huenda kuna data-URL kubwa (base64) badala ya Cloudinary URL. Tumia Cloudinary kisha jaribu tena.",
       err
     );
-    throw new Error("Hifadhi imeshindwa: localStorage imejaa (picha kubwa kama base64?). Tumia Cloudinary URL.");
+    throw new Error("Save failed: localStorage is full (large base64 photo?). Use a Cloudinary URL.");
   }
 }
 
