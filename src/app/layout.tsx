@@ -121,39 +121,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* FontAwesome is ~100KB+ render-blocking CSS. Defer it: load async
             via print-media swap so it never delays FCP/LCP on mobile.
             Icons render with a fallback until it arrives. */}
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/fontawesome.min.css"
-          media="print"
-          // @ts-expect-error onLoad media swap is a standard non-blocking CSS pattern
-          onLoad="this.media='all'"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/solid.min.css"
-          media="print"
-          // @ts-expect-error onLoad media swap is a standard non-blocking CSS pattern
-          onLoad="this.media='all'"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/brands.min.css"
-          media="print"
-          // @ts-expect-error onLoad media swap is a standard non-blocking CSS pattern
-          onLoad="this.media='all'"
+        {/* FontAwesome 7 self-hosted (public/fa, copied from the installed
+            v7.3.1 package so class names always match). FA7 splits icons
+            across fontawesome.min.css (solid+regular glyphs), solid/regular
+            .min.css (@font-face shims) and brands.min.css — all four are
+            needed. Injected after first paint via idle/load callback so the
+            ~90KB never blocks FCP/LCP. (A prior CDN + media="print" attempt
+            failed because React cannot bind an onLoad *string* on <link>,
+            so the swap never ran and every icon rendered blank.) */}
+        <link rel="preload" href="/fa/fontawesome.min.css" as="style" />
+        <link rel="preload" href="/fa/brands.min.css" as="style" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){function add(){["/fa/fontawesome.min.css","/fa/solid.min.css","/fa/regular.min.css","/fa/brands.min.css"].forEach(function(h){if(document.querySelector('link[data-fa="'+h+'"]'))return;var l=document.createElement("link");l.rel="stylesheet";l.href=h;l.setAttribute("data-fa",h);document.head.appendChild(l);});}if("requestIdleCallback" in window){requestIdleCallback(add,{timeout:1200});}else{window.addEventListener("load",add);}setTimeout(add,3000);})();`,
+          }}
         />
         <noscript>
-          <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
-          />
+          <link rel="stylesheet" href="/fa/fontawesome.min.css" />
+          <link rel="stylesheet" href="/fa/solid.min.css" />
+          <link rel="stylesheet" href="/fa/regular.min.css" />
+          <link rel="stylesheet" href="/fa/brands.min.css" />
         </noscript>
         {/* Early connections for LCP image + media hosts (mobile TTFB win) */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
         {/* LCP preload: mobile hero image (see HERO_LCP_URL note above) */}
         <link rel="preload" as="image" href={HERO_LCP_URL} fetchPriority="high" />
       </head>
