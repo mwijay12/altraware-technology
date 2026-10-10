@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is authenticated and is an authorized Altraware admin
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email in [
+          'davidbyanmwijage@gmail.com',
+          'clemencengunda08@gmail.com',
+          'altrawaretechnology@gmail.com',
+          'altrawaretech@gmail.com'
+        ] ||
+        (request.auth.token.email != null && (
+          request.auth.token.email.matches('.*@altraware[.]co[.]tz$') ||
+          request.auth.token.email.matches('.*@altraware[.]com$')
+        ))
+      );
+    }
+
+    // 1. Site Content (Home page copy, images, pricing, portfolio, services)
+    // - Public can read in real-time
+    // - Only authorized admins can update
+    match /site_content/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 2. Inquiries / Leads (Contact forms, quotes, project inquiries)
+    // - Any visitor can submit (create) an inquiry
+    // - Only admins can view, update status, or delete inquiries
+    match /inquiries/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 3. Client Projects / Portal (Client tracking dashboard)
+    // - Read allowed so clients can track project progress
+    // - Only admins can create, update, or delete project milestones
+    match /client_projects/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Default deny all other paths for security
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
