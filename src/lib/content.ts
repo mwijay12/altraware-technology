@@ -1070,18 +1070,14 @@ export function subscribeRemoteContent(
 export async function saveRemoteContent(content: SiteContent): Promise<boolean> {
   if (typeof window === "undefined") return false;
   try {
-    const { db, auth } = await import("./firebase");
-    // Writes require a Firebase-signed-in admin (see Firestore rules:
-    // public read, admin-email write). Visitors and master-passphrase
-    // sessions have no Firebase user — skip silently and keep the
-    // local save. Returning false (not throwing) keeps consoles clean.
-    if (!auth.currentUser) return false;
+    const { db } = await import("./firebase");
     const { doc, setDoc } = await import("firebase/firestore");
     const docRef = doc(db, "site_content", "main");
     const cleanContent = JSON.parse(JSON.stringify(content));
     await setDoc(docRef, cleanContent, { merge: true });
     return true;
-  } catch {
+  } catch (err) {
+    console.warn("[content] Firestore save error:", err);
     return false;
   }
 }

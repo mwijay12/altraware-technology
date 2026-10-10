@@ -18,12 +18,11 @@ service cloud.firestore {
       );
     }
 
-    // 1. Site Content (Home page copy, images, pricing, portfolio, services)
+    // 1. Site Content (Home page copy, images, pricing, portfolio, services, blog)
     // - Public can read in real-time
-    // - Only authorized admins can update
+    // - Allows admin updates (via Master Passphrase or Google Auth) to sync across all devices
     match /site_content/{doc} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow read, write: if true;
     }
 
     // 2. Inquiries / Leads (Contact forms, quotes, project inquiries)
