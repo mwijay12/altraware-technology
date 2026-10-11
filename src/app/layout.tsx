@@ -122,8 +122,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ~90KB never blocks FCP/LCP. (A prior CDN + media="print" attempt
             failed because React cannot bind an onLoad *string* on <link>,
             so the swap never ran and every icon rendered blank.) */}
-        <link rel="preload" href="/fa/fontawesome.min.css" as="style" />
-        <link rel="preload" href="/fa/brands.min.css" as="style" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){function add(){["/fa/fontawesome.min.css","/fa/solid.min.css","/fa/regular.min.css","/fa/brands.min.css"].forEach(function(h){if(document.querySelector('link[data-fa="'+h+'"]'))return;var l=document.createElement("link");l.rel="stylesheet";l.href=h;l.setAttribute("data-fa",h);document.head.appendChild(l);});}if("requestIdleCallback" in window){requestIdleCallback(add,{timeout:1200});}else{window.addEventListener("load",add);}setTimeout(add,3000);})();`,
@@ -135,9 +133,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <link rel="stylesheet" href="/fa/regular.min.css" />
           <link rel="stylesheet" href="/fa/brands.min.css" />
         </noscript>
-        {/* Early connections for media hosts */}
-        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        {/* Early connection for Cloudinary media host */}
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
       </head>

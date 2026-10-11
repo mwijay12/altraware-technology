@@ -137,9 +137,7 @@ export default function Home() {
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 grid lg:grid-cols-[1.15fr_.85fr] gap-10 md:gap-12 items-center relative">
           <div>
             <div
-              className={`hero-el transition-all duration-700 inline-flex items-center gap-3 bg-white/90 backdrop-blur-md border border-deep/10 rounded-full pl-2 pr-4 py-1.5 shadow-sm mb-7 ${
-                heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+              className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-md border border-deep/10 rounded-full pl-2 pr-4 py-1.5 shadow-sm mb-7"
             >
               <span className="flex items-center gap-1.5 bg-deep text-white text-[10px] font-grotesk font-bold px-2.5 py-1 rounded-full tracking-widest">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot" /> DSM · LIVE
@@ -166,12 +164,12 @@ export default function Home() {
               </span>
             </div>
 
-            <div className={`hero-el eyebrow text-viol mb-4 flex items-center gap-3 transition-all duration-700 delay-100 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <div className="eyebrow text-viol mb-4 flex items-center gap-3">
               <span className="w-10 h-[2px] bg-viol inline-block" />
               <span>{content.hero.eyebrow || "Rooted in Tanzania · Global Craft"}</span>
             </div>
 
-            <h1 className={`hero-el display text-4xl sm:text-6xl md:text-6xl lg:text-[4.2rem] xl:text-[4.8rem] font-medium leading-[1.08] tracking-tight transition-all duration-700 delay-150 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <h1 className="display text-4xl sm:text-6xl md:text-6xl lg:text-[4.2rem] xl:text-[4.8rem] font-medium leading-[1.08] tracking-tight">
               <span className="block whitespace-nowrap">
                 Rooted at{" "}
                 <span className="text-viol font-normal inline-block">
@@ -186,13 +184,13 @@ export default function Home() {
               </span>
             </h1>
 
-            <div className={`mt-6 max-w-xl transition-all duration-700 delay-200 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <div className="mt-6 max-w-xl">
               <p className="text-deep/75 text-base md:text-lg leading-relaxed font-normal">
                 {content.hero.subtitle}
               </p>
             </div>
 
-            <div className={`hero-el flex flex-wrap gap-3 mt-8 transition-all duration-700 delay-300 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <div className="flex flex-wrap gap-3 mt-8">
               <TransitionLink
                 href="/contact"
                 className="btn-magnetic bg-deep text-white px-7 py-4 rounded-full font-semibold text-sm flex items-center gap-3 shadow-xl shadow-deep/20"
@@ -213,7 +211,7 @@ export default function Home() {
               </TransitionLink>
             </div>
 
-            <div className={`hero-el flex flex-wrap items-center gap-x-6 gap-y-3 mt-9 text-[12px] font-grotesk font-medium text-deep/60 transition-all duration-700 delay-500 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-9 text-[12px] font-grotesk font-medium text-deep/60">
               <span className="flex items-center gap-2"><i className="fa-brands fa-react text-viol" /> Next.js 16</span>
               <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#3178C6]" /> TypeScript</span>
               <span className="flex items-center gap-2"><i className="fa-solid fa-wind text-sky-500" /> Tailwind CSS</span>
