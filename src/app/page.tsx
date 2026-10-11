@@ -301,14 +301,22 @@ export default function Home() {
               </pre>
             </div>
 
-            {/* rotating badge */}
+            {/* rotating badge — bright viol ring text with a soft white halo
+                so KISWAHILI FIRST reads on BOTH the light page bg and the
+                dark hero image it overlaps */}
             <div className="absolute -top-8 -right-4 w-28 h-28 z-10">
               <div className="spin-slow absolute inset-0">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
+                <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
                   <defs>
                     <path id="circ" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" />
                   </defs>
-                  <text className="fill-deep" style={{ fontSize: "10.5px", letterSpacing: "2.5px", fontFamily: "var(--font-space-grotesk)", fontWeight: 700 }}>
+                  <text
+                    fill="#7C3AED"
+                    stroke="rgba(255,255,255,0.9)"
+                    strokeWidth="3.5"
+                    strokeLinejoin="round"
+                    style={{ fontSize: "11.5px", letterSpacing: "3px", fontFamily: "var(--font-space-grotesk)", fontWeight: 700, paintOrder: "stroke" }}
+                  >
                     <textPath href="#circ">KISWAHILI FIRST • GLOBAL CRAFT • </textPath>
                   </text>
                 </svg>
