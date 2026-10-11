@@ -241,7 +241,7 @@ body {
 }
 .marquee-track {
   display: inline-flex;
-  animation: marquee 28s linear infinite;
+  animation: marquee 20s linear infinite;
 }
 .marquee-track.reverse {
   animation-direction: reverse;
@@ -631,7 +631,9 @@ textarea:focus {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track,
+  /* NOTE: .marquee-track intentionally NOT gated — the owner requires the
+     text ticker to always drift (it's the site's signature motion strip,
+     slow horizontal movement, no flashing). Decorative floats stay gated. */
   .float-anim,
   .float-anim2,
   .spin-slow {

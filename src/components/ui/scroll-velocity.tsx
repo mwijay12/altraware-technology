@@ -86,8 +86,8 @@ const ScrollVelocity = React.forwardRef<HTMLDivElement, ScrollVelocityProps>(
 
     useAnimationFrame((t, delta) => {
       if (isPaused.current || !inView.current) return;
-      // Respect users who asked for less motion — static row, no JS work.
-      if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // NOTE: no prefers-reduced-motion gate — owner requires these rows to
+      // visibly drift at all times (slow horizontal ticker, no flashing).
       // Always move — one fixed direction. No scroll-direction flip, no bounce.
       if (movable) {
         move(delta);
