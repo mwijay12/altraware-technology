@@ -57,6 +57,23 @@ async function fetchWithTimeout(url: string, ms: number): Promise<Response> {
 }
 
 async function detectViaIp(): Promise<GeoCache | null> {
+  // 0) First check internal edge API (Vercel/Cloudflare headers — instant, 0 external deps)
+  try {
+    const res = await fetchWithTimeout("/api/geo", 2500);
+    if (res.ok) {
+      const j = (await res.json()) as { countryCode?: string; countryName?: string; source?: string };
+      if (j.countryCode && j.source !== "default") {
+        return {
+          countryCode: j.countryCode.toUpperCase(),
+          countryName: j.countryName || j.countryCode,
+          at: Date.now(),
+        };
+      }
+    }
+  } catch {
+    /* fallback to public IP lookup */
+  }
+
   // 1) ipapi.co — no key, CORS-enabled
   try {
     const res = await fetchWithTimeout("https://ipapi.co/json/", 4000);

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useVisitorCurrency } from "@/lib/geo-pricing";
 
 /* ============================================================
    TransitionLink — plays the violet curtain page transition
@@ -136,6 +137,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const geo = useVisitorCurrency();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -205,7 +207,38 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Currency Toggle [ TZS | USD ] */}
+              <div
+                className="inline-flex items-center rounded-full border border-deep/15 bg-white/80 backdrop-blur-md p-0.5 text-[11px] font-bold font-grotesk shadow-sm"
+                aria-label="Currency toggle"
+              >
+                <button
+                  type="button"
+                  onClick={() => geo.setCurrency("TZS")}
+                  className={`px-2.5 py-1 rounded-full transition-all ${
+                    geo.currency === "TZS"
+                      ? "bg-deep text-white shadow-sm"
+                      : "text-deep/60 hover:text-deep"
+                  }`}
+                  title="Prices in Tanzanian Shillings (TSh)"
+                >
+                  TZS
+                </button>
+                <button
+                  type="button"
+                  onClick={() => geo.setCurrency("USD")}
+                  className={`px-2.5 py-1 rounded-full transition-all ${
+                    geo.currency === "USD"
+                      ? "bg-viol text-white shadow-sm"
+                      : "text-deep/60 hover:text-deep"
+                  }`}
+                  title="Prices in US Dollars ($ USD)"
+                >
+                  USD
+                </button>
+              </div>
+
               <TransitionLink
                 href="/contact"
                 className="btn-magnetic hidden sm:inline-flex items-center gap-2 bg-deep text-white text-[13px] font-semibold px-5 py-2.5 rounded-full"
@@ -253,6 +286,31 @@ export default function Navbar() {
               {l.num} · {l.en} <span className="text-base font-sans opacity-40">({l.sw})</span>
             </TransitionLink>
           ))}
+
+          {/* Mobile currency selector */}
+          <div className="pt-6 mt-4 border-t border-white/10 flex items-center justify-between">
+            <span className="text-xs text-white/60 font-mono">Currency / Sarafu:</span>
+            <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 p-0.5 text-xs font-bold font-grotesk">
+              <button
+                type="button"
+                onClick={() => geo.setCurrency("TZS")}
+                className={`px-3 py-1 rounded-full transition-all ${
+                  geo.currency === "TZS" ? "bg-viol text-white shadow-sm" : "text-white/60"
+                }`}
+              >
+                TSh (TZS)
+              </button>
+              <button
+                type="button"
+                onClick={() => geo.setCurrency("USD")}
+                className={`px-3 py-1 rounded-full transition-all ${
+                  geo.currency === "USD" ? "bg-viol text-white shadow-sm" : "text-white/60"
+                }`}
+              >
+                $ (USD)
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>

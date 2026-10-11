@@ -143,16 +143,29 @@ export default function Home() {
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot" /> DSM · LIVE
               </span>
               <span className="text-[12px] font-medium text-deep/70 min-h-[18px] inline-block">
-                <span className="font-semibold text-deep md:hidden">Tanzanian software studio</span>
+                <span className="font-semibold text-deep md:hidden">
+                  {geo.currency === "USD" ? "Global Software Studio · DSM" : "Tanzanian software studio"}
+                </span>
                 <span className="hidden md:inline">
                   <Typewriter
-                    text={[
-                      "Tanzanian software studio",
-                      "Websites starting from TSh 350,000",
-                      "Web & mobile apps from TSh 800,000",
-                      "Business systems from TSh 1,200,000",
-                      "M-Pesa native & offline-first systems",
-                    ]}
+                    key={geo.currency}
+                    text={
+                      geo.currency === "USD"
+                        ? [
+                            "Global Software Engineering Studio",
+                            "Websites starting from $150",
+                            "Web & mobile apps from $350",
+                            "Business systems from $500",
+                            "Worldwide cards & cross-border payments",
+                          ]
+                        : [
+                            "Tanzanian software studio",
+                            "Websites starting from TSh 350,000",
+                            "Web & mobile apps from TSh 800,000",
+                            "Business systems from TSh 1,200,000",
+                            "M-Pesa native & offline-first systems",
+                          ]
+                    }
                     speed={70}
                     deleteSpeed={35}
                     delay={2400}
@@ -216,13 +229,13 @@ export default function Home() {
               <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#3178C6]" /> TypeScript</span>
               <span className="flex items-center gap-2"><i className="fa-solid fa-wind text-sky-500" /> Tailwind CSS</span>
               <span className="flex items-center gap-2"><i className="fa-solid fa-bolt text-amber-500" /> GSAP Motion</span>
-              <span className="flex items-center gap-2"><i className="fa-solid fa-mobile-screen text-green-600" /> M-Pesa Ready</span>
+              <span className="flex items-center gap-2"><i className="fa-solid fa-credit-card text-green-600" /> {geo.currency === "USD" ? "International Payments" : "M-Pesa Ready"}</span>
             </div>
 
             {/* Mobile Location Badge (replaces the card on small screens) */}
             <div className="lg:hidden mt-6 flex items-center gap-3 text-[11px] font-mono text-deep/60 bg-white/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-deep/10 w-fit">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span>{content.hero.imageCaption || "Dar es Salaam, Tanzania"} · Offline-first &amp; 2G ready</span>
+              <span>{content.hero.imageCaption || "Dar es Salaam, Tanzania"} · {geo.currency === "USD" ? "Serving clients globally" : "Offline-first & 2G ready"}</span>
             </div>
           </div>
 
