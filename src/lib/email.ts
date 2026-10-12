@@ -20,8 +20,13 @@ let cachedTransporter: Transporter | null = null;
 function getTransporter(): Transporter | null {
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
   const port = parseInt(process.env.SMTP_PORT || "465", 10);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const user = process.env.SMTP_USER?.trim();
+  let pass = process.env.SMTP_PASS?.trim();
+
+  if (pass?.startsWith('"') && pass?.endsWith('"')) {
+    pass = pass.slice(1, -1).trim();
+  }
+
   const secure = process.env.SMTP_SECURE !== undefined ? process.env.SMTP_SECURE === "true" : port === 465;
 
   if (!user || !pass) {

@@ -23,349 +23,297 @@ function escapeHtml(str: string = ""): string {
 }
 
 /**
- * Generates an ultra-premium, responsive, branded HTML email for the client.
+ * Generates an ultra-premium, 100% inline-styled HTML email for the client.
+ * Fully compatible with Gmail (desktop, Android, iOS), Apple Mail, Outlook.
  */
 export function renderClientConfirmationEmail(data: EmailInquiryData): { subject: string; html: string; text: string } {
-  const safeName = escapeHtml(data.name || "Partner");
-  const safeType = escapeHtml(data.type || "Digital Solution");
-  const safeBudget = escapeHtml(data.budget || "To be discussed");
-  const safeTimeline = escapeHtml(data.timeline || "Standard deployment");
+  const safeName = escapeHtml(data.name || "Mteja Wetu");
+  const safeType = escapeHtml(data.type || "Mfumo / Tovuti ya Kidijitali");
+  const safeBudget = escapeHtml(data.budget || "Kuzungumzwa");
+  const safeTimeline = escapeHtml(data.timeline || "Kawaida");
   const safeRef = escapeHtml(data.refCode || "#ALT-" + Math.floor(1000 + Math.random() * 9000));
   const safeOrg = data.org ? escapeHtml(data.org) : "";
   const safeMessage = escapeHtml(data.message || "").replace(/\n/g, "<br/>");
   const whatsappUrl = `https://wa.me/255792867427?text=${encodeURIComponent(
-    `Hello Altraware! I submitted project brief ${safeRef} (${data.type || "System"}). My name is ${data.name}.`
+    `Habari Altraware! Nimetuma ombi la mradi ${safeRef} (${data.type || "System"}). Jina langu ni ${data.name}.`
   )}`;
 
   const subject = `Brief Received: ${data.type || "Project Inquiry"} [${safeRef}] — Altraware Technology`;
 
   const html = `
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="sw">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>${escapeHtml(subject)}</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #050B17;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      color: #E2E8F0;
-      -webkit-font-smoothing: antialiased;
-    }
-    .wrapper {
-      width: 100%;
-      background-color: #050B17;
-      padding: 30px 15px;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: #0A1325;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-    .header {
-      padding: 36px 32px 28px;
-      background: linear-gradient(180deg, rgba(124, 58, 237, 0.15) 0%, rgba(10, 19, 37, 0) 100%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      background: rgba(124, 58, 237, 0.2);
-      border: 1px solid rgba(124, 58, 237, 0.4);
-      color: #C4B5FD;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      border-radius: 9999px;
-      margin-bottom: 16px;
-    }
-    .brand-title {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #FFFFFF;
-      margin: 0;
-    }
-    .brand-sub {
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #94A3B8;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-    .content {
-      padding: 32px;
-    }
-    .greeting {
-      font-size: 22px;
-      font-weight: 700;
-      color: #FFFFFF;
-      margin: 0 0 12px;
-    }
-    .lead-text {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #94A3B8;
-      margin: 0 0 24px;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-    .card-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #7C3AED;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      margin: 0 0 16px;
-    }
-    .row {
-      display: table;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    .row-cell-lbl {
-      display: table-cell;
-      width: 35%;
-      font-size: 13px;
-      color: #64748B;
-      padding-bottom: 8px;
-    }
-    .row-cell-val {
-      display: table-cell;
-      width: 65%;
-      font-size: 14px;
-      font-weight: 600;
-      color: #F1F5F9;
-      padding-bottom: 8px;
-    }
-    .ref-highlight {
-      font-family: monospace;
-      color: #A78BFA;
-      background: rgba(124, 58, 237, 0.15);
-      padding: 2px 8px;
-      border-radius: 4px;
-      border: 1px solid rgba(124, 58, 237, 0.3);
-      font-size: 13px;
-    }
-    .steps-section {
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .steps-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #FFFFFF;
-      margin: 0 0 16px;
-      letter-spacing: 0.5px;
-    }
-    .step-item {
-      display: table;
-      width: 100%;
-      margin-bottom: 14px;
-    }
-    .step-num {
-      display: table-cell;
-      width: 28px;
-      height: 28px;
-      background: #7C3AED;
-      color: #FFFFFF;
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      vertical-align: top;
-      border-radius: 50%;
-      padding-top: 4px;
-    }
-    .step-body {
-      display: table-cell;
-      padding-left: 14px;
-      vertical-align: top;
-    }
-    .step-body-h {
-      font-size: 14px;
-      font-weight: 600;
-      color: #FFFFFF;
-      margin: 0 0 3px;
-    }
-    .step-body-p {
-      font-size: 13px;
-      color: #94A3B8;
-      line-height: 1.5;
-      margin: 0;
-    }
-    .actions {
-      text-align: center;
-      margin-top: 32px;
-      margin-bottom: 12px;
-    }
-    .btn-primary {
-      display: inline-block;
-      padding: 13px 26px;
-      background: #7C3AED;
-      color: #FFFFFF !important;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 10px;
-      margin: 6px;
-      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
-    }
-    .btn-secondary {
-      display: inline-block;
-      padding: 13px 24px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #E2E8F0 !important;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 10px;
-      margin: 6px;
-    }
-    .footer {
-      padding: 24px 32px;
-      background: #070D1A;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 12px;
-      color: #64748B;
-      line-height: 1.6;
-      text-align: center;
-    }
-    .footer a {
-      color: #94A3B8;
-      text-decoration: underline;
-    }
-  </style>
 </head>
-<body>
-  <div class="wrapper">
-    <div class="container">
-      
-      <!-- HEADER -->
-      <div class="header">
-        <span class="badge">● Brief Received</span>
-        <h1 class="brand-title">ALTRAWARE TECHNOLOGY</h1>
-        <div class="brand-sub">Software Engineering &amp; Enterprise Digital Systems · Dar es Salaam</div>
-      </div>
-
-      <!-- BODY CONTENT -->
-      <div class="content">
-        <h2 class="greeting">Habari, ${safeName}!</h2>
-        <p class="lead-text">
-          Thank you for entrusting your project vision to Altraware Technology. We have successfully logged your brief and assigned reference code <span class="ref-highlight">${safeRef}</span>.
-        </p>
-
-        <!-- SPECIFICATIONS CARD -->
-        <div class="card">
-          <div class="card-title">Project Summary</div>
+<body style="margin:0;padding:0;background-color:#050B17;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;color:#E2E8F0;">
+  
+  <!-- OUTER WRAPPER TABLE -->
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#050B17;padding:32px 12px;">
+    <tr>
+      <td align="center">
+        
+        <!-- MAIN CONTAINER -->
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:620px;background-color:#0B1426;border:1px solid #1E293B;border-radius:18px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
           
-          <div class="row">
-            <div class="row-cell-lbl">Reference Code</div>
-            <div class="row-cell-val"><span class="ref-highlight">${safeRef}</span></div>
-          </div>
-          
-          <div class="row">
-            <div class="row-cell-lbl">Service / Scope</div>
-            <div class="row-cell-val">${safeType}</div>
-          </div>
+          <!-- BRAND HEADER -->
+          <tr>
+            <td style="background:linear-gradient(180deg,#151B3B 0%,#0B1426 100%);padding:36px 32px 28px;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <!-- STATUS BADGE -->
+                    <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:18px;">
+                      <tr>
+                        <td style="background-color:rgba(124,58,237,0.18);border:1px solid rgba(167,139,250,0.4);border-radius:24px;padding:5px 14px;color:#C4B5FD;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                          ● &nbsp;BRIEF RECEIVED &bull; IMEPOKELEWA
+                        </td>
+                      </tr>
+                    </table>
 
-          ${
-            safeOrg
-              ? `<div class="row">
-            <div class="row-cell-lbl">Organization</div>
-            <div class="row-cell-val">${safeOrg}</div>
-          </div>`
-              : ""
-          }
+                    <!-- LOGO & BRAND TITLE -->
+                    <table border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td valign="middle" style="padding-right:14px;">
+                          <img src="https://altraware-technology.vercel.app/logo.png" alt="Altraware" width="46" height="46" style="display:block;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background-color:#070E1E;" />
+                        </td>
+                        <td valign="middle">
+                          <div style="font-size:20px;font-weight:800;color:#FFFFFF;letter-spacing:0.5px;margin:0;line-height:1.2;">
+                            ALTRAWARE TECHNOLOGY
+                          </div>
+                          <div style="font-size:11px;color:#94A3B8;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;font-weight:600;">
+                            SOFTWARE ENGINEERING &bull; DAR ES SALAAM, TANZANIA
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
 
-          <div class="row">
-            <div class="row-cell-lbl">Target Budget</div>
-            <div class="row-cell-val">${safeBudget}</div>
-          </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-          <div class="row">
-            <div class="row-cell-lbl">Timeline Goal</div>
-            <div class="row-cell-val">${safeTimeline}</div>
-          </div>
+          <!-- MAIN BODY CONTENT -->
+          <tr>
+            <td style="padding:32px 32px 28px;">
+              
+              <!-- GREETING -->
+              <h2 style="font-size:22px;font-weight:700;color:#FFFFFF;margin:0 0 12px;line-height:1.3;">
+                Habari, ${safeName}! 👋
+              </h2>
+              <p style="font-size:15px;line-height:1.6;color:#94A3B8;margin:0 0 24px;">
+                Asante kwa kuwasiliana na <strong>Altraware Technology</strong>. Tumeipokea taarifa ya mradi wako na tumemkabidhi mhandisi wetu kwa ajili ya kufanya tathmini ya kiufundi (technical review). Mradi wako umepewa nambari ya utambulisho:
+              </p>
 
-          ${
-            safeMessage
-              ? `<div class="row" style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
-            <div class="row-cell-lbl" style="vertical-align: top;">Your Notes</div>
-            <div class="row-cell-val" style="font-weight: 400; color: #CBD5E1; line-height: 1.5;">${safeMessage}</div>
-          </div>`
-              : ""
-          }
-        </div>
+              <!-- REF CODE BANNER -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.35);border-radius:12px;padding:14px 20px;margin-bottom:24px;">
+                <tr>
+                  <td>
+                    <div style="font-size:11px;color:#A78BFA;text-transform:uppercase;font-weight:700;letter-spacing:1px;">
+                      Nambari ya Kumbukumbu (Reference Code)
+                    </div>
+                    <div style="font-size:20px;font-weight:800;color:#FFFFFF;font-family:monospace;margin-top:4px;letter-spacing:1px;">
+                      ${safeRef}
+                    </div>
+                  </td>
+                  <td align="right" valign="middle">
+                    <span style="background-color:#10B981;color:#FFFFFF;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;">
+                      &check; Imethibitishwa
+                    </span>
+                  </td>
+                </tr>
+              </table>
 
-        <!-- WHAT HAPPENS NEXT -->
-        <div class="steps-section">
-          <div class="steps-title">What happens next?</div>
+              <!-- PROJECT SUMMARY BOX -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;margin-bottom:28px;">
+                <tr>
+                  <td>
+                    <div style="font-size:12px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:16px;">
+                      &bull; Muhtasari wa Mradi Alioomba
+                    </div>
 
-          <div class="step-item">
-            <div class="step-num">1</div>
-            <div class="step-body">
-              <div class="step-body-h">Architecture &amp; Scope Review (0–12h)</div>
-              <p class="step-body-p">Our software architects examine your requirements, database schema needs, and infrastructure roadmap.</p>
-            </div>
-          </div>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="38%" style="padding:8px 0;font-size:13px;color:#64748B;font-weight:500;">
+                          Huduma / Mfumo:
+                        </td>
+                        <td width="62%" style="padding:8px 0;font-size:14px;color:#FFFFFF;font-weight:700;">
+                          ${safeType}
+                        </td>
+                      </tr>
 
-          <div class="step-item">
-            <div class="step-num">2</div>
-            <div class="step-body">
-              <div class="step-body-h">Consultation &amp; Quotation (Within 24h)</div>
-              <p class="step-body-p">We reach out via WhatsApp/Email or direct phone call with an exact milestone timeline and cost breakdown.</p>
-            </div>
-          </div>
+                      ${
+                        safeOrg
+                          ? `<tr>
+                        <td style="padding:8px 0;font-size:13px;color:#64748B;font-weight:500;">
+                          Kampuni / Taasisi:
+                        </td>
+                        <td style="padding:8px 0;font-size:14px;color:#FFFFFF;font-weight:600;">
+                          ${safeOrg}
+                        </td>
+                      </tr>`
+                          : ""
+                      }
 
-          <div class="step-item">
-            <div class="step-num">3</div>
-            <div class="step-body">
-              <div class="step-body-h">Interactive Prototype &amp; Kickoff</div>
-              <p class="step-body-p">Work commences with sprint transparency, weekly updates, and full client dashboard access.</p>
-            </div>
-          </div>
-        </div>
+                      <tr>
+                        <td style="padding:8px 0;font-size:13px;color:#64748B;font-weight:500;">
+                          Makadirio ya Bajeti:
+                        </td>
+                        <td style="padding:8px 0;font-size:14px;color:#34D399;font-weight:700;">
+                          ${safeBudget}
+                        </td>
+                      </tr>
 
-        <!-- ACTION BUTTONS -->
-        <div class="actions">
-          <a href="${whatsappUrl}" class="btn-primary" target="_blank" rel="noopener noreferrer">
-            💬 Fast-Track on WhatsApp (+255 792 867 427)
-          </a>
-          <a href="https://altraware-technology.vercel.app/services" class="btn-secondary" target="_blank" rel="noopener noreferrer">
-            Explore Systems &amp; Work
-          </a>
-        </div>
+                      <tr>
+                        <td style="padding:8px 0;font-size:13px;color:#64748B;font-weight:500;">
+                          Muda Unaotarajiwa:
+                        </td>
+                        <td style="padding:8px 0;font-size:14px;color:#F1F5F9;font-weight:600;">
+                          ${safeTimeline}
+                        </td>
+                      </tr>
 
-      </div>
+                      ${
+                        safeMessage
+                          ? `<tr>
+                        <td colspan="2" style="padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);margin-top:8px;">
+                          <div style="font-size:12px;color:#64748B;font-weight:600;margin-bottom:6px;text-transform:uppercase;">
+                            Maelezo Yako:
+                          </div>
+                          <div style="font-size:13px;color:#CBD5E1;line-height:1.6;background-color:rgba(0,0,0,0.25);padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
+                            ${safeMessage}
+                          </div>
+                        </td>
+                      </tr>`
+                          : ""
+                      }
 
-      <!-- FOOTER -->
-      <div class="footer">
-        <div><strong>Altraware Technology Ltd</strong> · Dar es Salaam, Tanzania</div>
-        <div style="margin-top: 4px;">
-          Hotline: +255 792 867 427 / +255 790 942 616 · Email: <a href="mailto:altrawaretechnology@gmail.com">altrawaretechnology@gmail.com</a>
-        </div>
-        <div style="margin-top: 8px; color: #475569; font-size: 11px;">
-          © ${new Date().getFullYear()} Altraware Technology. All rights reserved. Security and data privacy committed.
-        </div>
-      </div>
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
-    </div>
-  </div>
+              <!-- NEXT STEPS ROADMAP -->
+              <div style="font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:16px;letter-spacing:0.5px;">
+                Nini Kinafuata Sasa? (What happens next?)
+              </div>
+
+              <!-- STEP 1 -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:14px;">
+                <tr>
+                  <td width="36" valign="top">
+                    <div style="width:28px;height:28px;background-color:#7C3AED;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
+                      1
+                    </div>
+                  </td>
+                  <td valign="top" style="padding-left:12px;">
+                    <div style="font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:2px;">
+                      Tathmini ya Mahitaji (Masaa 0–12)
+                    </div>
+                    <div style="font-size:13px;color:#94A3B8;line-height:1.5;">
+                      Wahandisi wetu wanapitia ramani ya mfumo, database, na muundo wa tovuti unaoendana na biashara yako.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- STEP 2 -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:14px;">
+                <tr>
+                  <td width="36" valign="top">
+                    <div style="width:28px;height:28px;background-color:#7C3AED;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
+                      2
+                    </div>
+                  </td>
+                  <td valign="top" style="padding-left:12px;">
+                    <div style="font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:2px;">
+                      Mawasiliano &amp; Quotation Rasmi (Ndani ya masaa 24)
+                    </div>
+                    <div style="font-size:13px;color:#94A3B8;line-height:1.5;">
+                      Tunawasiliana nawe moja kwa moja kupitia WhatsApp au Simu kukupatia bei rasmi na ratiba ya hatua kwa hatua (milestones).
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- STEP 3 -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:26px;">
+                <tr>
+                  <td width="36" valign="top">
+                    <div style="width:28px;height:28px;background-color:#7C3AED;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
+                      3
+                    </div>
+                  </td>
+                  <td valign="top" style="padding-left:12px;">
+                    <div style="font-size:14px;font-weight:700;color:#FFFFFF;margin-bottom:2px;">
+                      Mfano wa Kwanza (Interactive Prototype) &amp; Kuanza Kazi
+                    </div>
+                    <div style="font-size:13px;color:#94A3B8;line-height:1.5;">
+                      Kazi inaanza kwa uwazi, ufuatiliaji wa maendeleo live kwenye Client Portal, na mkataba wa kisheria wenye amani ya moyo.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CALL TO ACTION BUTTONS -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:20px;margin-bottom:10px;">
+                <tr>
+                  <td align="center">
+                    
+                    <!-- WHATSAPP FAST-TRACK BUTTON -->
+                    <table border="0" cellspacing="0" cellpadding="0" style="margin:6px 0;">
+                      <tr>
+                        <td align="center" style="background-color:#25D366;border-radius:12px;">
+                          <a href="${whatsappUrl}" target="_blank" style="display:inline-block;padding:14px 28px;font-size:14px;font-weight:700;color:#FFFFFF;text-decoration:none;letter-spacing:0.5px;">
+                            &phone;&nbsp; Zungumza Nasi WhatsApp (+255 792 867 427)
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- WEBSITE LINK BUTTON -->
+                    <table border="0" cellspacing="0" cellpadding="0" style="margin:6px 0;">
+                      <tr>
+                        <td align="center" style="background-color:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;">
+                          <a href="https://altraware-technology.vercel.app/services" target="_blank" style="display:inline-block;padding:12px 24px;font-size:13px;font-weight:600;color:#CBD5E1;text-decoration:none;">
+                            Tazama Mifumo &amp; Kazi Zetu &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background-color:#070E1E;padding:26px 32px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+              <div style="font-size:13px;font-weight:700;color:#FFFFFF;">
+                Altraware Technology Ltd
+              </div>
+              <div style="font-size:12px;color:#64748B;margin-top:6px;line-height:1.6;">
+                Dar es Salaam, Tanzania &bull; Simu: +255 792 867 427 / +255 790 942 616<br/>
+                Barua pepe rasmi: <a href="mailto:altrawaretechnology@gmail.com" style="color:#A78BFA;text-decoration:none;">altrawaretechnology@gmail.com</a>
+              </div>
+              <div style="font-size:11px;color:#475569;margin-top:12px;">
+                &copy; ${new Date().getFullYear()} Altraware Technology. Haki zote zimehifadhiwa. Ulinzi wa taarifa na mkataba wa kisheria umezingatiwa.
+              </div>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>
   `.trim();
@@ -373,116 +321,196 @@ export function renderClientConfirmationEmail(data: EmailInquiryData): { subject
   const text = `
 HABARI ${data.name.toUpperCase()} — ALTRAWARE TECHNOLOGY
 
-Thank you for contacting Altraware Technology. Your project brief has been received.
+Asante kwa kuwasiliana na Altraware Technology. Tumeipokea taarifa ya mradi wako na mhandisi wetu anaiangalia sasa.
 
-Project Summary:
-- Reference Code: ${data.refCode}
-- Solution: ${data.type}
-- Budget: ${data.budget || "To be discussed"}
-- Timeline: ${data.timeline || "Standard"}
-${data.org ? `- Organization: ${data.org}\n` : ""}- Notes: ${data.message}
+MUHTASARI WA MRADI:
+- Nambari ya Kumbukumbu: ${safeRef}
+- Mfumo / Huduma: ${data.type}
+- Makadirio ya Bajeti: ${data.budget || "Kuzungumzwa"}
+- Muda Unaotarajiwa: ${data.timeline || "Kawaida"}
+${data.org ? `- Kampuni / Taasisi: ${data.org}\n` : ""}- Maelezo Yako: ${data.message}
 
-What happens next:
-1. Technical architecture review within 12 hours.
-2. Direct phone / WhatsApp consultation & milestone quotation within 24 hours.
-3. Interactive prototype and kickoff.
+NINI KINAFUATA?
+1. Tathmini ya Mahitaji ndani ya masaa 12.
+2. Mawasiliano moja kwa moja kupitia WhatsApp/Simu na quotation rasmi ndani ya masaa 24.
+3. Interactive Prototype na kuanza ujenzi.
 
-Need fast response?
+Unahitaji jibu la haraka?
 WhatsApp: +255 792 867 427
-Email: altrawaretechnology@gmail.com
-Website: https://altraware-technology.vercel.app/
+Barua pepe: altrawaretechnology@gmail.com
+Tovuti: https://altraware-technology.vercel.app/
 `.trim();
 
   return { subject, html, text };
 }
 
 /**
- * Generates an internal notification email sent to the Altraware team (e.g. altrawaretechnology@gmail.com).
+ * Generates an internal alert email sent to the Altraware team (altrawaretechnology@gmail.com).
+ * 100% inline-styled, beautiful, and actionable.
  */
 export function renderAdminAlertEmail(data: EmailInquiryData): { subject: string; html: string; text: string } {
   const safeName = escapeHtml(data.name);
   const safePhone = escapeHtml(data.phone);
-  const safeEmail = escapeHtml(data.email || "Not provided");
-  const safeOrg = escapeHtml(data.org || "Individual / Not specified");
+  const safeEmail = escapeHtml(data.email || "Haijawekwa");
+  const safeOrg = escapeHtml(data.org || "Mtu binafsi / Haikutajwa");
   const safeType = escapeHtml(data.type);
-  const safeBudget = escapeHtml(data.budget || "Unspecified");
-  const safeTimeline = escapeHtml(data.timeline || "Unspecified");
+  const safeBudget = escapeHtml(data.budget || "Haijatajwa");
+  const safeTimeline = escapeHtml(data.timeline || "Haijatajwa");
   const safeRef = escapeHtml(data.refCode);
   const safeMessage = escapeHtml(data.message).replace(/\n/g, "<br/>");
 
   const cleanPhone = data.phone.replace(/[^0-9]/g, "");
   const waLink = `https://wa.me/${cleanPhone.startsWith("0") ? "255" + cleanPhone.slice(1) : cleanPhone}`;
 
-  const subject = `🔥 NEW PROJECT BRIEF: ${data.name} (${data.type}) [${safeRef}]`;
+  const subject = `🔥 MRADI MPYA: ${data.name} (${data.type}) [${safeRef}]`;
 
   const html = `
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="sw">
 <head>
-  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title>${escapeHtml(subject)}</title>
 </head>
-<body style="margin:0;padding:24px;background:#060C18;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#F1F5F9;">
-  <div style="max-width:600px;margin:0 auto;background:#0D172A;border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:28px;">
-    
-    <div style="background:#7C3AED;color:#FFF;font-size:12px;font-weight:700;display:inline-block;padding:4px 10px;border-radius:6px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">
-      ⚡ Lead Inbound Alert
-    </div>
-    
-    <h2 style="margin:0 0 8px;font-size:22px;color:#FFF;">New Project Request Received</h2>
-    <p style="margin:0 0 20px;color:#94A3B8;font-size:14px;">A prospective client submitted a brief on altraware-technology.</p>
+<body style="margin:0;padding:0;background-color:#070E1E;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#F1F5F9;">
+  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#070E1E;padding:28px 12px;">
+    <tr>
+      <td align="center">
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#0F1A30;border:1px solid #1E293B;border-radius:16px;padding:28px;box-shadow:0 20px 40px rgba(0,0,0,0.5);">
+          <tr>
+            <td>
+              
+              <!-- BADGE -->
+              <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:14px;">
+                <tr>
+                  <td style="background-color:#7C3AED;color:#FFFFFF;font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:1px;text-transform:uppercase;">
+                    ⚡ LEAD MPYA AMEINGIA TOVUTINI
+                  </td>
+                </tr>
+              </table>
 
-    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:16px;margin-bottom:20px;">
-      <table style="width:100%;font-size:14px;border-collapse:collapse;">
-        <tr><td style="color:#64748B;padding:6px 0;width:120px;">Client Name</td><td style="color:#FFF;font-weight:700;">${safeName}</td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Organization</td><td style="color:#FFF;">${safeOrg}</td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Phone / WA</td><td style="color:#38BDF8;font-weight:700;"><a href="tel:${safePhone}" style="color:#38BDF8;">${safePhone}</a></td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Email</td><td style="color:#A78BFA;"><a href="mailto:${safeEmail}" style="color:#A78BFA;">${safeEmail}</a></td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Service Type</td><td style="color:#FBBF24;font-weight:700;">${safeType}</td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Budget</td><td style="color:#34D399;font-weight:700;">${safeBudget}</td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Timeline</td><td style="color:#FFF;">${safeTimeline}</td></tr>
-        <tr><td style="color:#64748B;padding:6px 0;">Ref Code</td><td style="color:#C084FC;font-family:monospace;font-weight:700;">${safeRef}</td></tr>
-      </table>
-    </div>
+              <h2 style="margin:0 0 8px;font-size:22px;color:#FFFFFF;font-weight:800;">
+                Ombi Jipya la Mradi Limefika!
+              </h2>
+              <p style="margin:0 0 20px;color:#94A3B8;font-size:14px;line-height:1.5;">
+                Mteja ametuma brief kwenye tovuti ya Altraware Technology. Hapa chini ni maelezo yake kamili:
+              </p>
 
-    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:16px;margin-bottom:24px;">
-      <div style="color:#94A3B8;font-size:12px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Project Requirements &amp; Notes:</div>
-      <div style="color:#E2E8F0;font-size:14px;line-height:1.6;">${safeMessage}</div>
-    </div>
+              <!-- CLIENT DETAILS CARD -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:16px 18px;margin-bottom:20px;">
+                <tr>
+                  <td width="35%" style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Jina la Mteja:</td>
+                  <td width="65%" style="color:#FFFFFF;font-size:14px;padding:7px 0;font-weight:700;">${safeName}</td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Simu / WhatsApp:</td>
+                  <td style="font-size:14px;padding:7px 0;font-weight:700;">
+                    <a href="tel:${safePhone}" style="color:#38BDF8;text-decoration:none;">${safePhone}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Barua Pepe:</td>
+                  <td style="font-size:14px;padding:7px 0;font-weight:600;">
+                    <a href="mailto:${safeEmail}" style="color:#C4B5FD;text-decoration:none;">${safeEmail}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Kampuni / Taasisi:</td>
+                  <td style="color:#E2E8F0;font-size:14px;padding:7px 0;">${safeOrg}</td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Aina ya Mfumo:</td>
+                  <td style="color:#FBBF24;font-size:14px;padding:7px 0;font-weight:700;">${safeType}</td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Makadirio ya Bajeti:</td>
+                  <td style="color:#34D399;font-size:14px;padding:7px 0;font-weight:700;">${safeBudget}</td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Muda Unaotakiwa:</td>
+                  <td style="color:#E2E8F0;font-size:14px;padding:7px 0;">${safeTimeline}</td>
+                </tr>
+                <tr>
+                  <td style="color:#64748B;font-size:13px;padding:7px 0;font-weight:600;">Ref Code:</td>
+                  <td style="color:#A78BFA;font-size:14px;padding:7px 0;font-family:monospace;font-weight:800;">${safeRef}</td>
+                </tr>
+              </table>
 
-    <div style="text-align:center;">
-      <a href="${waLink}" style="display:inline-block;padding:12px 22px;background:#10B981;color:#FFF;text-decoration:none;font-weight:700;font-size:14px;border-radius:8px;margin-right:8px;">
-        💬 Chat Client on WhatsApp
-      </a>
-      ${
-        data.email
-          ? `<a href="mailto:${data.email}?subject=Altraware%20Technology%20-%20Re:%20${encodeURIComponent(
-              data.type
-            )}%20[${safeRef}]" style="display:inline-block;padding:12px 22px;background:#7C3AED;color:#FFF;text-decoration:none;font-weight:700;font-size:14px;border-radius:8px;">
-        ✉️ Reply via Email
-      </a>`
-          : ""
-      }
-    </div>
+              <!-- PROJECT NOTES -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px 18px;margin-bottom:24px;">
+                <tr>
+                  <td>
+                    <div style="color:#94A3B8;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+                      Maelezo Aliyoandika Mteja:
+                    </div>
+                    <div style="color:#F1F5F9;font-size:13px;line-height:1.6;">
+                      ${safeMessage}
+                    </div>
+                  </td>
+                </tr>
+              </table>
 
-  </div>
+              <!-- ACTION BUTTONS -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    
+                    <table border="0" cellspacing="0" cellpadding="0" style="margin:4px 0;">
+                      <tr>
+                        <td style="background-color:#10B981;border-radius:10px;">
+                          <a href="${waLink}" target="_blank" style="display:inline-block;padding:12px 24px;color:#FFFFFF;text-decoration:none;font-size:14px;font-weight:700;">
+                            💬 Mpigie / Chat WhatsApp Sasa
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    ${
+                      data.email
+                        ? `<table border="0" cellspacing="0" cellpadding="0" style="margin:4px 0;">
+                      <tr>
+                        <td style="background-color:#7C3AED;border-radius:10px;">
+                          <a href="mailto:${data.email}?subject=Altraware%20Technology%20-%20Kuhusu%20Mradi%20Wako%20[${safeRef}]" style="display:inline-block;padding:12px 24px;color:#FFFFFF;text-decoration:none;font-size:14px;font-weight:700;">
+                            ✉️ Mjibu kwa Email
+                          </a>
+                        </td>
+                      </tr>
+                    </table>`
+                        : ""
+                    }
+
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>
   `.trim();
 
   const text = `
-NEW PROJECT INQUIRY [${data.refCode}]
+LEAD MPYA AMEINGIA TOVUTINI [${data.refCode}]
 
-Client: ${data.name}
-Organization: ${data.org || "N/A"}
-Phone: ${data.phone}
+Mteja: ${data.name}
+Kampuni: ${data.org || "N/A"}
+Simu: ${data.phone}
 Email: ${data.email || "N/A"}
-Service: ${data.type}
-Budget: ${data.budget || "N/A"}
-Timeline: ${data.timeline || "N/A"}
+Mfumo: ${data.type}
+Bajeti: ${data.budget || "N/A"}
+Muda: ${data.timeline || "N/A"}
 
-Message:
+Maelezo:
 ${data.message}
+
+WhatsApp: ${waLink}
 `.trim();
 
   return { subject, html, text };
