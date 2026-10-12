@@ -65,6 +65,7 @@ function ContactInner() {
   const [done, setDone] = useState(false);
   const [refCode, setRefCode] = useState("");
   const [sending, setSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   // Form states
   const [name, setName] = useState("");
@@ -122,8 +123,10 @@ function ContactInner() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    const generatedRef = "#ALT-" + Math.floor(1000 + Math.random() * 9000);
+    setRefCode(generatedRef);
+
     try {
-      const generatedRef = "#ALT-" + Math.floor(1000 + Math.random() * 9000);
       await createInquiry({
         name,
         org: company || undefined,
@@ -136,13 +139,38 @@ function ContactInner() {
         refCode: generatedRef,
       });
 
-      setRefCode(generatedRef);
+      // Send branded emails via Nodemailer
+      try {
+        const mailRes = await fetch("/api/inquiries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            org: company || undefined,
+            phone,
+            email,
+            type: selectedServices.join(", "),
+            message,
+            budget,
+            timeline,
+            refCode: generatedRef,
+          }),
+        });
+        if (mailRes.ok) {
+          const mailData = await mailRes.json();
+          if (mailData.emailSent) {
+            setEmailSent(true);
+          }
+        }
+      } catch (mailErr) {
+        console.warn("Email API notification error:", mailErr);
+      }
+
       setSending(false);
       setDone(true);
       notify("Brief received — we'll be in touch within one business day ✓", "success");
     } catch {
       setSending(false);
-      setRefCode("#ALT-" + Math.floor(1000 + Math.random() * 9000));
       setDone(true);
       notify("Brief saved — we'll be in touch soon ✓", "success");
     }
@@ -241,6 +269,17 @@ function ContactInner() {
                       We&apos;ve received your brief. David and the Altraware team will review it and get back to you at{" "}
                       <b className="text-violL">{email}</b> or <b className="text-white">{phone}</b> within one business day.
                     </p>
+                    <div className="mt-3">
+                      {emailSent ? (
+                        <span className="inline-flex items-center gap-2 text-xs text-green-300 bg-green-500/15 border border-green-500/30 px-3.5 py-1.5 rounded-full">
+                          <i className="fa-solid fa-envelope-circle-check text-green-400" /> Branded receipt sent to {email}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-2 text-xs text-white/70 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full">
+                          <i className="fa-solid fa-envelope text-violL" /> Notification queued for {email}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="pt-4 flex flex-wrap items-center justify-center gap-3">

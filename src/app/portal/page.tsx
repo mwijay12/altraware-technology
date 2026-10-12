@@ -148,15 +148,40 @@ export default function ClientPortalPage() {
       return;
     }
     try {
+      const clientName = user?.displayName || user?.email?.split("@")[0] || "Client";
+      const clientEmail = user?.email || "";
+      const generatedRef = "#ALT-" + Math.floor(1000 + Math.random() * 9000);
+
       await createInquiry({
-        name: user?.displayName || user?.email?.split("@")[0] || "Client",
-        email: user?.email || "",
+        name: clientName,
+        email: clientEmail,
         phone: briefPhone,
         org: briefOrg,
         type: briefSystem,
         message: briefNotes || "System deployment request submitted via Client Portal.",
         status: "new",
+        refCode: generatedRef,
       });
+
+      // Send branded emails via Nodemailer
+      try {
+        await fetch("/api/inquiries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: clientName,
+            email: clientEmail,
+            phone: briefPhone,
+            org: briefOrg,
+            type: briefSystem,
+            message: briefNotes || "System deployment request submitted via Client Portal.",
+            refCode: generatedRef,
+          }),
+        });
+      } catch (mailErr) {
+        console.warn("Portal email dispatch error:", mailErr);
+      }
+
       setBriefSubmitted(true);
       setShowBriefForm(false);
     } catch (err) {
