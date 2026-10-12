@@ -33,22 +33,18 @@ function getTransporter(): Transporter | null {
     return null;
   }
 
-  if (!cachedTransporter) {
-    cachedTransporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
-      auth: {
-        user,
-        pass,
-      },
-      pool: true,
-      maxConnections: 3,
-      maxMessages: 100,
-    });
-  }
-
-  return cachedTransporter;
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: {
+      user,
+      pass,
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  });
 }
 
 export async function sendProjectInquiryEmails(data: EmailInquiryData): Promise<EmailDispatchResult> {

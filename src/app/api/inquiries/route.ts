@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       emailSent: emailResult.clientSent,
       adminNotified: emailResult.adminSent,
       reason: emailResult.reason,
+      error: emailResult.error,
     });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : "Internal server error";
