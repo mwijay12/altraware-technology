@@ -34,7 +34,9 @@ const grotesk = Space_Grotesk({
   adjustFontFallback: true,
 });
 
-const SITE_URL = "https://www.altraware.co.tz";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://altra.tanzaniareach.com";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -62,7 +64,12 @@ export const metadata: Metadata = {
     "app development Tanzania",
     "school management system Tanzania",
     "Altraware",
+    "software developers Kariakoo",
+    "tanzania tech company",
   ],
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
     type: "website",
     locale: "en_TZ",
@@ -72,15 +79,38 @@ export const metadata: Metadata = {
     title: "Altraware Technology — Rooted at Home. Engineered for the World.",
     description:
       "Websites, apps & business systems built in Tanzania for how Tanzania works. Kiswahili-first, M-Pesa native, offline-ready.",
-    images: [{ url: "/logo.jpg", width: 1254, height: 1254, alt: "Altraware Technology logo" }],
+    images: [
+      {
+        url: "/logo.jpg",
+        width: 1254,
+        height: 1254,
+        alt: "Altraware Technology — Software Company in Tanzania",
+      },
+      {
+        url: "/faidahq.png",
+        width: 1200,
+        height: 630,
+        alt: "Faida POS & Altraware Business Platforms",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Altraware Technology",
+    title: "Altraware Technology — Software Company in Tanzania",
     description: "Tanzanian software studio — websites, apps & business systems.",
     images: ["/logo.jpg"],
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "any" },
@@ -91,22 +121,58 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const orgSchema = {
+  const schemaGraph = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Altraware Technology",
-    url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
-    image: [`${SITE_URL}/logo.jpg`, `${SITE_URL}/faidahq.png`],
-    description:
-      "Tanzanian software company in Dar es Salaam. Websites, web & mobile apps, POS systems (Faida POS), clinic systems (CareTrack) — Kiswahili & English, M-Pesa native, offline-first.",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Dar es Salaam",
-      addressCountry: "TZ",
-    },
-    areaServed: ["Tanzania", "Kenya", "Uganda", "Worldwide"],
-    sameAs: ["https://github.com/mwijay12"],
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: "Altraware Technology",
+        url: SITE_URL,
+        logo: {
+          "@type": "ImageObject",
+          url: `${SITE_URL}/logo.png`,
+          width: 512,
+          height: 512,
+          caption: "Altraware Technology Logo",
+        },
+        image: [
+          `${SITE_URL}/logo.jpg`,
+          `${SITE_URL}/logo.png`,
+          `${SITE_URL}/faidahq.png`,
+        ],
+        description:
+          "Tanzanian software company in Dar es Salaam. Websites, web & mobile apps, POS systems (Faida POS), clinic systems (CareTrack) — Kiswahili & English, M-Pesa native, offline-first.",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Dar es Salaam",
+          addressCountry: "TZ",
+        },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: -6.7924,
+          longitude: 39.2083,
+        },
+        hasMap: "https://www.google.com/maps/place/Altraware+Technology/@-6.3457672,29.6864765,6z/data=!4m6!3m5!1s0xb655bb5a1860615:0x815b0f25ed425796!8m2!3d-6.3457672!4d29.6864765!16s%2Fg%2F11w_m7w_q?entry=ttu",
+        telephone: "+255792867427",
+        email: "altrawaretechnology@gmail.com",
+        areaServed: ["Tanzania", "Kenya", "Uganda", "Worldwide"],
+        sameAs: [
+          "https://github.com/mwijay12",
+          "https://www.google.com/maps/place/Altraware+Technology/@-6.3457672,29.6864765,6z/data=!4m6!3m5!1s0xb655bb5a1860615:0x815b0f25ed425796!8m2!3d-6.3457672!4d29.6864765!16s%2Fg%2F11w_m7w_q?entry=ttu",
+        ],
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: "Altraware Technology",
+        description: "Rooted at Home. Engineered for the World.",
+        publisher: {
+          "@id": `${SITE_URL}/#organization`,
+        },
+      },
+    ],
   };
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable} ${grotesk.variable}`}>
@@ -140,7 +206,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased font-sans">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
         />
         <ContentProvider>
           <NotifyProvider>

@@ -8,7 +8,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: post.title,
     description: post.excerpt,
-    openGraph: { title: post.title, description: post.excerpt, images: post.cover ? [post.cover] : [], type: "article" },
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: post.cover ? [post.cover] : [],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: post.cover ? [post.cover] : [],
+    },
   };
 }
 export default function Layout({ children }: { children: React.ReactNode }) {

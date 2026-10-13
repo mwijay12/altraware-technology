@@ -241,6 +241,46 @@ function ContactInner() {
                   We never share client data — hatutashiriki taarifa zako.
                 </p>
               </div>
+
+              {/* GOOGLE BUSINESS PROFILE MAP EMBED */}
+              <div className="bg-white border border-deep/10 rounded-3xl p-5 shadow-sm overflow-hidden">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <i className="fa-solid fa-map-location-dot text-viol text-base" />
+                    <span className="font-bold text-sm text-deep">Google Business Profile</span>
+                  </div>
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-700 font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Verified
+                  </span>
+                </div>
+                <p className="text-deep/60 text-xs mb-3">
+                  Altraware Technology on Google Maps · Dar es Salaam, Tanzania
+                </p>
+                <div className="rounded-2xl overflow-hidden border border-deep/10 shadow-inner aspect-[4/3] w-full">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8121083.165202397!2d29.686476509624033!3d-6.345767185778589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xb655bb5a1860615%3A0x815b0f25ed425796!2sAltraware%20Technology!5e0!3m2!1sen!2stz!4v1791875517058!5m2!1sen!2stz"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Altraware Technology Google Maps"
+                    className="w-full h-full"
+                  />
+                </div>
+                <div className="mt-3 flex items-center justify-between text-[11px]">
+                  <span className="text-deep/50">Dar es Salaam, Tanzania</span>
+                  <a
+                    href="https://maps.google.com/maps/place/Altraware+Technology/@-6.3457672,29.6864765,6z/data=!4m6!3m5!1s0xb655bb5a1860615:0x815b0f25ed425796!8m2!3d-6.3457672!4d29.6864765!16s%2Fg%2F11w_m7w_q?entry=ttu"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-viol font-bold hover:underline inline-flex items-center gap-1"
+                  >
+                    Open in Google Maps <i className="fa-solid fa-arrow-up-right-from-square text-[9px]" />
+                  </a>
+                </div>
+              </div>
             </Reveal>
 
             {/* RIGHT MULTI-STEP FLOW / REVIEW & SEND */}

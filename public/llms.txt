@@ -1,0 +1,70 @@
+# Altraware Technology
+
+> Rooted at Home. Engineered for the World.
+> Leading software company and product studio in Dar es Salaam, Tanzania.
+> Official Website: https://altra.tanzaniareach.com
+
+## Overview
+Altraware Technology is a formally registered Tanzanian technology company (BRELA verified) based in Dar es Salaam. We specialize in building fast, mobile-first websites, native mobile applications, and resilient business systems engineered specifically for the East African operational context — with offline-first architectures, native M-Pesa / mobile money integration, and Kiswahili + English bilingual interfaces.
+
+## Key Products & Platforms
+
+### 1. Faida POS (FaidaHQ)
+- **Category**: Retail & Supermarket Operating System (POS & Inventory ERP)
+- **Target Audience**: Retailers, supermarkets, wholesale shops, pharmacies, cafes, hardware stores in Tanzania and East Africa.
+- **Key Features**:
+  - 100% offline-first operation (continues selling with zero internet; auto-syncs when online).
+  - Fast barcode/product checkout (<0.8s avg) with instant ESC/POS thermal receipt printing.
+  - Automated smart low-stock warnings and inventory depletion alerts.
+  - Daily automated sales summaries, profit margins, and audit trail.
+  - Companion Flutter Android APK for store attendants and web terminal for owners.
+  - M-Pesa / mobile money reconciliation.
+- **Live Demo**: https://faida-hq.vercel.app/
+- **Featured Image**: https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497492/faidahq.png
+
+### 2. CareTrack
+- **Category**: Child Care, Clinic & NGO Attendance & Health Logging
+- **Target Audience**: Daycare centres, preschools, health clinics, community centres, NGOs.
+- **Key Features**:
+  - One-tap child attendance with automated SMS notifications to guardians.
+  - Daily health notes, medication logs, and meal records per child.
+  - Fee management with M-Pesa payment tracking and automated receipts.
+  - Privacy by Design: Encrypted storage adhering to Tanzania's Personal Data Protection Act (PDPA 2022).
+  - Works on weak 2G/3G connections.
+- **Live Demo**: https://caretrack-six.vercel.app/dashboard
+
+### 3. UAUT Connect
+- **Category**: Higher Education Campus & Admissions Portal
+- **Client**: United African University of Tanzania (Kigamboni, Dar es Salaam)
+- **Features**: Online student application workflow, degree & diploma eligibility checker, campus news, and referral engine.
+- **Live Portal**: https://www.uautconnect.com/
+- **Featured Image**: https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497518/uautconnect.png
+
+### 4. ShuleDirect Pro
+- **Category**: School Management & Grading System
+- **Features**: NECTA-aligned continuous assessment matrices, terminal report generation, parent SMS notifications, and school fee tracking.
+
+## Services Offered
+1. **Business Websites**: Fast, high-converting websites optimized for local Google search, Google Maps, and click-to-WhatsApp client acquisition.
+2. **Mobile Applications**: Native and cross-platform Android & iOS applications developed with Flutter.
+3. **Custom Business Systems**: Enterprise portals, inventory management, CRM, and cloud databases.
+4. **Payment Integrations**: Vodacom M-Pesa (Daraja API), Tigo Pesa, Airtel Money, and Halopesa STK push & automated callback reconciliation.
+5. **Local SEO & Google Business Optimization**: Registration and high-visibility optimization on Google Maps and search results.
+
+## Transparent Pricing (Tanzanian Shillings - TSh)
+- **Web Starter**: TSh 350,000 (1–2 weeks delivery; landing page, WhatsApp integration, Google Maps setup, free SSL).
+- **Growth Business Site**: TSh 550,000 (2–3 weeks delivery; 4–6 pages, service catalog, corporate emails, local SEO ranking).
+- **Pro Web Portal**: TSh 750,000 (2–4 weeks delivery; booking/client portal, database forms, bilingual SW/EN, Lighthouse 95+).
+- **Custom Web/Mobile App**: From TSh 800,000 (3–5 weeks delivery; tailored workflow, role-based dashboards, CSV/PDF reports).
+- **Turnkey Business System (e.g., Faida POS)**: From TSh 1,200,000 (offline-first sales, thermal receipt integration, team training).
+
+## Office & Contact Details
+- **Company**: Altraware Technology
+- **Location**: Dar es Salaam, Tanzania
+- **Google Maps**: https://maps.google.com/?q=Altraware+Technology+Dar+es+Salaam
+- **Primary Phone**: +255 792 867 427
+- **Secondary Phone**: +255 790 942 616
+- **WhatsApp**: +255 792 867 427 (https://wa.me/255792867427)
+- **Email**: altrawaretechnology@gmail.com
+- **Operating Hours**: Monday–Saturday, 8:00 AM – 6:00 PM EAT
+- **Legal Compliance**: Registered entity with BRELA; compliant with Tanzania Personal Data Protection Act (PDPA No. 11 of 2022).
