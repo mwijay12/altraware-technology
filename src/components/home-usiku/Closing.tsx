@@ -1,6 +1,6 @@
 "use client";
 
-import { Rise } from "@/components/usiku";
+import { Rise, useSettle } from "@/components/usiku";
 import { TransitionLink } from "@/components/Navbar";
 import MediaImage from "@/components/MediaImage";
 import type { SiteContent } from "@/lib/content";
@@ -14,6 +14,7 @@ import type { SiteContent } from "@/lib/content";
    ============================================================ */
 
 export default function Closing({ content }: { content: SiteContent }) {
+  const titleRef = useSettle<HTMLHeadingElement>();
   const quote = content.impact.testimonials?.[0];
   const wa = `https://wa.me/255792867427?text=${encodeURIComponent(
     "Habari Altraware — I'd like to talk about a project."
@@ -83,7 +84,7 @@ export default function Closing({ content }: { content: SiteContent }) {
             <span className="u-label">06 — Start</span>
           </Rise>
           <Rise delay={0.06}>
-            <h2 className="u-mega mt-6">
+            <h2 ref={titleRef} className="u-mega u-settle mt-6">
               Tu<span className="u-outline">tengeneze</span>.
             </h2>
           </Rise>

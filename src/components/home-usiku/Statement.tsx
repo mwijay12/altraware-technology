@@ -1,7 +1,7 @@
 "use client";
 
 import MediaImage from "@/components/MediaImage";
-import { Rise, useParallax } from "@/components/usiku";
+import { Rise, useParallax, useSettle } from "@/components/usiku";
 import { TransitionLink } from "@/components/Navbar";
 import type { SiteContent } from "@/lib/content";
 
@@ -13,6 +13,7 @@ import type { SiteContent } from "@/lib/content";
    ============================================================ */
 
 export default function Statement({ content }: { content: SiteContent }) {
+  const titleRef = useSettle<HTMLDivElement>();
   const ref = useParallax<HTMLDivElement>(0.08);
 
   return (
@@ -21,7 +22,7 @@ export default function Statement({ content }: { content: SiteContent }) {
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-20 items-center">
           <div>
             <span className="u-label">01 — Mizizi · Roots</span>
-            <Rise>
+            <div ref={titleRef} className="u-settle">
               <h2 className="u-display mt-5">
                 Built in Tanzania,
                 <br />
@@ -29,7 +30,7 @@ export default function Statement({ content }: { content: SiteContent }) {
                 <br />
                 actually works.
               </h2>
-            </Rise>
+            </div>
             <Rise delay={0.1}>
               <p className="u-lead mt-7 max-w-[56ch]">{content.about.shortDescription}</p>
             </Rise>

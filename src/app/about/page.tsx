@@ -43,7 +43,7 @@ export default function AboutPage() {
       </section>
 
       {/* THREE AREAS */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 py-20 md:py-28 relative">
           <Reveal className="mb-12">
@@ -111,7 +111,7 @@ export default function AboutPage() {
                 Local insight.<br /><i className="text-viol">Global craft.</i>
               </h2>
               <p className="text-deep/60 mt-5 text-[15px] leading-relaxed">{a.whoWeServe}</p>
-              <div className="mt-8 bg-deep text-white rounded-2xl p-5">
+              <div className="on-dark mt-8 bg-deep text-white rounded-2xl p-5">
                 <div className="font-grotesk font-bold text-3xl"><Counter target={15} />+</div>
                 <div className="text-xs text-white/55 mt-1">projects delivered across TZ & beyond</div>
               </div>
@@ -157,7 +157,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-viol/25 blur-[120px] rounded-full" />
         <div className="max-w-[900px] mx-auto px-5 py-24 text-center relative">

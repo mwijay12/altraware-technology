@@ -315,7 +315,7 @@ export default function ClientPortalPage() {
             <button
               type="submit"
               disabled={authSubmitting}
-              className="w-full bg-deep hover:bg-viol text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-lg shadow-deep/15 cursor-pointer"
+              className="on-dark w-full bg-deep hover:bg-viol text-white font-bold py-3.5 rounded-xl text-xs transition-all shadow-lg shadow-deep/15 cursor-pointer"
             >
               {authSubmitting ? (
                 <span>Processing...</span>
@@ -444,7 +444,7 @@ export default function ClientPortalPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                 <button
                   onClick={() => setShowBriefForm(true)}
-                  className="w-full sm:w-auto bg-deep hover:bg-viol text-white font-bold text-xs px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-deep/15 flex items-center justify-center gap-2 cursor-pointer"
+                  className="on-dark w-full sm:w-auto bg-deep hover:bg-viol text-white font-bold text-xs px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-deep/15 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <i className="fa-solid fa-plus" /> Request New System Deployment
                 </button>
@@ -524,7 +524,7 @@ export default function ClientPortalPage() {
                   </button>
                   <button
                     type="submit"
-                    className="bg-deep hover:bg-viol text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow cursor-pointer"
+                    className="on-dark bg-deep hover:bg-viol text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow cursor-pointer"
                   >
                     Submit Project Brief →
                   </button>
@@ -793,7 +793,7 @@ export default function ClientPortalPage() {
                           href={activeProject.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-deep hover:bg-viol text-white font-bold text-xs px-5 py-3 rounded-xl transition-all inline-flex items-center gap-2 shadow"
+                          className="on-dark bg-deep hover:bg-viol text-white font-bold text-xs px-5 py-3 rounded-xl transition-all inline-flex items-center gap-2 shadow"
                         >
                           <i className="fa-solid fa-arrow-up-right-from-square" /> Open Staging Environment
                         </a>
@@ -827,7 +827,7 @@ export default function ClientPortalPage() {
 
                   <button
                     onClick={handlePrintDocs}
-                    className="bg-deep hover:bg-viol text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+                    className="on-dark bg-deep hover:bg-viol text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-sm cursor-pointer"
                   >
                     <i className="fa-solid fa-print" /> Download / Print Documentation (PDF)
                   </button>
@@ -973,7 +973,7 @@ export default function ClientPortalPage() {
                           href={file.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-deep hover:bg-viol text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
+                          className="on-dark bg-deep hover:bg-viol text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
                         >
                           <i className="fa-solid fa-download text-[11px]" /> Download
                         </a>
@@ -1101,7 +1101,7 @@ export default function ClientPortalPage() {
                     href="tel:+255757939444"
                     className="bg-deep/5 hover:bg-deep/10 border border-deep/10 rounded-2xl p-6 transition-all flex items-center gap-4 group"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-deep text-white flex items-center justify-center text-xl shrink-0 group-hover:scale-105 transition-transform shadow">
+                    <div className="on-dark w-12 h-12 rounded-xl bg-deep text-white flex items-center justify-center text-xl shrink-0 group-hover:scale-105 transition-transform shadow">
                       <i className="fa-solid fa-phone" />
                     </div>
                     <div>

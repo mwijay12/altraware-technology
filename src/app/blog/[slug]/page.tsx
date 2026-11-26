@@ -41,7 +41,7 @@ export default function BlogPostPage() {
             </div>
             <h1 className="display text-4xl md:text-6xl font-medium leading-[1.02]">{post.title}</h1>
             <div className="flex items-center gap-3 mt-6">
-              <div className="w-10 h-10 rounded-full bg-deep text-white flex items-center justify-center font-bold">{post.author.charAt(0)}</div>
+              <div className="on-dark w-10 h-10 rounded-full bg-deep text-white flex items-center justify-center font-bold">{post.author.charAt(0)}</div>
               <div>
                 <div className="text-sm font-bold">{post.author}</div>
                 <div className="text-xs text-deep/50 font-mono">

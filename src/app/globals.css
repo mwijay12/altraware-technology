@@ -29,19 +29,30 @@
   --color-jewel: #8B5CF6;
   --color-jeweldeep: #4C1D95;
 
-  /* --- legacy remap: ground --- */
-  --color-deep: #0B0A0F;      /* was #0A1735 — now the noir ground */
+  /* --- legacy remap: ground ---
+     IMPORTANT: these are *presence* colours, not text colours.
+     `deep` must stay DARK everywhere (it is used as a dark section ground
+     and as `bg-deep text-white` button fill, 59 times). `cream` must stay
+     LIGHT everywhere (it is used as a light section ground and as
+     `bg-cream text-deep` card surface, 29 times).
+
+     The previous version pointed both at near-black, which produced
+     text-deep on bg-cream = #0B0A0F on #121018. That is the "maandishi
+     hayasomeki" bug: 74 headings were invisible on the inner pages.
+
+     Body copy inside a dark section uses the `.on-dark` wrapper instead
+     (see below), which repaints real Tailwind utilities using higher
+     specificity — no per-file rewrite needed. --- */
+
+  /* dark grounds — used for hero bands, footer, dark cards */
+  --color-deep: #0B0A0F;
   --color-deep2: #121018;
   --color-deep3: #08070C;
-  --color-paper: #0B0A0F;     /* light grounds become the dark ground */
-  --color-cream: #121018;
-  --color-line: #26232E;      /* was a pale hairline, now a dark wire */
 
-  /* --- legacy remap: accent --- */
-  --color-viol: #8B5CF6;
-  --color-violL: #A78BFA;
-  --color-violD: #4C1D95;
-  --color-gold: #EAB308;
+  /* light grounds — used for content sections and card surfaces */
+  --color-cream: #F4F1EA;   /* warm bone, matches the Usiku palette */
+  --color-paper: #EDE9E3;   /* --color-bone, one step deeper */
+  --color-line: #D9D4C9;    /* light hairline */
 
   /* --- type pairing --- */
   --font-display: var(--font-syne), "Syne", system-ui, sans-serif;
@@ -989,4 +1000,401 @@ textarea:focus {
 @layer components {
   /* Shown only when scripting is disabled. */
   .no-js-only { display: none; }
+}
+
+/* ============================================================
+   LEGACY PAGE REPAIR
+   ============================================================
+   The old pages were written assuming a light site: `bg-cream`
+   surfaces with `text-deep` copy, and `bg-deep text-white` bands.
+   When the palette went dark, `deep` and `cream` collapsed onto each
+   other and 74 headings became invisible (#0B0A0F on #121018).
+
+   Two decisions fix it without rewriting 25 files:
+
+   1. GROUNDS keep their meaning — `deep` stays dark, `cream` stays
+      light. So every existing light section is a light theme again,
+      and every existing dark band is still a dark theme.
+
+   2. `.on-dark` repaints the real Tailwind utilities inside dark
+      bands. Higher specificity (class + attribute) beats the plain
+      `.text-deep` utility, so heavy text on a near-black ground
+      becomes bone without touching the markup.
+   ============================================================ */
+
+@layer components {
+  /* --- dark band: anything that inherits dark ink becomes light --- */
+  .on-dark :is(h1, h2, h3, h4, h5, h6),
+  .on-dark p { color: #EDE9E3; }
+
+  .on-dark :is(.text-deep, [class*="text-deep/"]),
+  .on-dark :is(.text-deep\/90, .text-deep\/85, .text-deep\/80, .text-deep\/75,
+               .text-deep\/70, .text-deep\/65, .text-deep\/60, .text-deep\/55,
+               .text-deep\/50, .text-deep\/45, .text-deep\/40, .text-deep\/35,
+               .text-deep\/30, .text-deep\/25, .text-deep\/20) {
+    color: rgba(237, 233, 227, 0.72);
+  }
+
+  .on-dark :is(h1, h2, h3, h4, h5, h6)[class*="text-deep"] {
+    color: #EDE9E3;
+  }
+
+  /* watermarks and disabled copy should stay quiet, not shout */
+  .on-dark [class*="text-deep/2"],
+  .on-dark [class*="text-deep/3"] {
+    color: rgba(237, 233, 227, 0.34);
+  }
+
+  .on-dark :is(.border-deep, [class*="border-deep/"]) {
+    border-color: rgba(237, 233, 227, 0.16);
+  }
+
+  /* --- light card sitting on a light section --- */
+  .on-light :is(.bg-white, .bg-white\/90, .bg-white\/85, .bg-white\/80) {
+    background-color: #FDFBF7;
+  }
+
+  /* A near-black ground is an L that reads as "hole". Give every dark
+     band a floor so it reads as a genuine surface. */
+  .on-dark {
+    background-color: #0B0A0F;
+  }
+
+  /* --- type legibility floor ------------------------------------
+     Small, low-opacity copy on any ground was the other half of the
+     complaint. These raise contrast to a readable floor without
+     changing the layout. --- */
+  .u-floor-text {
+    color: rgba(237, 233, 227, 0.72);
+  }
+}
+
+@layer utilities {
+  /* Minimum readable size for body copy. Several legacy blocks used
+     9–10px at 40% opacity, which is unreadable on any screen. */
+  .u-micro {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+}
+
+/* ============================================================
+   LEGIBILITY FLOOR
+   ============================================================
+   The old pages were tuned on a designer's 27" monitor: 142 uses of
+   10px type, 11 of 9px, plus 180+ labels at 25–45% opacity. On a phone
+   in daylight (the actual reading condition in Dar es Salaam) that is
+   unreadable — this is the "texts hazisomekki" half of the complaint.
+
+   These rules raise the floor without touching layout:
+   - no body copy below 11px
+   - no text below 45% opacity when it is the only content in a block
+
+   Attribute selectors are used so the real Tailwind utilities are
+   repainted directly, and !important is scoped to this accessibility
+   concern only.
+   ============================================================ */
+
+@layer utilities {
+  /* small caps / meta text: 10px -> 11px, and a tighter optical track */
+  .text-\[10px\] {
+    font-size: 0.6875rem !important;
+    line-height: 1.45 !important;
+    letter-spacing: 0.01em;
+  }
+  .text-\[9px\] {
+    font-size: 0.6875rem !important;
+    line-height: 1.45 !important;
+    letter-spacing: 0.01em;
+  }
+
+  /* quiet greys that were too quiet to read */
+  .text-white\/40, .text-white\/35, .text-white\/30 { color: rgba(255, 255, 255, 0.62) !important; }
+  .text-white\/25, .text-white\/20 { color: rgba(255, 255, 255, 0.55) !important; }
+  .text-deep\/40, .text-deep\/45 { color: rgba(11, 10, 15, 0.62) !important; }
+  .text-deep\/30 { color: rgba(11, 10, 15, 0.55) !important; }
+  .text-bone\/40, .text-bone\/45 { color: rgba(237, 233, 227, 0.62) !important; }
+  .text-bone\/20 { color: rgba(237, 233, 227, 0.5) !important; }
+  .text-ash\/70, .text-ash\/60 { color: #9C9691 !important; }
+}
+
+/* Dark bands: the same floor, expressed against bone instead of white. */
+@layer components {
+  .on-dark .text-white\/40,
+  .on-dark .text-white\/35,
+  .on-dark .text-white\/30 { color: rgba(237, 233, 227, 0.66) !important; }
+  .on-dark .text-white\/25,
+  .on-dark .text-white\/20 { color: rgba(237, 233, 227, 0.58) !important; }
+  .on-dark .text-\[10px\],
+  .on-dark .text-\[9px\] { color: rgba(237, 233, 227, 0.72); }
+}
+
+/* ============================================================
+   THEME SYSTEM — dark (Usiku) + light (Mchana)
+   ============================================================
+   The owner's requirement: the site must look good even on a light
+   theme. Rather than bolt a second stylesheet on, both themes are
+   driven by the same semantic variables, so every component written
+   against `--ui-*` works in both without a conditional.
+
+   Dark is the default. `data-theme="light"` on <html> flips it, and
+   the toggle persists in localStorage.
+   ============================================================ */
+
+@layer base {
+  :root {
+    --ui-ground: #0B0A0F;      /* page */
+    --ui-surface: #121018;     /* raised band */
+    --ui-card: #1A1723;        /* card / frame */
+    --ui-ink: #EDE9E3;         /* primary text */
+    --ui-ink-soft: #A8A29C;    /* secondary text */
+    --ui-hairline: #26232E;    /* borders */
+    --ui-inverse: #0B0A0F;     /* text on accent */
+    --ui-accent: #8B5CF6;
+    --ui-grain: 0.035;
+  }
+
+  html[data-theme="light"] {
+    --ui-ground: #F6F3EC;
+    --ui-surface: #EEE9DF;
+    --ui-card: #FFFFFF;
+    --ui-ink: #14121A;
+    --ui-ink-soft: #56514B;
+    --ui-hairline: #D8D2C6;
+    --ui-inverse: #F6F3EC;
+    --ui-accent: #6D3DE0;   /* one step deeper so it passes contrast on cream */
+    --ui-grain: 0.018;
+  }
+
+  html[data-theme="light"] body {
+    background-color: var(--ui-ground);
+    color: var(--ui-ink);
+  }
+
+  /* ---------- 1. GROUNDS ----------
+     A "dark band" is a *device*, not a colour. In light mode it becomes a
+     deeper cream panel with dark ink, so the rhythm of the page survives
+     while nothing on the page is left with light text on a light field.
+     A true black band (`.band-hold`) opts out — used for the hero film
+     strip and the footer, where the photograph needs the black. */
+  html[data-theme="light"] .bg-noir,
+  html[data-theme="light"] .bg-noir2,
+  html[data-theme="light"] .bg-noir3,
+  html[data-theme="light"] .bg-deep,
+  html[data-theme="light"] .bg-deep2,
+  html[data-theme="light"] .bg-deep3 {
+    background-color: var(--ui-surface);
+  }
+
+  html[data-theme="light"] .band-hold {
+    background-color: #0B0A0F;
+  }
+
+  /* ---------- 2. INK ---------- */
+  html[data-theme="light"] .text-bone { color: var(--ui-ink); }
+  html[data-theme="light"] .text-ash  { color: var(--ui-ink-soft); }
+  html[data-theme="light"] .border-wire { border-color: var(--ui-hairline); }
+
+  /* Legacy ink: `text-deep` means "body text", which is dark in light mode. */
+  html[data-theme="light"] :is(.text-deep, [class*="text-deep/"]) {
+    color: var(--ui-ink);
+  }
+  /* ...but inside a band that stayed dark, it must stay light. */
+  html[data-theme="light"] .band-hold :is(.text-deep, [class*="text-deep/"]) {
+    color: rgba(237, 233, 227, 0.72);
+  }
+
+  /* `text-white` was the old way to say "on a dark ground". On cream that
+     is invisible, so it inherits ink — unless it sits in a held band or on
+     a saturated fill, where white is still correct. */
+  html[data-theme="light"] :is(.text-white, [class*="text-white/"]) {
+    color: var(--ui-ink);
+  }
+  html[data-theme="light"] .band-hold :is(.text-white, [class*="text-white/"]),
+  html[data-theme="light"] :is(.bg-jewel, .bg-jeweldeep, .bg-viol, .bg-green-600, .bg-red-600) :is(.text-white, [class*="text-white/"]) {
+    color: #ffffff;
+  }
+
+  /* The legacy `.on-dark` wrapper kept its black ground in light mode, so
+     the ink rules above must follow it back to bone. */
+  html[data-theme="light"] .on-dark {
+    background-color: #14121A;
+    color: #EDE9E3;
+  }
+  html[data-theme="light"] .on-dark :is(h1, h2, h3, h4, h5, h6) { color: #EDE9E3; }
+  html[data-theme="light"] .on-dark p { color: rgba(237, 233, 227, 0.78); }
+  html[data-theme="light"] .on-dark :is(.text-deep, [class*="text-deep/"]),
+  html[data-theme="light"] .on-dark :is(.text-white, [class*="text-white/"]) {
+    color: rgba(237, 233, 227, 0.78);
+  }
+  html[data-theme="light"] .on-dark :is(h1,h2,h3,h4,h5,h6)[class*="text-"] { color: #EDE9E3; }
+
+  /* ---------- 3. SURFACES + LINES ---------- */
+  html[data-theme="light"] .bg-cream { background-color: #FBF8F2; }
+  html[data-theme="light"] .bg-paper { background-color: #F1ECE2; }
+
+  html[data-theme="light"] :is(.border-deep, [class*="border-deep/"]) {
+    border-color: var(--ui-hairline);
+  }
+  html[data-theme="light"] :is(.border-white, [class*="border-white/"]) {
+    border-color: rgba(20, 18, 26, 0.14);
+  }
+  html[data-theme="light"] .on-dark :is(.border-white, [class*="border-white/"], .border-deep, [class*="border-deep/"]) {
+    border-color: rgba(237, 233, 227, 0.16);
+  }
+
+  /* ---------- 4. TYPE TREATMENTS ---------- */
+  /* `u-outline` is a bone stroke; on cream it disappears. */
+  html[data-theme="light"] .u-outline { -webkit-text-stroke-color: #14121A; }
+  html[data-theme="light"] .u-outline-dim { -webkit-text-stroke-color: rgba(20, 18, 26, 0.38); }
+  html[data-theme="light"] .u-grain::after { opacity: var(--ui-grain); }
+  html[data-theme="light"] .grain,
+  html[data-theme="light"] .grain-cine { opacity: 0.5; mix-blend-mode: multiply; }
+
+  /* Accent: the jewel violet is too light on cream. Go one step deeper. */
+  html[data-theme="light"] :is(.text-jewel, .text-viol) { color: var(--ui-accent); }
+  html[data-theme="light"] :is(.bg-jewel, .bg-viol) { background-color: var(--ui-accent); }
+
+  /* ---------- 4b. TINTED PANELS ----------
+     The legacy pages build cards out of `bg-white/[0.03]` — a white wash on
+     black. On cream that wash is invisible, so every card silently loses its
+     edge. Invert the wash: a black tint at the same strength keeps the exact
+     same visual weight against the new ground. */
+  html[data-theme="light"] :is(.bg-white\/5, .bg-white\/10, .bg-white\/20,
+      [class*="bg-white/["]) {
+    background-color: rgba(20, 18, 26, 0.045);
+  }
+  /* ...but not where the white wash is doing real work: it is a frosted
+     panel over a photograph or a saturated fill. Leave those at full white. */
+  html[data-theme="light"] :is(.bg-white\/90, .bg-white\/95) {
+    background-color: #ffffff;
+  }
+  html[data-theme="light"] .band-hold :is(.bg-white\/5, .bg-white\/10, [class*="bg-white/["]) {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+  /* The mirror case: `bg-deep/5` washes used as quiet insets on a light
+     card. In dark mode they are near-invisible anyway; on cream they read
+     correctly, so only the held bands need the light version. */
+  html[data-theme="light"] .band-hold :is(.bg-deep\/5, .bg-deep\/10) {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  /* Hover states written as `hover:bg-white/10` would leave a hole. */
+  html[data-theme="light"] :is([class*="hover:bg-white/"]) {
+    transition: background-color .3s;
+  }
+  html[data-theme="light"] :is([class*="hover:bg-white/"]):hover {
+    background-color: rgba(20, 18, 26, 0.08);
+  }
+
+  /* ---------- 5. FORM FIELDS ---------- */
+  /* The legacy inputs are transparent with white text. On cream that is
+     an empty box you cannot see into. */
+  html[data-theme="light"] :is(input, textarea, select) {
+    color: var(--ui-ink);
+  }
+  html[data-theme="light"] :is(input, textarea, select)::placeholder {
+    color: rgba(20, 18, 26, 0.42);
+  }
+  html[data-theme="light"] :is(input, textarea, select):focus {
+    border-color: var(--ui-accent);
+  }
+}
+
+/* ============================================================
+   MOTION, PART TWO — the part that was missing
+   ============================================================
+   The first pass animated things *in* (fades, lifts, clips). It read
+   as polite rather than premium because nothing responded to the
+   reader. These add the three moves that make a page feel alive:
+
+   1. WEIGHT  — headlines that skew and settle as you scroll
+   2. PRECISION — an image that scales *past* its frame
+   3. PLAY    — a magnetic CTA and a cursor-aware hero
+
+   All of it is transform/opacity only, and all of it dies under
+   prefers-reduced-motion.
+   ============================================================ */
+
+@layer components {
+  /* 1. Letter-spacing and skew settle as a headline enters. Cheap,
+        legible, and it reads as type being *placed* rather than fading. */
+  .u-settle {
+    letter-spacing: -0.08em;
+    opacity: 0;
+    transform: translateY(0.16em) skewY(1.4deg);
+    transition:
+      letter-spacing 1.25s cubic-bezier(.16,1,.3,1),
+      opacity .8s cubic-bezier(.16,1,.3,1),
+      transform 1.1s cubic-bezier(.16,1,.3,1);
+  }
+  .u-settle.is-in {
+    letter-spacing: -0.035em;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* 2. Overscan frame: the image starts larger than its mask and settles
+        to 1, so the reveal has depth instead of a plain fade. */
+  .u-overscan img {
+    transform: scale(1.18);
+    transition: transform 1.6s cubic-bezier(.16,1,.3,1);
+  }
+  .u-overscan.is-in img {
+    transform: scale(1);
+  }
+
+  /* 3a. Magnetic CTA. JS only sets --mx/--my; the transform is CSS. */
+  .u-magnet {
+    transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+    transition: transform .5s cubic-bezier(.16,1,.3,1);
+  }
+  .u-magnet:hover {
+    transition: transform .12s linear;
+  }
+
+  /* 3b. Cursor-aware decor: drifts against the pointer. */
+  .u-drift {
+    transform: translate3d(calc(var(--dx, 0px) * -1), calc(var(--dy, 0px) * -1), 0);
+    transition: transform .6s cubic-bezier(.16,1,.3,1);
+  }
+
+  /* A rule that draws itself across the section on entry. */
+  .u-draw {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.3s cubic-bezier(.16,1,.3,1);
+  }
+  .u-draw.is-in {
+    transform: scaleX(1);
+  }
+
+  /* Text that changes weight on hover — cheap, tactile, very editorial. */
+  .u-weight {
+    transition: font-variation-settings .4s ease, letter-spacing .4s ease;
+    font-variation-settings: "wght" 800;
+  }
+  .u-weight:hover {
+    font-variation-settings: "wght" 500;
+    letter-spacing: 0.01em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u-settle,
+  .u-settle.is-in,
+  .u-overscan img,
+  .u-overscan.is-in img,
+  .u-draw,
+  .u-draw.is-in {
+    opacity: 1;
+    transform: none;
+    letter-spacing: inherit;
+    transition: none;
+  }
+  .u-magnet,
+  .u-drift { transform: none; }
+
+  /* The no-JS / reduced-motion contract: never hide content. */
+  .u-settle { opacity: 1; }
 }

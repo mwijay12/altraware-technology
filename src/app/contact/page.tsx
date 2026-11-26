@@ -196,7 +196,7 @@ function ContactInner() {
           <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start max-w-6xl mx-auto">
             {/* LEFT CONTACT INFO */}
             <Reveal className="space-y-4">
-              <div className="bg-deep text-white rounded-3xl p-6 sm:p-7 relative overflow-hidden shadow-xl">
+              <div className="on-dark bg-deep text-white rounded-3xl p-6 sm:p-7 relative overflow-hidden shadow-xl">
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-viol/30 blur-[80px] rounded-full" />
                 <div className="relative space-y-4">
                   <div className="font-grotesk font-bold text-lg text-white">Get in touch</div>
@@ -284,7 +284,7 @@ function ContactInner() {
             </Reveal>
 
             {/* RIGHT MULTI-STEP FLOW / REVIEW & SEND */}
-            <div className="bg-deep text-white rounded-3xl p-6 sm:p-9 shadow-2xl relative overflow-hidden border border-white/10">
+            <div className="on-dark bg-deep text-white rounded-3xl p-6 sm:p-9 shadow-2xl relative overflow-hidden border border-white/10">
               <div className="absolute -top-24 -right-24 w-72 h-72 bg-viol/25 blur-[90px] rounded-full pointer-events-none" />
 
               {done ? (

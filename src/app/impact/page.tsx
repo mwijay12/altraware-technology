@@ -20,7 +20,7 @@ export default function ImpactPage() {
   return (
     <div className="pt-[120px]">
       {/* HERO */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="absolute top-0 left-1/3 w-[600px] h-[400px] bg-viol/25 blur-[140px] rounded-full" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 relative">
@@ -209,7 +209,7 @@ export default function ImpactPage() {
               ))}
             </div>
             <Reveal delay={0.2}>
-              <div className="bg-deep text-white rounded-2xl p-6">
+              <div className="on-dark bg-deep text-white rounded-2xl p-6">
                 <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-3">WHO WE SERVE — TUNAWAHUDUMIA</div>
                 <p className="text-sm text-white/70 leading-relaxed">{content.about.whoWeServe}</p>
               </div>
@@ -219,7 +219,7 @@ export default function ImpactPage() {
       </section>
 
       {/* SUPPORT PLANS */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 py-20 md:py-28 relative">
           <Reveal className="text-center text-[11px] font-grotesk font-bold tracking-[0.3em] text-white/40 mb-10">

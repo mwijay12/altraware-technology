@@ -129,7 +129,7 @@ export default function ProcessPage() {
       </section>
 
       {/* WRITTEN AGREEMENTS PANEL */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 py-20 md:py-28 relative">
           <div className="grid md:grid-cols-3 gap-4">            {[
@@ -163,7 +163,7 @@ export default function ProcessPage() {
             </p>
           </Reveal>
           <Reveal delay={0.15} className="mt-8">
-            <TransitionLink href="/contact" className="btn-magnetic inline-flex items-center gap-2 bg-deep text-white px-8 py-4 rounded-full font-bold text-sm">
+            <TransitionLink href="/contact" className="on-dark btn-magnetic inline-flex items-center gap-2 bg-deep text-white px-8 py-4 rounded-full font-bold text-sm">
               Begin phase 01 — Discovery <i className="fa-solid fa-arrow-right text-xs" />
             </TransitionLink>
           </Reveal>
