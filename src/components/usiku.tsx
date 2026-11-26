@@ -470,3 +470,433 @@ export function useHeroFrame<T extends HTMLElement>() {
   }, []);
   return ref;
 }
+
+/**
+ * useFitText — scale a display line to the width it actually has.
+ *
+ * `clamp()` cannot do this. The size that fits depends on how many glyphs
+ * the string has, and `.u-mega` is shared between "MIZIZI." (5.2em wide at
+ * weight 800) and "TUTENGENEZE." (12.9em). Any single clamp value is either
+ * too large for the long line — which is what clipped the closing headline
+ * on the home page — or too small to be a display headline on the short one.
+ *
+ * The CSS cap is now set so the longest string fits unaided (the no-JS
+ * baseline). This hook then measures and, for shorter strings, scales *up*
+ * towards the same optical width. Both lines end up filling the column, so
+ * the type looks deliberate at every length instead of small-then-clipped.
+ *
+ * Re-runs on resize and once webfonts settle — Syne changes metrics
+ * substantially against the fallback, so measuring before it loads is
+ * measuring the wrong face.
+ */
+export function useFitText<T extends HTMLElement>(min = 28, max = 320) {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let raf = 0;
+
+    const fit = () => {
+      // Measure against the element's own box: a block headline is as wide
+      // as its column, and a `max-w-[…]` cap is a deliberate constraint the
+      // line must respect rather than escape.
+      const avail = el.clientWidth;
+      if (!avail) return;
+
+      // reset so we measure the stylesheet's intent, not the last result
+      el.style.fontSize = "";
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      if (!size) return;
+
+      // grow first (short strings should fill the column) …
+      let guard = 0;
+      while (size < max && guard < 40) {
+        el.style.fontSize = `${size * 1.05}px`;
+        if (el.scrollWidth > avail) {
+          el.style.fontSize = `${size}px`;
+          break;
+        }
+        size *= 1.05;
+        guard += 1;
+      }
+
+      // … then shrink if the starting size already overflowed
+      guard = 0;
+      while (el.scrollWidth > avail && size > min && guard < 40) {
+        size *= 0.96;
+        el.style.fontSize = `${size}px`;
+        guard += 1;
+      }
+    };
+
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(fit);
+    };
+
+    schedule();
+    window.addEventListener("resize", schedule, { passive: true });
+    document.fonts?.ready?.then(schedule).catch(() => {});
+    return () => {
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(raf);
+    };
+  }, [min, max]);
+
+  return ref;
+}
+
+/**
+ * useCountUp — a figure that counts when it scrolls into view, and can be
+ * counted again.
+ *
+ * This is the deliberately *different* contract from the one in
+ * components/motion.tsx, where Counter is frozen on purpose: those are
+ * claims ("99.9% uptime") that must never appear mid-tween. The figures in
+ * the Closing section are read as a rhythm — the client asked for numbers
+ * that count — so here the count is the point.
+ *
+ * To keep it honest anyway:
+ *  - the element renders the FINAL value server-side, so crawlers, no-JS
+ *    readers and screenshots all see the real number;
+ *  - the tween only ever moves *up towards* that value and lands exactly
+ *    on it, so a frame is never a number larger than the claim;
+ *  - it re-arms when it leaves the viewport, which is what makes it feel
+ *    alive on the way back up.
+ */
+export function useCountUp<T extends HTMLElement>(value: number, suffix = "") {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") return;
+
+    const render = (n: number) => {
+      el.textContent = `${Math.round(n)}${suffix}`;
+    };
+
+    let raf = 0;
+    let running = false;
+
+    const run = () => {
+      if (running) return;
+      running = true;
+      const from = value > 10 ? value * 0.72 : value;
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / 1100);
+        const eased = 1 - Math.pow(1 - p, 3);
+        render(from + (value - from) * eased);
+        if (p < 1) {
+          raf = requestAnimationFrame(step);
+        } else {
+          render(value);
+          running = false;
+        }
+      };
+      raf = requestAnimationFrame(step);
+    };
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) run();
+        else {
+          // reset below the final figure so the next entry counts again
+          cancelAnimationFrame(raf);
+          running = false;
+          render(value * (value > 10 ? 0.72 : 1));
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value, suffix]);
+
+  return ref;
+}
+
+/**
+ * StatFigure — a number that counts up every time it enters the viewport.
+ *
+ * Renders the real value server-side (see useCountUp for why that matters)
+ * and re-arms on exit, which is what the client meant by "numbers count up
+ * more": the motion should be repeatable, not a one-time flourish you see
+ * only if you happened to scroll past at the right moment.
+ *
+ * `suffix` is part of the string the tween rewrites, so "99" + ".9%" must
+ * be passed as value=99 suffix=".9%" and renders "99.9%" at rest.
+ */
+export function StatFigure({
+  value,
+  suffix = "",
+  className = "",
+}: {
+  value: number | string;
+  suffix?: string;
+  className?: string;
+}) {
+  const numeric = typeof value === "number" ? value : parseFloat(value);
+  const countable = Number.isFinite(numeric) && String(numeric) === String(value).replace(/[^0-9.]/g, "");
+  const ref = useCountUp<HTMLDivElement>(countable ? numeric : 0, countable ? suffix : "");
+
+  if (!countable) {
+    // "2G", "24/7" — not a quantity that counts. Draw it, do not tween it.
+    return (
+      <div className={className}>
+        {value}
+        {suffix}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={ref} className={className}>
+      {value}
+      {suffix}
+    </div>
+  );
+}
+
+/**
+ * useScrub — drive a CSS variable from scroll progress through the element.
+ *
+ * This is the difference between "animated in" and "moved by you". An
+ * entrance fires once and is over; a scrub is still running while the
+ * element crosses the viewport, so the page answers the scroll wheel
+ * directly. Both references the brief names are built this way.
+ *
+ * Writes `--scrub` on the element: 0 when it enters from the bottom, 1 when
+ * it leaves through the top. CSS decides what that means — scale, blur,
+ * letter-spacing — so nothing here hard-codes a look.
+ *
+ * rAF-throttled, and reads a single getBoundingClientRect per frame.
+ */
+export function useScrub<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersReduced()) return;
+
+    let raf = 0;
+    let visible = false;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 = just below the fold, 1 = fully past the top
+      const p = (vh - rect.top) / (vh + rect.height);
+      el.style.setProperty("--scrub", Math.min(1, Math.max(0, p)).toFixed(4));
+    };
+
+    const onScroll = () => {
+      if (!visible) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible) onScroll();
+      },
+      { rootMargin: "80px" }
+    );
+    io.observe(el);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return ref;
+}
+
+/**
+ * useHeadline — settle on entry, then keep scrubbing while on screen.
+ *
+ * The two behaviours must live on the same element, and React 19 forbids
+ * writing a ref returned by another hook, so they are composed here rather
+ * than stitched at the call site.
+ *
+ * Order matters for feel: the clip aperture opens on arrival (one-shot),
+ * and the scrub variable keeps updating the whole time the line is
+ * visible, so the type is still responding to the wheel after the reveal
+ * has finished. That is the "more on scroll" the brief asked for.
+ */
+export function useHeadline<T extends HTMLElement>(scrub = true) {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let settleTimer: number | undefined;
+    let settleIO: IntersectionObserver | undefined;
+
+    // --- settle (one-shot) ---
+    const reveal = () => el.classList.add("is-in");
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") {
+      reveal();
+    } else {
+      settleIO = new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) {
+            reveal();
+            settleIO?.disconnect();
+          }
+        },
+        { threshold: 0.15 }
+      );
+      settleIO.observe(el);
+      // failsafe: never leave a headline clipped because a callback was missed
+      settleTimer = window.setTimeout(reveal, 2600);
+    }
+
+    // --- scrub (continuous) ---
+    if (!scrub || prefersReduced()) {
+      return () => {
+        settleIO?.disconnect();
+        if (settleTimer) clearTimeout(settleTimer);
+      };
+    }
+
+    let raf = 0;
+    let visible = false;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const p = (vh - rect.top) / (vh + rect.height);
+      el.style.setProperty("--scrub", Math.min(1, Math.max(0, p)).toFixed(4));
+    };
+
+    const onScroll = () => {
+      if (!visible) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    const sio = new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible) onScroll();
+      },
+      { rootMargin: "80px" }
+    );
+    sio.observe(el);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+
+    return () => {
+      sio.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+      settleIO?.disconnect();
+      if (settleTimer) clearTimeout(settleTimer);
+    };
+  }, [scrub]);
+
+  return ref;
+}
+
+/**
+ * useFitHeadline — size-to-width and reveal, on the same element.
+ *
+ * /closing needs both: the line must be scaled to its column (otherwise it
+ * clips, which is the bug this pass started from) *and* it must open with
+ * the aperture like every other section headline.
+ *
+ * React 19 forbids holding two refs to the same node from separate hooks,
+ * and it also forbids writing to a ref another hook returned. So this is a
+ * single hook that owns one ref and runs both behaviours against it — not a
+ * composition of the two above.
+ */
+export function useFitHeadline<T extends HTMLElement>(min = 24, max = 320) {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let raf = 0;
+    let settleTimer: number | undefined;
+    let settleIO: IntersectionObserver | undefined;
+
+    /* ---- settle: open the aperture once ---- */
+    const reveal = () => el.classList.add("is-in");
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") {
+      reveal();
+    } else {
+      settleIO = new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) {
+            reveal();
+            settleIO?.disconnect();
+          }
+        },
+        { threshold: 0.15 }
+      );
+      settleIO.observe(el);
+      settleTimer = window.setTimeout(reveal, 2600);
+    }
+
+    /* ---- fit: scale to the column ---- */
+    const fit = () => {
+      const avail = el.clientWidth;
+      if (!avail) return;
+      el.style.fontSize = "";
+      let size = parseFloat(getComputedStyle(el).fontSize);
+      if (!size) return;
+
+      let guard = 0;
+      while (size < max && guard < 40) {
+        el.style.fontSize = `${size * 1.05}px`;
+        if (el.scrollWidth > avail) {
+          el.style.fontSize = `${size}px`;
+          break;
+        }
+        size *= 1.05;
+        guard += 1;
+      }
+      guard = 0;
+      while (el.scrollWidth > avail && size > min && guard < 40) {
+        size *= 0.96;
+        el.style.fontSize = `${size}px`;
+        guard += 1;
+      }
+    };
+
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(fit);
+    };
+    schedule();
+    window.addEventListener("resize", schedule, { passive: true });
+    document.fonts?.ready?.then(schedule).catch(() => {});
+
+    return () => {
+      settleIO?.disconnect();
+      if (settleTimer) clearTimeout(settleTimer);
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(raf);
+    };
+  }, [min, max]);
+
+  return ref;
+}

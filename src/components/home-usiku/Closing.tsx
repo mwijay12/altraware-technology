@@ -1,6 +1,6 @@
 "use client";
 
-import { Rise, useSettle } from "@/components/usiku";
+import { Rise, useFitHeadline, StatFigure } from "@/components/usiku";
 import { TransitionLink } from "@/components/Navbar";
 import MediaImage from "@/components/MediaImage";
 import type { SiteContent } from "@/lib/content";
@@ -14,7 +14,7 @@ import type { SiteContent } from "@/lib/content";
    ============================================================ */
 
 export default function Closing({ content }: { content: SiteContent }) {
-  const titleRef = useSettle<HTMLHeadingElement>();
+  const titleRef = useFitHeadline<HTMLHeadingElement>();
   const quote = content.impact.testimonials?.[0];
   const wa = `https://wa.me/255792867427?text=${encodeURIComponent(
     "Habari Altraware — I'd like to talk about a project."
@@ -64,10 +64,11 @@ export default function Closing({ content }: { content: SiteContent }) {
               <div className="grid grid-cols-3 gap-6 mt-10">
                 {(content.impact.stats ?? []).slice(0, 3).map((s) => (
                   <div key={s.label}>
-                    <div className="font-display text-3xl md:text-4xl font-extrabold">
-                      {s.value}
-                      {s.suffix}
-                    </div>
+                    <StatFigure
+                      value={s.value}
+                      suffix={s.suffix}
+                      className="font-display text-3xl md:text-4xl font-extrabold"
+                    />
                     <div className="u-label mt-1.5">{s.label}</div>
                   </div>
                 ))}
