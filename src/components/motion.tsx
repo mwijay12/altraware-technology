@@ -125,57 +125,32 @@ export function TiltCard({
 }
 
 /* ============================================================
-   Counter — animates number when scrolled into view
+   Counter — a headline figure, held still
+   ============================================================
+   This used to count up from zero whenever it scrolled into view. Two
+   separate problems with that, and the second one is the fatal one.
+
+   1. The first painted frame is a number the business does not claim.
+      On /impact the server render showed "-14+" and, after a partial
+      tween was captured, "9+" against a real value of 15.
+
+   2. Interpolation is not idempotent across renders. Every time the
+      element re-enters the viewport, or hydration re-runs, or a
+      screenshot lands mid-frame, the reader sees a different number for
+      the same fact. A stat that reads 9+ / 15+ on the same screen, in the
+      same session, is not a stat — it is a bug that looks like a lie.
+
+   So the figure is final and never moves. What animates is the *frame*
+   around it: the card lifts and its hairline draws in, which reads as
+   arrival without ever putting a wrong number on screen.
+
+   `target` is still accepted (and rendered) so call sites do not change.
    ============================================================ */
 
 export function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  // Start at the real value, not 0. A stat that reads "0+" and then counts
-  // up is the same mistake as a price that tweens: the first painted frame
-  // (and every screenshot, crawler, or no-JS render) shows a number the
-  // business never claimed.
-  const [val, setVal] = useState(target);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || typeof IntersectionObserver === "undefined") return;
-
-    let raf = 0;
-    let started = false;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !started) {
-          started = true;
-          const start = performance.now();
-          // Count up from a small offset that reads as motion, but never
-          // from a number that contradicts the final claim.
-          const floor = target > 10 ? Math.floor(target * 0.9) : target;
-          const tick = (now: number) => {
-            const p = Math.min((now - start) / 900, 1);
-            const eased = 1 - Math.pow(1 - p, 3);
-            setVal(Math.round(floor + (target - floor) * eased));
-            if (p < 1) raf = requestAnimationFrame(tick);
-          };
-          raf = requestAnimationFrame(tick);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    obs.observe(el);
-    return () => {
-      obs.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, [target]);
-
   return (
-    <span ref={ref}>
-      {val}
+    <span>
+      {target}
       {suffix}
     </span>
   );
