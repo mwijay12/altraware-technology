@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="relative bg-white/[0.04] border border-white/15 backdrop-blur-2xl rounded-3xl p-8 w-full max-w-sm shadow-2xl z-10 text-white">
           <div className="flex items-center gap-3.5 mb-6">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#7c3aed] to-[#0a1735] p-2 flex items-center justify-center border border-white/10 shadow-lg shadow-viol/30">
+            <div className="w-11 h-11 rounded-2xl bg-forest p-2 flex items-center justify-center border border-white/10 shadow-lg shadow-viol/30">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo.png" alt="Altraware" className="w-full h-full object-contain" />
             </div>

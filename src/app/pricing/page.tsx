@@ -145,12 +145,12 @@ export default function PricingPage() {
             </div>
             <div className="space-y-2.5">
               <label className="flex items-center gap-3 bg-cream border border-deep/10 rounded-xl px-4 py-3 cursor-pointer">
-                <input type="checkbox" className="accent-[#7C3AED] w-4 h-4" checked={includeVat} onChange={(e) => setIncludeVat(e.target.checked)} />
+                <input type="checkbox" className="accent-[#A63D2A] w-4 h-4" checked={includeVat} onChange={(e) => setIncludeVat(e.target.checked)} />
                 <span className="text-sm">Include VAT ({pricing.estimator.vatPercent}%)</span>
                 <span className="ml-auto text-xs font-mono text-deep/45">added on top</span>
               </label>
               <label className="flex items-center gap-3 bg-cream border border-deep/10 rounded-xl px-4 py-3 cursor-pointer">
-                <input type="checkbox" className="accent-[#7C3AED] w-4 h-4" checked={includeSupport} onChange={(e) => setIncludeSupport(e.target.checked)} />
+                <input type="checkbox" className="accent-[#A63D2A] w-4 h-4" checked={includeSupport} onChange={(e) => setIncludeSupport(e.target.checked)} />
                 <span className="text-sm">Include monthly support plan</span>
               </label>
               {includeSupport && (

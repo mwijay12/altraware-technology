@@ -67,9 +67,9 @@
   --color-deep3: #100e09;
   --color-cream: #f4efe6;
   --color-line: #dcd3c4;
-  --color-viol: #7c3aed;
-  --color-violL: #a78bfa;
-  --color-violD: #5b21b6;
+  --color-viol: var(--color-clay);
+  --color-violL: #c26450;
+  --color-violD: #87301f;
   --color-gold: #b8860b;
 
   /* ---- type ---- */
@@ -665,6 +665,62 @@
 .site-header[data-scrolled="true"] {
   background: rgba(244, 239, 230, 0.94);
   border-bottom-color: var(--rule);
+}
+
+/* ============================================================
+   LEGACY PAGE PASS — inner marketing pages still carry the
+   old markup. These rules give them the Karatasi rhythm and
+   flatten the card reflex until each page gets its own
+   rebuild (Act 3 in DESIGN.md).
+   ============================================================ */
+.bg-cream,
+.bg-paper {
+  background-color: var(--paper);
+}
+.bg-deep,
+.bg-forest {
+  background-color: var(--forest);
+}
+.bg-deep2,
+.bg-deep3 {
+  background-color: var(--ink);
+}
+
+/* Legacy inner pages were tuned for 20-28 spacing; halve it so the
+   new masthead and colophon do not sandwich an over-long page. */
+main section.py-20,
+main section.py-28 {
+  padding-top: clamp(40px, 6vw, 72px) !important;
+  padding-bottom: clamp(40px, 6vw, 72px) !important;
+}
+main section.py-16 {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+/* The 3px accent strip on every card is a textbook slop tell. */
+main .border-l-2 {
+  border-left-width: 1px;
+}
+
+/* De-glow the old card system: hairline instead of glow, no lift. */
+main .shadow-viol\/30,
+main .shadow-viol\/10,
+main .shadow-viol\/20,
+main .shadow-viol\/40 {
+  box-shadow: none;
+}
+main .rounded-3xl {
+  border-radius: 6px;
+}
+main .rounded-2xl {
+  border-radius: 4px;
+}
+
+/* Legacy hero blobs: keep one, kill the rest, and cap the size. */
+main section .blur-\[120px\],
+main section .blur-\[140px\] {
+  opacity: 0.5;
 }
 
 /* ============================================================
