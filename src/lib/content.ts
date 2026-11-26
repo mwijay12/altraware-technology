@@ -1011,6 +1011,73 @@ export const DEFAULT_CONTENT: SiteContent = {
 
 const STORAGE_KEY = "altraware_content_v2";
 
+/* ---------- media freshness gate ----------
+   Saved content (Firestore + localStorage) is meant to carry copy edits the
+   owner makes in /admin. It must NOT silently pin old media, because a saved
+   document then outranks every code fix forever — which is exactly what
+   happened: the live site kept serving movie files dressed up as product
+   demos and w_600 screenshots long after content.ts was corrected.
+
+   Rule: if a saved value contains media the current build considers invalid
+   (a placeholder film, or a Cloudinary request that is too small to render
+   sharply), that saved media is discarded and the shipped default is used
+   instead. Copy fields are never touched. */
+
+const MIN_CLOUDINARY_WIDTH = 800;
+
+function isStaleMediaUrl(url: string): boolean {
+  if (typeof url !== "string" || !url) return false;
+  if (/(media\.w3\.org|test-videos\.co\.uk|bigbuckbunny|sintel)/i.test(url)) return true;
+  const m = url.match(/[,\/]w_(\d+)/);
+  if (m && /res\.cloudinary\.com/.test(url) && Number(m[1]) < MIN_CLOUDINARY_WIDTH) return true;
+  return false;
+}
+
+/** Recursively drop media entries whose URL is stale; keep every text field. */
+function pruneStaleMedia<T>(value: T): T {
+  if (Array.isArray(value)) {
+    const kept = value.filter((item) => {
+      const url = (item as { url?: string } | null)?.url;
+      return !(typeof url === "string" && isStaleMediaUrl(url));
+    });
+    // A container of media that lost items still needs real media: if every
+    // entry was stale, return [] so the caller falls back to the default.
+    return kept.map((item) => pruneStaleMedia(item)) as unknown as T;
+  }
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (typeof v === "string" && (k === "url" || k === "image" || k === "cover" || k === "photo" || k === "poster" || k === "src")) {
+        if (isStaleMediaUrl(v)) continue;
+      }
+      out[k] = pruneStaleMedia(v);
+    }
+    return out as unknown as T;
+  }
+  return value;
+}
+
+/**
+ * Merge saved overrides over shipped defaults, refusing to let saved media
+ * outrank the current build. Arrays of media that end up empty fall back to
+ * the shipped default so a section can never render without pictures.
+ */
+export function applyOverrides(
+  base: SiteContent,
+  saved: Partial<SiteContent> | null | undefined
+): SiteContent {
+  if (!saved) return base;
+  const clean = pruneStaleMedia(saved) as Partial<SiteContent>;
+  const merged = { ...base } as Record<string, unknown>;
+  for (const [key, value] of Object.entries(clean)) {
+    if (value === undefined) continue;
+    const def = (base as unknown as Record<string, unknown>)[key];
+    if (Array.isArray(value) && value.length === 0 && Array.isArray(def)) continue;
+    merged[key] = value;
+  }
+  return merged as unknown as SiteContent;
+}
+
 export function loadOverrides(): Partial<SiteContent> | null {
   if (typeof window === "undefined") return null;
   try {
