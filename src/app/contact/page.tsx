@@ -258,7 +258,16 @@ function ContactInner() {
                 </p>
                 <div className="rounded-2xl overflow-hidden border border-deep/10 shadow-inner aspect-[4/3] w-full">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8121083.165202397!2d29.686476509624033!3d-6.345767185778589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xb655bb5a1860615%3A0x815b0f25ed425796!2sAltraware%20Technology!5e0!3m2!1sen!2stz!4v1791875517058!5m2!1sen!2stz"
+                    /* The pb blob that used to live here had its viewport
+                       centred at 29.6865°E — roughly Kigoma, on Lake
+                       Tanganyika, a thousand kilometres west of the city
+                       this page names twice. At that zoom the visitor saw
+                       a map of the whole country with a pin they could not
+                       place. A name query is resolved by Google against the
+                       real listing, so it centres wherever the business
+                       actually is; if the listing ever moves, the map
+                       follows it and this URL does not need editing. */
+                    src="https://www.google.com/maps?q=Altraware+Technology,+Dar+es+Salaam,+Tanzania&z=15&output=embed"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -272,7 +281,7 @@ function ContactInner() {
                 <div className="mt-3 flex items-center justify-between text-[11px]">
                   <span className="text-deep/50">Dar es Salaam, Tanzania</span>
                   <a
-                    href="https://maps.google.com/maps/place/Altraware+Technology/@-6.3457672,29.6864765,6z/data=!4m6!3m5!1s0xb655bb5a1860615:0x815b0f25ed425796!8m2!3d-6.3457672!4d29.6864765!16s%2Fg%2F11w_m7w_q?entry=ttu"
+                    href="https://www.google.com/maps/search/?api=1&query=Altraware+Technology,+Dar+es+Salaam,+Tanzania"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-viol font-bold hover:underline inline-flex items-center gap-1"
