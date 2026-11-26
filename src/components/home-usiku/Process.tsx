@@ -1,6 +1,6 @@
 "use client";
 
-import { Rise, useSettle } from "@/components/usiku";
+import { Rise, useHeadline } from "@/components/usiku";
 import type { SiteContent } from "@/lib/content";
 
 /* ============================================================
@@ -11,7 +11,7 @@ import type { SiteContent } from "@/lib/content";
    ============================================================ */
 
 export default function Process({ content }: { content: SiteContent }) {
-  const titleRef = useSettle<HTMLHeadingElement>();
+  const titleRef = useHeadline<HTMLHeadingElement>();
   const phases = content.processPhases ?? [];
 
   return (
@@ -20,7 +20,7 @@ export default function Process({ content }: { content: SiteContent }) {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
           <div>
             <span className="u-label">04 — How we build</span>
-            <h2 ref={titleRef} className="u-display u-settle mt-4">
+            <h2 ref={titleRef} className="u-display u-settle u-scrub mt-4">
               Mchakato.
               <br />
               <span className="u-outline-dim">No guesswork.</span>

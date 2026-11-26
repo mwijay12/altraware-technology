@@ -1,7 +1,7 @@
 "use client";
 
 import MediaImage from "@/components/MediaImage";
-import { Rise, useParallax, useSettle } from "@/components/usiku";
+import { Rise, useParallax, useHeadline, StatFigure } from "@/components/usiku";
 import { TransitionLink } from "@/components/Navbar";
 import type { SiteContent } from "@/lib/content";
 
@@ -13,7 +13,7 @@ import type { SiteContent } from "@/lib/content";
    ============================================================ */
 
 export default function Statement({ content }: { content: SiteContent }) {
-  const titleRef = useSettle<HTMLDivElement>();
+  const titleRef = useHeadline<HTMLDivElement>();
   const ref = useParallax<HTMLDivElement>(0.08);
 
   return (
@@ -22,7 +22,7 @@ export default function Statement({ content }: { content: SiteContent }) {
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-20 items-center">
           <div>
             <span className="u-label">01 — Mizizi · Roots</span>
-            <div ref={titleRef} className="u-settle">
+            <div ref={titleRef} className="u-settle u-scrub">
               <h2 className="u-display mt-5">
                 Built in Tanzania,
                 <br />
@@ -38,12 +38,15 @@ export default function Statement({ content }: { content: SiteContent }) {
             <Rise delay={0.16}>
               <div className="grid grid-cols-3 gap-6 mt-10 max-w-md">
                 {[
-                  { n: "11", l: "In production" },
-                  { n: "2", l: "Languages" },
+                  { n: 11, l: "In production" },
+                  { n: 2, l: "Languages" },
                   { n: "2G", l: "Offline-ready" },
                 ].map((s) => (
                   <div key={s.l}>
-                    <div className="font-display text-3xl md:text-4xl font-extrabold">{s.n}</div>
+                    <StatFigure
+                      value={s.n}
+                      className="font-display text-3xl md:text-4xl font-extrabold"
+                    />
                     <div className="u-label mt-1.5">{s.l}</div>
                   </div>
                 ))}

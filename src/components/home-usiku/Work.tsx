@@ -1,7 +1,7 @@
 "use client";
 
 import MediaImage from "@/components/MediaImage";
-import { Rise, useParallax, useSettle } from "@/components/usiku";
+import { Rise, useParallax, useHeadline } from "@/components/usiku";
 import { TransitionLink } from "@/components/Navbar";
 import type { Project, SiteContent } from "@/lib/content";
 
@@ -86,7 +86,7 @@ export default function Work({
   content: SiteContent;
   onOpen: (p: Project) => void;
 }) {
-  const titleRef = useSettle<HTMLHeadingElement>();
+  const titleRef = useHeadline<HTMLHeadingElement>();
   const projects = FEATURED.map((id) => content.projects.find((p) => p.id === id))
     .filter(Boolean) as Project[];
 
@@ -96,7 +96,7 @@ export default function Work({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
           <div>
             <span className="u-label">02 — Work</span>
-            <h2 ref={titleRef} className="u-display u-settle mt-4">
+            <h2 ref={titleRef} className="u-display u-settle u-scrub mt-4">
               Kazi zetu.
               <br />
               <span className="u-outline-dim">All live.</span>

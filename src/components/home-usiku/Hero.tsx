@@ -2,7 +2,15 @@
 
 import { TransitionLink } from "@/components/Navbar";
 import MediaImage from "@/components/MediaImage";
-import { MaskLine, useParallax, useDrift, useMagnet, useHeroFrame } from "@/components/usiku";
+import {
+  MaskLine,
+  useParallax,
+  useDrift,
+  useMagnet,
+  useHeroFrame,
+  useScrub,
+  useFitText,
+} from "@/components/usiku";
 import type { SiteContent } from "@/lib/content";
 
 /* ============================================================
@@ -16,6 +24,9 @@ export default function Hero({ content }: { content: SiteContent }) {
   const imgParallax = useParallax<HTMLDivElement>(0.06);
   const bloomParallax = useParallax<HTMLDivElement>(-0.12);
   const frameRef = useHeroFrame<HTMLDivElement>();
+  const headlineRef = useScrub<HTMLHeadingElement>();
+  const l1Ref = useFitText<HTMLSpanElement>();
+  const l2Ref = useFitText<HTMLSpanElement>();
   const bloomDrift = useDrift<HTMLDivElement>(26);
   const ctaMagnet = useMagnet<HTMLAnchorElement>(0.22);
 
@@ -44,9 +55,13 @@ export default function Hero({ content }: { content: SiteContent }) {
           <span className="u-label hidden sm:block">Est. 2025 — {content.hero.badge}</span>
         </div>
 
-        <h1 className="u-mega max-w-[15ch]">
-          <MaskLine text={line1} as="span" className="block" />
-          <MaskLine text={line2} as="span" className="block u-outline" delay={0.18} />
+        <h1 ref={headlineRef} className="u-mega u-scrub">
+          <span ref={l1Ref} className="block">
+            <MaskLine text={line1} as="span" className="block" />
+          </span>
+          <span ref={l2Ref} className="block">
+            <MaskLine text={line2} as="span" className="block u-outline" delay={0.18} />
+          </span>
         </h1>
 
         <div className="mt-10 md:mt-14 grid lg:grid-cols-[1fr_auto] gap-8 items-end">

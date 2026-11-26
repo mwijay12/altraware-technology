@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Rise, useSettle } from "@/components/usiku";
+import { Rise, useHeadline } from "@/components/usiku";
 import { TransitionLink } from "@/components/Navbar";
 import type { SiteContent } from "@/lib/content";
 
@@ -13,7 +13,7 @@ import type { SiteContent } from "@/lib/content";
    ============================================================ */
 
 export default function Services({ content }: { content: SiteContent }) {
-  const titleRef = useSettle<HTMLHeadingElement>();
+  const titleRef = useHeadline<HTMLHeadingElement>();
   const [open, setOpen] = useState<string | null>(content.services[0]?.id ?? null);
 
   return (
@@ -22,7 +22,7 @@ export default function Services({ content }: { content: SiteContent }) {
         <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <span className="u-label">03 — Services</span>
-            <h2 ref={titleRef} className="u-display u-settle mt-4">
+            <h2 ref={titleRef} className="u-display u-settle u-scrub mt-4">
               Tunachojenga.
               <br />
               <span className="u-outline-dim">What we build.</span>
