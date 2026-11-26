@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /* ============================================================
    USIKU motion primitives.
@@ -594,6 +594,14 @@ export function StatFigure({
     <div
       ref={ref}
       className={`u-figure ${className} tabular-nums`}
+      // role="img" is what makes the split glyphs behave like ONE thing.
+      // `aria-label` alone on a generic div is not reliably honoured, so a
+      // screen reader would read "one one" for 11 and "one five plus" for
+      // 15+. Naming a graphic element gives the figure a single accessible
+      // name and hides the decorative characters beneath it — without
+      // rendering a second copy of the text, which is the ghost-copy bug
+      // that produced "111" earlier.
+      role="img"
       aria-label={text}
     >
       {Array.from(text).map((ch, i) => (
