@@ -130,11 +130,20 @@ export function TiltCard({
 
 export function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [val, setVal] = useState(0);
+  // Start at the real value, not 0. A stat that reads "0+" and then counts
+  // up is the same mistake as a price that tweens: the first painted frame
+  // (and every screenshot, crawler, or no-JS render) shows a number the
+  // business never claimed.
+  const [val, setVal] = useState(target);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || typeof IntersectionObserver === "undefined") return;
+
     let raf = 0;
     let started = false;
     const obs = new IntersectionObserver(
@@ -142,9 +151,13 @@ export function Counter({ target, suffix = "" }: { target: number; suffix?: stri
         if (entries[0].isIntersecting && !started) {
           started = true;
           const start = performance.now();
+          // Count up from a small offset that reads as motion, but never
+          // from a number that contradicts the final claim.
+          const floor = target > 10 ? Math.floor(target * 0.9) : target;
           const tick = (now: number) => {
-            const p = Math.min((now - start) / 1600, 1);
-            setVal(Math.floor(target * (1 - Math.pow(1 - p, 3))));
+            const p = Math.min((now - start) / 900, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            setVal(Math.round(floor + (target - floor) * eased));
             if (p < 1) raf = requestAnimationFrame(tick);
           };
           raf = requestAnimationFrame(tick);
