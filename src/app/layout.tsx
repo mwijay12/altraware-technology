@@ -1,37 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter, Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ContentProvider, NotifyProvider, SmoothScroll, PageTransition } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingAILazy from "@/components/FloatingAILazy";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  // Trimmed: display font only needs 2 weights on mobile (was 5).
-  weight: ["400", "600"],
-  variable: "--font-fraunces",
+/* Self-hosted, not next/font/google: the build must never depend on
+   fonts.googleapis.com being reachable, and self-hosting removes a
+   third-party connection from the critical path. */
+const syne = localFont({
+  src: "../../node_modules/@fontsource-variable/syne/files/syne-latin-wght-normal.woff2",
+  variable: "--font-syne",
   display: "swap",
-  preload: false,
-  adjustFontFallback: true,
-});
-const inter = Inter({
-  subsets: ["latin"],
-  // Body font: 3 essential weights (was 5).
-  weight: ["400", "500", "700"],
-  variable: "--font-inter",
-  display: "swap",
+  weight: "400 800",
   preload: true,
-  adjustFontFallback: true,
+  fallback: ["system-ui", "sans-serif"],
 });
-const grotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "700"],
+const grotesk = localFont({
+  src: "../../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2",
   variable: "--font-space-grotesk",
   display: "swap",
-  preload: false,
-  adjustFontFallback: true,
+  weight: "300 700",
+  preload: true,
+  fallback: ["system-ui", "sans-serif"],
 });
 
 const SITE_URL =
@@ -175,7 +167,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     ],
   };
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable} ${grotesk.variable}`}>
+    <html lang="en" className={`${syne.variable} ${grotesk.variable}`}>
       <head>
         {/* FontAwesome is ~100KB+ render-blocking CSS. Defer it: load async
             via print-media swap so it never delays FCP/LCP on mobile.
@@ -204,6 +196,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
       </head>
       <body className="antialiased font-sans">
+        {/* No-JS guarantee: the Usiku motion primitives start hidden so they
+            can animate in. Without this, a blocked script bundle leaves the
+            headline and every section invisible. Inline (not a stylesheet) so
+            it cannot itself fail to load. */}
+        <noscript>
+          <style>{`
+            [data-ch], .u-rise, .u-mask-ch { opacity: 1 !important; transform: none !important; }
+            .u-clip { clip-path: none !important; }
+            .u-parallax { transform: none !important; }
+            .u-marquee-track { animation: none !important; }
+          `}</style>
+        </noscript>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}

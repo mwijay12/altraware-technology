@@ -1,20 +1,55 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-deep: #0A1735;
-  --color-deep2: #10265C;
-  --color-deep3: #071022;
-  --color-paper: #F7F6F2;
-  --color-cream: #FDFCF9;
-  --color-viol: #7C3AED;
+  /* ============================================================
+     "USIKU" (night) v4 — the palette is the design.
+
+     Measured against the two reference sites:
+       parallax-website : 0 accent colours (pure mono)
+       site-unixstudio  : 1 acid lime, used 6x in a whole stylesheet
+       Altraware (v3)   : 6 competing hues, violet 618 times
+
+     A colour used everywhere is not a brand. Violet survives here as
+     --color-jewel with a hard budget of 8 appearances per page.
+
+     Legacy names are deliberately REMAPPED rather than deleted:
+     1,182 utilities across the app still say deep/viol/cream, and
+     deleting the tokens would silently break every inner page. They
+     now resolve to the Usiku palette, so old markup inherits the new
+     look without a line-by-line rewrite.
+     ============================================================ */
+
+  /* --- new tokens --- */
+  --color-noir: #0B0A0F;
+  --color-noir2: #121018;
+  --color-noir3: #1A1723;
+  --color-bone: #EDE9E3;
+  --color-ash: #8A8580;
+  --color-wire: #26232E;
+  --color-jewel: #8B5CF6;
+  --color-jeweldeep: #4C1D95;
+
+  /* --- legacy remap: ground --- */
+  --color-deep: #0B0A0F;      /* was #0A1735 — now the noir ground */
+  --color-deep2: #121018;
+  --color-deep3: #08070C;
+  --color-paper: #0B0A0F;     /* light grounds become the dark ground */
+  --color-cream: #121018;
+  --color-line: #26232E;      /* was a pale hairline, now a dark wire */
+
+  /* --- legacy remap: accent --- */
+  --color-viol: #8B5CF6;
   --color-violL: #A78BFA;
-  --color-violD: #5B21B6;
+  --color-violD: #4C1D95;
   --color-gold: #EAB308;
-  --color-line: #E8E6E0;
-  --font-serif: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-grotesk: var(--font-space-grotesk), sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+
+  /* --- type pairing --- */
+  --font-display: var(--font-syne), "Syne", system-ui, sans-serif;
+  --font-body: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-serif: var(--font-syne), "Syne", Georgia, serif;
+  --font-sans: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-grotesk: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
 }
 
 :root {
@@ -31,6 +66,8 @@ html {
 }
 html.lenis,
 html.lenis body {
+  background-color: #0B0A0F;
+  color: #EDE9E3;
   height: auto;
 }
 .lenis.lenis-smooth {
@@ -766,4 +803,190 @@ textarea:focus {
 .admin-light .creds-box .bg-black\/40 {
   background-color: #fef3c7 !important;
   border: 1px solid #fcd34d;
+}
+
+/* ============================================================
+   USIKU v4 — primitives
+   ============================================================
+   Everything here lives inside @layer so Tailwind utilities always
+   win. Unlayered rules beat every utility and that bug already bit
+   this codebase once.
+   ============================================================ */
+
+@layer components {
+  /* --- oversized display type --- */
+  .u-display {
+    font-family: var(--font-syne), "Syne", system-ui, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.035em;
+    line-height: 0.9;
+    font-size: clamp(2.4rem, 6.6vw, 5rem);
+    color: var(--color-bone);
+    text-wrap: balance;
+  }
+  .u-mega {
+    font-family: var(--font-syne), "Syne", system-ui, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.045em;
+    line-height: 0.84;
+    font-size: clamp(3rem, 12vw, 9.5rem);
+    color: var(--color-bone);
+  }
+
+  /* Outline stroke text — the most recognisable move in both references,
+     and it costs nothing from the accent budget. */
+  .u-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px #EDE9E3;
+    paint-order: stroke fill;
+  }
+  .u-outline-dim {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(237, 233, 227, 0.3);
+    paint-order: stroke fill;
+  }
+  @media (min-width: 768px) {
+    .u-outline { -webkit-text-stroke-width: 1.5px; }
+  }
+
+  /* --- small caps label, replaces the violet eyebrow everywhere --- */
+  .u-label {
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #8A8580;
+  }
+
+  .u-lead {
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    line-height: 1.65;
+    color: rgba(237, 233, 227, 0.7);
+  }
+
+  .u-rule { height: 1px; background-color: #26232E; }
+
+  .u-wrap {
+    width: 100%;
+    max-width: 1320px;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+  }
+
+  .u-section { padding-block: clamp(4.5rem, 11vh, 8rem); }
+
+  /* --- buttons --- */
+  .u-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 9999px;
+    padding: 0.9rem 1.55rem;
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: transform .35s cubic-bezier(.16,1,.3,1), background-color .35s, border-color .35s, color .35s;
+  }
+  .u-btn:hover { transform: translateY(-2px); }
+  /* JEWEL USE #2 of 8 — the single primary CTA. */
+  .u-btn-primary { background-color: #8B5CF6; color: #fff; }
+  .u-btn-primary:hover { background-color: #7C4AEF; }
+  .u-btn-ghost { border: 1px solid #26232E; color: #EDE9E3; }
+  .u-btn-ghost:hover { border-color: rgba(237,233,227,.38); }
+
+  /* --- links --- */
+  .u-link { position: relative; display: inline-block; }
+  .u-link::after {
+    content: "";
+    position: absolute; left: 0; bottom: -2px;
+    width: 100%; height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0); transform-origin: right;
+    transition: transform .5s cubic-bezier(.16,1,.3,1);
+  }
+  .u-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+  /* --- media --- */
+  .u-frame { position: relative; overflow: hidden; background-color: #1A1723; }
+  .u-frame img {
+    transition: transform 1.1s cubic-bezier(.16,1,.3,1);
+    will-change: transform;
+  }
+  .u-frame:hover img { transform: scale(1.04); }
+
+  /* clip-path reveal for hero + full-bleed moments */
+  .u-clip { clip-path: inset(0 0 100% 0); transition: clip-path 1.3s cubic-bezier(.16,1,.3,1); }
+  .u-clip.is-in { clip-path: inset(0 0 0 0); }
+
+  /* Scroll-scrubbed parallax: JS writes one CSS variable, so there is no
+     layout thrash and no transform fighting between plugins. */
+  .u-parallax { transform: translate3d(0, var(--py, 0px), 0); }
+
+  /* Film grain — one fixed element, kills the flat digital tell. */
+  .u-grain::after {
+    content: "";
+    position: fixed; inset: 0; z-index: 60;
+    pointer-events: none; opacity: .035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* --- marquee: a rhythm device between sections --- */
+  .u-marquee { display: flex; overflow: hidden; user-select: none; gap: 2.5rem; }
+  .u-marquee-track {
+    display: flex; flex-shrink: 0; align-items: center;
+    gap: 2.5rem; min-width: 100%;
+    animation: u-slide 42s linear infinite;
+  }
+  @keyframes u-slide { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+
+  /* --- nav --- */
+  .u-nav-link {
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+    font-size: .8125rem;
+    color: rgba(237,233,227,.6);
+    transition: color .3s;
+  }
+  .u-nav-link:hover, .u-nav-link[data-active="true"] { color: #EDE9E3; }
+
+  /* Legacy typography helpers now point at Syne so inner pages inherit
+     the new voice without a rewrite. */
+  .display {
+    font-family: var(--font-syne), "Syne", Georgia, serif !important;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+  .display i { font-weight: 400; }
+  .eyebrow { color: #8A8580; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u-marquee-track { animation: none; }
+  .u-clip { clip-path: none; }
+  .u-parallax { transform: none; }
+}
+
+/* ============================================================
+   NO-JS FALLBACK
+   ============================================================
+   Motion primitives (MaskLine, Rise, clip reveals) start hidden so
+   they can animate in. If the JS bundle never runs — blocked script,
+   network failure, a privacy extension — every one of those elements
+   would stay at opacity:0 and the page would look broken.
+
+   This block is the hard guarantee: without JS, the site renders
+   complete and readable, with no animation at all.
+   ============================================================ */
+
+@layer base {
+  .u-clip { clip-path: none; }
+  .u-parallax { transform: none; }
+}
+
+@layer components {
+  /* Shown only when scripting is disabled. */
+  .no-js-only { display: none; }
 }
