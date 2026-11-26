@@ -11,31 +11,37 @@ import { useEffect, useRef, useState } from "react";
 
        $012345678901234567890123456789
 
-   That is a pricing page advertising "the price" as a keyboard mash. It
-   also cannot be fixed from the call site — v0.6.2 exposes no
-   initial-value prop.
+   That is a pricing page advertising "the price" as a keyboard mash.
 
-   This does the same job with no dependency: the server renders the real
-   final price, and the browser animates *from* a smaller number on first
-   view. If JS never runs, or the reader prefers reduced motion, the price
-   is already correct and stays put.
+   Design rule for this component: A PRICE NEVER SHOWS A NUMBER THAT IS
+   NOT THE PRICE. No pre-tween frame, no "0 → value" flourish on the
+   server, no intermediate state that a crawler, a screenshot, or a slow
+   connection can catch. The number is correct from the first painted
+   frame; the animation is confined to a subtle opacity/offset lift that
+   cannot misrepresent the value.
 
-   The animation is a plain rAF tween over 900ms on an ease-out curve —
-   cheap enough to run for six cards at once and impossible to jank.
+   The earlier version of this file tweened from `value * 0.55`. That is
+   a digital the honest-traders rule does not allow on a pricing page —
+   if anything at all goes wrong mid-tween the card is left advertising a
+   price the business never quoted.
    ============================================================ */
 
 export default function PriceFlow({
   value,
   className = "",
-  duration = 900,
 }: {
   value: number;
   className?: string;
-  duration?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [display, setDisplay] = useState(value);
-  const started = useRef(false);
+  const [shown, setShown] = useState(false);
+
+  // Guard the type at the boundary, not at the call site: a stored admin
+  // override can arrive as a string or as `"custom"`.
+  const safe =
+    typeof value === "number" && Number.isFinite(value) && value >= 0
+      ? Math.round(value)
+      : null;
 
   useEffect(() => {
     const el = ref.current;
@@ -46,53 +52,40 @@ export default function PriceFlow({
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reduced || typeof IntersectionObserver === "undefined") return;
 
-    const run = () => {
-      if (started.current) return;
-      started.current = true;
-
-      const from = Math.round(value * 0.55);
-      const to = value;
-      const t0 = performance.now();
-
-      const tick = (now: number) => {
-        const p = Math.min(1, (now - t0) / duration);
-        // easeOutCubic — fast start, soft landing
-        const eased = 1 - Math.pow(1 - p, 3);
-        setDisplay(Math.round(from + (to - from) * eased));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      setDisplay(from);
-      requestAnimationFrame(tick);
-    };
-
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
-          run();
+          setShown(true);
           io.disconnect();
         }
       },
       { threshold: 0.4 }
     );
     io.observe(el);
-
-    // Failsafe: never leave a card showing the pre-animation number if the
-    // observer callback is missed (some in-app browsers do not fire it).
-    const t = window.setTimeout(run, 2500);
+    const t = window.setTimeout(() => setShown(true), 2500);
     return () => {
       io.disconnect();
       clearTimeout(t);
     };
-  }, [value, duration]);
+  }, []);
 
-  // Keep in sync when the currency flips.
-  useEffect(() => {
-    if (started.current) setDisplay(value);
-  }, [value]);
+  if (safe === null) {
+    // A price we cannot read is not a price. Say so rather than print NaN.
+    return (
+      <span ref={ref} className={className}>
+        On request
+      </span>
+    );
+  }
 
   return (
-    <span ref={ref} className={className}>
-      {display.toLocaleString("en-US")}
+    <span
+      ref={ref}
+      className={`${className} inline-block transition-[opacity,transform] duration-700 ease-out ${
+        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+      } motion-reduce:opacity-100 motion-reduce:translate-y-0`}
+    >
+      {safe.toLocaleString("en-US")}
     </span>
   );
 }
