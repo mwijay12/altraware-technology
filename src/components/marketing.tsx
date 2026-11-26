@@ -59,7 +59,7 @@ export function ServicesAccordion({ preview = false }: { preview?: boolean }) {
                       from TSh {s.startingPrice.toLocaleString()}
                     </span>
                   )}
-                  <span className="plus w-9 h-9 rounded-full border border-rule flex items-center justify-center shrink-0 text-[13px]">
+                  <span className="plus w-9 h-9 rounded-[3px] border border-rule flex items-center justify-center shrink-0 text-[13px]">
                     +
                   </span>
                 </button>

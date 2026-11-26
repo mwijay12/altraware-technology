@@ -196,7 +196,7 @@ function ContactInner() {
           <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start max-w-6xl mx-auto">
             {/* LEFT CONTACT INFO */}
             <Reveal className="space-y-4">
-              <div className="bg-deep text-white rounded-3xl p-6 sm:p-7 relative overflow-hidden shadow-xl">
+              <div className="bg-deep text-white rounded-3xl p-6 sm:p-7 relative overflow-hidden">
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-viol/30 blur-[80px] rounded-full" />
                 <div className="relative space-y-4">
                   <div className="font-grotesk font-bold text-lg text-white">Get in touch</div>
@@ -222,7 +222,7 @@ function ContactInner() {
                       href={`https://wa.me/${c.whatsapp.replace(/[^0-9]/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-5 py-3 rounded-full font-bold text-xs sm:text-sm transition-transform hover:scale-[1.02] shadow-lg"
+                      className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-5 py-3 rounded-full font-bold text-xs sm:text-sm transition-transform hover:scale-[1.02]"
                     >
                       <i className="fa-brands fa-whatsapp text-lg" />
                       Chat on WhatsApp now
@@ -231,7 +231,7 @@ function ContactInner() {
                 </div>
               </div>
 
-              <div className="bg-white border border-deep/10 rounded-3xl p-5 shadow-sm">
+              <div className="bg-white border border-deep/10 rounded-3xl p-5">
                 <div className="flex items-center gap-2.5">
                   <i className="fa-solid fa-shield-halved text-viol text-lg" />
                   <div className="font-bold text-sm text-deep">Privacy &amp; Data Promise</div>
@@ -243,7 +243,7 @@ function ContactInner() {
               </div>
 
               {/* GOOGLE BUSINESS PROFILE MAP EMBED */}
-              <div className="bg-white border border-deep/10 rounded-3xl p-5 shadow-sm overflow-hidden">
+              <div className="bg-white border border-deep/10 rounded-3xl p-5 overflow-hidden">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <i className="fa-solid fa-map-location-dot text-viol text-base" />
@@ -256,7 +256,7 @@ function ContactInner() {
                 <p className="text-deep/60 text-xs mb-3">
                   Altraware Technology on Google Maps · Dar es Salaam, Tanzania
                 </p>
-                <div className="rounded-2xl overflow-hidden border border-deep/10 shadow-inner aspect-[4/3] w-full">
+                <div className="rounded-2xl overflow-hidden border border-deep/10 aspect-[4/3] w-full">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8121083.165202397!2d29.686476509624033!3d-6.345767185778589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xb655bb5a1860615%3A0x815b0f25ed425796!2sAltraware%20Technology!5e0!3m2!1sen!2stz!4v1791875517058!5m2!1sen!2stz"
                     width="100%"
@@ -284,7 +284,7 @@ function ContactInner() {
             </Reveal>
 
             {/* RIGHT MULTI-STEP FLOW / REVIEW & SEND */}
-            <div className="bg-deep text-white rounded-3xl p-6 sm:p-9 shadow-2xl relative overflow-hidden border border-white/10">
+            <div className="bg-deep text-white rounded-3xl p-6 sm:p-9 relative overflow-hidden border border-white/10">
               <div className="absolute -top-24 -right-24 w-72 h-72 bg-viol/25 blur-[90px] rounded-full pointer-events-none" />
 
               {done ? (
@@ -295,7 +295,7 @@ function ContactInner() {
                   transition={{ type: "spring", stiffness: 260, damping: 20 }}
                   className="relative z-10 text-center py-8 space-y-5"
                 >
-                  <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-viol to-green-500 text-white flex items-center justify-center text-3xl shadow-2xl shadow-green-500/20">
+                  <div className="mx-auto w-16 h-16 rounded-[4px] bg-ink text-paper flex items-center justify-center text-2xl">
                     <i className="fa-solid fa-check" />
                   </div>
                   <div>
@@ -366,7 +366,7 @@ function ContactInner() {
                           onClick={() => s.n < step && go(s.n)}
                           className={`w-8 h-8 rounded-full text-xs font-bold transition-all flex items-center justify-center ${
                             s.n === step
-                              ? "bg-viol text-white shadow-lg shadow-viol/40 scale-110"
+                              ? "bg-viol text-white scale-110"
                               : s.n < step
                               ? "bg-white/20 text-white hover:bg-viol cursor-pointer"
                               : "bg-white/5 text-white/30 cursor-default"
@@ -494,7 +494,7 @@ function ContactInner() {
                                     onClick={() => toggleService(s)}
                                     className={`text-xs font-semibold px-3.5 py-2 rounded-full border transition-all ${
                                       active
-                                        ? "bg-viol border-viol text-white shadow-md shadow-viol/30"
+                                        ? "bg-viol border-viol text-white"
                                         : "bg-white/[0.05] border-white/15 text-white/70 hover:border-white/30"
                                     }`}
                                   >
@@ -545,7 +545,7 @@ function ContactInner() {
                                   onClick={() => setBudget(b)}
                                   className={`text-xs font-semibold px-4 py-2.5 rounded-full border transition-all ${
                                     budget === b
-                                      ? "bg-viol border-viol text-white shadow-md shadow-viol/30"
+                                      ? "bg-viol border-viol text-white"
                                       : "bg-white/[0.05] border-white/15 text-white/70 hover:border-white/30"
                                   }`}
                                 >
@@ -567,7 +567,7 @@ function ContactInner() {
                                   onClick={() => setTimeline(t)}
                                   className={`text-xs font-semibold px-4 py-2.5 rounded-full border transition-all ${
                                     timeline === t
-                                      ? "bg-viol border-viol text-white shadow-md shadow-viol/30"
+                                      ? "bg-viol border-viol text-white"
                                       : "bg-white/[0.05] border-white/15 text-white/70 hover:border-white/30"
                                   }`}
                                 >
@@ -646,7 +646,7 @@ function ContactInner() {
                       <button
                         type="button"
                         onClick={next}
-                        className="bg-viol hover:bg-violD text-white text-xs font-bold px-7 py-3 rounded-full transition-all shadow-lg shadow-viol/30 flex items-center gap-2"
+                        className="bg-viol hover:bg-violD text-white text-xs font-bold px-7 py-3 rounded-full transition-all flex items-center gap-2"
                       >
                         <span>Continue</span>
                         <i className="fa-solid fa-arrow-right text-[10px]" />
@@ -656,7 +656,7 @@ function ContactInner() {
                         type="button"
                         onClick={handleSubmit}
                         disabled={sending}
-                        className="bg-gradient-to-r from-viol to-green-500 hover:opacity-95 text-white text-xs font-bold px-8 py-3.5 rounded-full transition-all shadow-xl shadow-viol/40 flex items-center gap-2 disabled:opacity-50"
+                        className="bg-clay hover:bg-ink text-paper text-[13px] font-medium px-8 py-3.5 rounded-[3px] transition-colors flex items-center gap-2 disabled:opacity-50"
                       >
                         {sending ? (
                           <>

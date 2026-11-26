@@ -98,7 +98,7 @@ export default function ImpactPage() {
                   onClick={() => setModalProject(p)}
                   className="block h-full group cursor-pointer text-left"
                 >
-                  <TiltCard intensity={7} className="bg-cream border border-deep/10 rounded-3xl overflow-hidden h-full hover:border-viol transition-colors shadow-sm hover:shadow-lg">
+                  <TiltCard intensity={7} className="bg-cream border border-deep/10 rounded-3xl overflow-hidden h-full hover:border-viol transition-colors hover:">
                     {p.media[0] && (
                       <div className="relative h-48 overflow-hidden bg-deep/5">
                         {p.media[0].type === "video" ? (
@@ -121,7 +121,7 @@ export default function ImpactPage() {
                             loading="lazy" decoding="async"
                             onError={(e) => {
                               e.currentTarget.style.display = "none";
-                              e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]", "flex", "items-center", "justify-center");
+                              e.currentTarget.parentElement?.classList.add("bg-paper-2", "flex", "items-center", "justify-center");
                             }}
                           />
                         )}
@@ -130,13 +130,13 @@ export default function ImpactPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="absolute top-3 right-3 bg-deep/90 hover:bg-viol text-white text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md transition-colors"
+                          className="absolute top-3 right-3 bg-deep/90 hover:bg-viol text-white text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors"
                           title="Open live website in new tab"
                         >
                           <i className="fa-solid fa-arrow-up-right-from-square text-[9px]" /> LIVE ↗
                         </a>
                         {p.featured && (
-                          <span className="absolute top-3 left-3 bg-viol text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
+                          <span className="absolute top-3 left-3 bg-viol text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
                             ★ FEATURED
                           </span>
                         )}
@@ -229,7 +229,7 @@ export default function ImpactPage() {
               <Reveal key={p.id} delay={i * 0.08}>
                 <div
                   className={`rounded-3xl p-7 h-full relative overflow-hidden transition-colors ${
-                    p.popular ? "bg-viol shadow-2xl shadow-viol/30" : "bg-white/[0.06] border border-white/10 hover:border-violL/50"
+                    p.popular ? "bg-viol" : "bg-white/[0.06] border border-white/10 hover:border-violL/50"
                   }`}
                 >
                   {p.popular && (
