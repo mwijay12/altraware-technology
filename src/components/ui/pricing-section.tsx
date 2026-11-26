@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TimelineContent } from "@/components/ui/timeline-animation";
-import NumberFlow from "@number-flow/react";
+import PriceFlow from "@/components/ui/price-flow";
 import {
   Briefcase,
   CheckCheck,
@@ -346,9 +346,8 @@ export default function PricingSection() {
                     {geo.symbol}
                   </span>
                   <span className="text-3xl sm:text-4xl font-extrabold text-deep font-grotesk tracking-tight">
-                    <NumberFlow
+                    <PriceFlow
                       value={geo.currency === "USD" ? tzsToUsd(plan.price) : plan.price}
-                      format={{ useGrouping: true }}
                       className="text-3xl sm:text-4xl font-extrabold"
                     />
                   </span>
