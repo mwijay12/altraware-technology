@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   DEFAULT_CONTENT,
@@ -199,17 +200,55 @@ export function Preloader() {
   return null;
 }
 
-/* ============ PAGE TRANSITION (single ink veil) ============ */
+/* ============================================================
+/* ============ PAGE TRANSITION (5-Column Curtain Sweep) ============ */
 
 export function PageTransition() {
+  const pathname = usePathname();
+  const prev = useRef<string | null>(null);
+
+  useEffect(() => {
+    prev.current = pathname;
+  }, [pathname]);
+
   return (
     <div id="page-transition" aria-hidden className="fixed inset-0 pointer-events-none z-[150]">
-      {/* One ink veil. 180ms up, 180ms away — a page turn, not a title sequence. */}
+      {/* Layer 1: Violet curtain cols */}
+      <div className="absolute inset-0 flex pointer-events-none z-[151]">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="curtain-col-viol h-full flex-1 origin-top bg-gradient-to-b from-[#7c3aed] to-[#5b21b6]"
+            style={{ transform: "scaleY(0)" }}
+          />
+        ))}
+      </div>
+
+      {/* Layer 2: Deep blue curtain cols */}
+      <div className="absolute inset-0 flex pointer-events-none z-[152]">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="curtain-col-deep h-full flex-1 origin-top bg-[#0a1735]"
+            style={{ transform: "scaleY(0)" }}
+          />
+        ))}
+      </div>
+
+      {/* Center brand & transition word */}
       <div
-        id="inkVeil"
-        className="absolute inset-0 bg-ink"
-        style={{ transform: "scaleY(0)", transformOrigin: "bottom" }}
-      />
+        id="transitionCenter"
+        className="absolute inset-0 z-[153] flex flex-col items-center justify-center opacity-0 pointer-events-none"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Altraware" className="w-14 h-14 object-contain mb-3 drop-shadow-md brightness-110" />
+        <span id="transitionWord" className="font-serif italic text-white text-3xl md:text-5xl font-light tracking-wide">
+          Let&apos;s Go
+        </span>
+        <span className="text-violet-300/70 font-mono text-xs uppercase tracking-[0.25em] mt-2">
+          Altraware Technology
+        </span>
+      </div>
     </div>
   );
 }

@@ -161,7 +161,7 @@ export default function PlatformsPage() {
                         href={p.webUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-deep text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-viol transition-all"
+                        className="inline-flex items-center gap-2 bg-deep text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-viol transition-all shadow-sm"
                       >
                         <i className="fa-solid fa-arrow-up-right-from-square text-[11px]" />
                         Open Live Web App
@@ -170,7 +170,7 @@ export default function PlatformsPage() {
                     {p.apkUrl && (
                       <a
                         href={p.apkUrl}
-                        className="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-green-700 transition-all"
+                        className="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-green-700 transition-all shadow-sm"
                       >
                         <i className="fa-brands fa-android text-sm" />
                         Download Android APK (Flutter)
@@ -181,7 +181,7 @@ export default function PlatformsPage() {
                         href={p.repoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-black transition-all"
+                        className="inline-flex items-center gap-2 bg-zinc-900 text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-black transition-all shadow-sm"
                       >
                         <i className="fa-brands fa-github text-sm" />
                         GitHub Repository & Releases
@@ -287,7 +287,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
     <>
       <div className="grid lg:grid-cols-[1fr_380px] gap-6">
         {/* POS grid */}
-        <div className="bg-white text-deep rounded-3xl p-5 md:p-7">
+        <div className="bg-white text-deep rounded-3xl p-5 md:p-7 shadow-2xl">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-deep text-white flex items-center justify-center font-bold">F</div>
@@ -326,7 +326,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
                   onClick={() => add(p.id)}
                 >
                   {qty > 0 && (
-                    <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-viol text-white text-xs font-bold flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-viol text-white text-xs font-bold flex items-center justify-center shadow">
                       ×{qty}
                     </span>
                   )}
@@ -342,7 +342,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
         </div>
 
         {/* Receipt panel */}
-        <div className="bg-[#0D1E45] border border-white/10 rounded-3xl p-6 flex flex-col">
+        <div className="bg-[#0D1E45] border border-white/10 rounded-3xl p-6 flex flex-col shadow-2xl">
           <div className="flex items-center justify-between">
             <div className="font-grotesk font-bold text-lg">
               <i className="fa-solid fa-receipt mr-2 text-violL" />
@@ -394,7 +394,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
             ))}
           </div>
           <button
-            className="mt-3 w-full bg-viol hover:bg-violD transition-colors rounded-xl py-4 font-bold text-sm flex items-center justify-center gap-2"
+            className="mt-3 w-full bg-viol hover:bg-violD transition-colors rounded-xl py-4 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-viol/30"
             onClick={checkout}
           >
             <i className="fa-solid fa-lock" /> CHARGE {fmt(total)}
@@ -422,7 +422,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
       {modal && (
         <div className="fixed inset-0 z-[160] flex items-center justify-center p-5">
           <div className="absolute inset-0 bg-deep3/80 backdrop-blur-sm" onClick={() => setModal(null)} />
-          <div className="relative bg-white text-deep rounded-3xl p-8 max-w-sm w-full text-center">
+          <div className="relative bg-white text-deep rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
             {modal === "processing" ? (
               <div>
                 <span className="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-300 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">
@@ -447,7 +447,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
                 <span className="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-300 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full tracking-widest">
                   <i className="fa-solid fa-flask" /> DEMO SIMULATION
                 </span>
-                <div className="w-20 h-20 rounded-full bg-green-500 text-white flex items-center justify-center text-3xl mx-auto mt-3">
+                <div className="w-20 h-20 rounded-full bg-green-500 text-white flex items-center justify-center text-3xl mx-auto shadow-lg shadow-green-500/40 mt-3">
                   <i className="fa-solid fa-check" />
                 </div>
                 <div className="font-grotesk font-bold text-2xl mt-4">Simulated payment successful! ✓</div>
@@ -496,7 +496,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
     <>
       <div className="grid lg:grid-cols-[240px_1fr] gap-6">
         {/* Sidebar */}
-        <div className="bg-white text-deep rounded-3xl p-5 hidden lg:block">
+        <div className="bg-white text-deep rounded-3xl p-5 shadow-2xl hidden lg:block">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="w-10 h-10 rounded-xl bg-viol text-white flex items-center justify-center">
               <i className="fa-solid fa-heart-pulse" />
@@ -523,7 +523,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
         </div>
 
         {/* Main dashboard */}
-        <div className="bg-white text-deep rounded-3xl p-5 md:p-7">
+        <div className="bg-white text-deep rounded-3xl p-5 md:p-7 shadow-2xl">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
             <div>
               <div className="font-grotesk font-bold text-lg">
@@ -585,7 +585,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
               return (
                 <button
                   key={k.n}
-                  className={`flex items-center gap-3 border-2 rounded-2xl p-3 cursor-pointer transition-all hover: text-left ${
+                  className={`flex items-center gap-3 border-2 rounded-2xl p-3 cursor-pointer transition-all hover:shadow-md text-left ${
                     on ? "border-green-400 bg-green-50/60" : "border-deep/10 bg-white hover:border-viol"
                   }`}
                   onClick={() => toggle(i, k.n, k.g, on)}

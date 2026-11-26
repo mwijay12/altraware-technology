@@ -219,7 +219,7 @@ export default function ClientPortalPage() {
         <div className="w-full max-w-md relative z-10 bg-white/90 border border-deep/10 backdrop-blur-xl rounded-3xl p-7 sm:p-9 shadow-2xl shadow-deep/5">
           {/* Logo & Header */}
           <div className="flex items-center gap-3.5 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-forest p-2 flex items-center justify-center shadow-md shadow-viol/20">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#7c3aed] to-[#0a1735] p-2 flex items-center justify-center shadow-md shadow-viol/20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo.png" alt="Altraware" className="w-full h-full object-contain" />
             </div>

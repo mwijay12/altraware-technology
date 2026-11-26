@@ -6,10 +6,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useVisitorCurrency } from "@/lib/geo-pricing";
 
 /* ============================================================
-   TransitionLink — 180ms ink wipe. One motion, no logo, no
-   word, no curtain columns. Navigation should feel like a
-   page turn, not a title sequence.
+   TransitionLink — plays the violet curtain page transition
+   before navigating, so dedicated pages still feel premium.
    ============================================================ */
+
+const TRANS_WORDS: Record<string, string> = {
+  "/": "Welcome",
+  "/about": "Roots",
+  "/services": "Craft",
+  "/platforms": "Platforms",
+  "/process": "Process",
+  "/impact": "Impact",
+  "/pricing": "Pricing",
+  "/blog": "Journal",
+  "/contact": "Let's Build",
+};
 
 export function TransitionLink({
   href,
@@ -30,30 +41,63 @@ export function TransitionLink({
   const go = useCallback(
     (e: React.MouseEvent) => {
       if (href.startsWith("http") || href.startsWith("mailto") || href.startsWith("tel")) return;
-      if (href.includes("#")) return;
+      if (href.includes("#")) return; // let anchor links behave natively
       e.preventDefault();
       if (busy.current || href === pathname) return;
       busy.current = true;
       const overlay = document.getElementById("page-transition");
+      const word = document.getElementById("transitionWord");
+      if (word) word.textContent = TRANS_WORDS[href] ?? "Let's Go";
       overlay?.classList.add("active");
-      const veil = document.getElementById("inkVeil");
-      if (veil) {
-        veil.style.transition = "transform .18s cubic-bezier(.65,0,.35,1)";
-        veil.style.transformOrigin = "bottom";
-        veil.style.transform = "scaleY(1)";
-      }
-      window.setTimeout(() => {
-        router.push(href);
-        window.setTimeout(() => {
-          window.scrollTo({ top: 0 });
-          if (veil) {
-            veil.style.transformOrigin = "top";
-            veil.style.transform = "scaleY(0)";
-          }
-          overlay?.classList.remove("active");
-          busy.current = false;
-        }, 120);
-      }, 190);
+      import("gsap").then(({ gsap }) => {
+        const tl = gsap.timeline();
+        tl.set(".curtain-col-viol, .curtain-col-deep", { transformOrigin: "bottom" })
+          .to(".curtain-col-viol", {
+            scaleY: 1,
+            duration: 0.45,
+            stagger: 0.045,
+            ease: "power3.inOut",
+          })
+          .to(
+            ".curtain-col-deep",
+            {
+              scaleY: 1,
+              duration: 0.5,
+              stagger: 0.045,
+              ease: "power3.inOut",
+            },
+            "-=0.38"
+          )
+          .to("#transitionCenter", { opacity: 1, duration: 0.25, ease: "power2.out" }, "-=0.2")
+          .add(() => {
+            router.push(href);
+            window.setTimeout(() => {
+              window.scrollTo({ top: 0 });
+            }, 60);
+          })
+          .to("#transitionCenter", { opacity: 0, duration: 0.2, ease: "power2.in" }, "+=0.15")
+          .set(".curtain-col-viol, .curtain-col-deep", { transformOrigin: "top" })
+          .to(".curtain-col-deep", {
+            scaleY: 0,
+            duration: 0.5,
+            stagger: 0.045,
+            ease: "power3.inOut",
+          })
+          .to(
+            ".curtain-col-viol",
+            {
+              scaleY: 0,
+              duration: 0.45,
+              stagger: 0.045,
+              ease: "power3.inOut",
+            },
+            "-=0.38"
+          )
+          .add(() => {
+            overlay?.classList.remove("active");
+            busy.current = false;
+          });
+      });
     },
     [href, pathname, router]
   );
@@ -74,107 +118,88 @@ export function TransitionLink({
 }
 
 /* ============================================================
-   Navbar — a masthead on paper: wordmark left, section index
-   centre, one action right. Hairline appears on scroll.
+   Navbar — transparent floating pill, sits below the top edge;
+   turns into a frosted glass bar once you scroll past the hero.
    ============================================================ */
 
 const NAV_LINKS = [
-  { href: "/services", label: "Services" },
-  { href: "/platforms", label: "Platforms" },
-  { href: "/process", label: "Process" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/impact", label: "Work" },
-  { href: "/about", label: "Studio" },
-  { href: "/blog", label: "Notes" },
+  { href: "/about", label: "Roots", sw: "Mizizi" },
+  { href: "/services", label: "What we build", sw: "Tunachojenga" },
+  { href: "/platforms", label: "Platforms", sw: "Mifumo" },
+  { href: "/process", label: "Process", sw: "Mchakato" },
+  { href: "/pricing", label: "Pricing", sw: "Bei" },
+  { href: "/impact", label: "Impact", sw: "Athari" },
+  { href: "/blog", label: "Blog", sw: "Makala" },
+  { href: "/portal", label: "Portal", sw: "Mradi Wako" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const geo = useVisitorCurrency();
 
-  // The masthead only changes at one threshold. Flip the attribute in the
-  // scroll listener (an external system) instead of holding React state,
-  // and let CSS do the styling — no cascading renders on scroll.
   useEffect(() => {
-    const header = document.getElementById("site-header");
-    if (!header) return;
-    let frame = 0;
-    const sync = () => {
-      header.dataset.scrolled = window.scrollY > 24 ? "true" : "false";
-      frame = 0;
-    };
-    const onScroll = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(sync);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    sync();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close the menu whenever the route changes — done in the click
-  // handler (see mobile nav links) instead of an effect, so React
-  // never has to cascade a render just to hide a sheet.
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
+  useEffect(() => setMenuOpen(false), [pathname]);
 
-  if (pathname?.startsWith("/admin")) return null;
+  // Scroll progress bar
+  useEffect(() => {
+    const bar = document.getElementById("scrollProgress");
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      if (bar) bar.style.width = (window.scrollY / h) * 100 + "%";
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <>
-      {/* Scroll progress: a 1px clay thread, not a gradient bar */}
+      {/* Scroll progress */}
       <div
         id="scrollProgress"
-        className="fixed top-0 left-0 h-px bg-clay z-[140] w-0"
-        aria-hidden
+        className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-viol via-violL to-deep z-[140] w-0 transition-[width] duration-150"
       />
 
-      {/* data-scrolled is written by the scroll listener, never by render,
-          so a re-render (menu, currency) cannot reset the masthead. */}
-      <header id="site-header" className="site-header fixed top-0 left-0 right-0 z-[100]">
-        <div className="mx-auto max-w-[1240px] px-[var(--pad)]">
-          <div className="h-[68px] md:h-[76px] flex items-center justify-between gap-6">
-            {/* Wordmark */}
-            <TransitionLink href="/" className="flex items-center gap-2.5 group shrink-0" aria-label="Altraware Technology — home">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logo.png"
-                alt=""
-                width={26}
-                height={26}
-                decoding="async"
-                className="w-[26px] h-[26px] object-contain"
-              />
-              <span className="font-grotesk font-medium tracking-[-0.01em] text-[17px] leading-none">
-                Altraware
-              </span>
-              <span className="hidden xl:inline label !text-[10px] !tracking-[0.14em] text-ink-3 border-l border-rule pl-2.5 ml-1">
-                Dar es Salaam
-              </span>
+      <header className="fixed top-0 left-0 right-0 z-[100]">
+        <div className="max-w-[1320px] mx-auto px-5 md:px-8">
+          <div
+            className={`mt-4 rounded-2xl px-4 md:px-6 py-3 flex items-center justify-between transition-all duration-500 border ${
+              scrolled
+                ? "bg-white/85 backdrop-blur-xl border-deep/10 shadow-lg shadow-deep/5"
+                : "bg-transparent border-transparent"
+            }`}
+          >
+            <TransitionLink href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl relative overflow-hidden border border-deep/10 p-1 bg-white/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="Altraware logo" width={40} height={40} decoding="async" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <div className="leading-none">
+                <div className="font-grotesk font-bold tracking-tight text-[15px]">ALTRAWARE</div>
+                <div className="text-[9px] tracking-[0.32em] font-grotesk text-deep/60 font-medium">
+                  TECHNOLOGY · DSM
+                </div>
+              </div>
             </TransitionLink>
 
-            {/* Section index */}
-            <nav className="hidden lg:flex items-center gap-6 text-[14px] text-ink-2" aria-label="Sections">
+            <nav className="hidden lg:flex items-center gap-6 text-[13px] font-medium">
               {NAV_LINKS.map((l) => (
                 <TransitionLink
                   key={l.href}
                   href={l.href}
-                  className={`link-underline transition-colors hover:text-ink ${
-                    pathname === l.href ? "text-ink" : ""
+                  className={`link-underline transition-colors hover:text-viol ${
+                    pathname === l.href ? "text-viol font-semibold" : ""
                   }`}
                 >
                   {l.label}
@@ -182,29 +207,33 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-3 md:gap-5">
-              {/* Currency: plain text toggle, mono, no pill chrome */}
-              <div className="hidden sm:flex items-center gap-1.5 num text-[11px] uppercase tracking-[0.06em]">
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Currency Toggle [ TZS | USD ] */}
+              <div
+                className="inline-flex items-center rounded-full border border-deep/15 bg-white/80 backdrop-blur-md p-0.5 text-[11px] font-bold font-grotesk shadow-sm"
+                aria-label="Currency toggle"
+              >
                 <button
                   type="button"
                   onClick={() => geo.setCurrency("TZS")}
-                  className={`px-1 py-1 transition-colors ${
-                    geo.currency === "TZS" ? "text-ink" : "text-ink-3 hover:text-ink"
+                  className={`px-2.5 py-1 rounded-full transition-all ${
+                    geo.currency === "TZS"
+                      ? "bg-deep text-white shadow-sm"
+                      : "text-deep/60 hover:text-deep"
                   }`}
-                  aria-pressed={geo.currency === "TZS"}
-                  title="Prices in Tanzanian Shillings"
+                  title="Prices in Tanzanian Shillings (TSh)"
                 >
-                  TSh
+                  TZS
                 </button>
-                <span className="text-rule">/</span>
                 <button
                   type="button"
                   onClick={() => geo.setCurrency("USD")}
-                  className={`px-1 py-1 transition-colors ${
-                    geo.currency === "USD" ? "text-ink" : "text-ink-3 hover:text-ink"
+                  className={`px-2.5 py-1 rounded-full transition-all ${
+                    geo.currency === "USD"
+                      ? "bg-viol text-white shadow-sm"
+                      : "text-deep/60 hover:text-deep"
                   }`}
-                  aria-pressed={geo.currency === "USD"}
-                  title="Prices in US Dollars"
+                  title="Prices in US Dollars ($ USD)"
                 >
                   USD
                 </button>
@@ -212,82 +241,77 @@ export default function Navbar() {
 
               <TransitionLink
                 href="/contact"
-                className="hidden sm:inline-flex items-center gap-2 bg-ink text-paper text-[13px] font-medium px-4 py-2.5 rounded-[3px] hover:bg-clay transition-colors"
+                className="btn-magnetic hidden sm:inline-flex items-center gap-2 bg-deep text-white text-[13px] font-semibold px-5 py-2.5 rounded-full"
               >
-                Start a project
-                <span aria-hidden className="text-[11px]">→</span>
+                Start a project <i className="fa-solid fa-arrow-right text-[11px]" />
               </TransitionLink>
-
               <button
-                className="lg:hidden w-9 h-9 -mr-1 flex flex-col items-center justify-center gap-[5px]"
+                className="lg:hidden w-10 h-10 rounded-full bg-deep text-white flex items-center justify-center"
                 onClick={() => setMenuOpen(true)}
                 aria-label="Open menu"
-                aria-expanded={menuOpen}
               >
-                <span className="block w-5 h-px bg-ink" />
-                <span className="block w-5 h-px bg-ink" />
+                <i className="fa-solid fa-bars" />
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile menu: full paper sheet, indexed like a table of contents */}
+      {/* Mobile menu — clip-path circle reveal */}
       <div
         id="mobileMenu"
-        className={`fixed inset-0 z-[95] bg-paper text-ink flex flex-col ${menuOpen ? "open" : ""}`}
+        className={`fixed inset-0 z-[95] bg-deep text-white flex flex-col justify-center px-8 ${menuOpen ? "open" : ""}`}
         aria-hidden={!menuOpen}
       >
-        <div className="h-[68px] shrink-0" />
-        <div className="px-[var(--pad)] flex-1 overflow-y-auto pb-10">
-          <div className="label border-b border-rule pb-3 mb-2">Index</div>
-          {[{ href: "/", label: "Home" }, ...NAV_LINKS, { href: "/portal", label: "Client portal" }, { href: "/contact", label: "Start a project" }].map(
-            (l, i) => (
-              <TransitionLink
-                key={l.href}
-                href={l.href}
-                onClick={() => setMenuOpen(false)}
-                className="flex items-baseline gap-4 py-3.5 border-b border-rule group"
-              >
-                <span className="num text-[11px] text-ink-3 w-6">{String(i + 1).padStart(2, "0")}</span>
-                <span className="display text-[28px] leading-none group-hover:text-clay transition-colors">
-                  {l.label}
-                </span>
-              </TransitionLink>
-            )
-          )}
+        <div className="noise-blue absolute inset-0" />
+        <button
+          onClick={() => setMenuOpen(false)}
+          className="absolute top-7 right-7 w-11 h-11 rounded-full border border-white/20 flex items-center justify-center"
+          aria-label="Close menu"
+        >
+          <i className="fa-solid fa-xmark" />
+        </button>
+        <div className="relative space-y-2">
+          <div className="eyebrow text-violL mb-6">Navigation — Menyu</div>
+          {[
+            { href: "/", num: "01", en: "Home", sw: "Nyumbani" },
+            ...NAV_LINKS.map((l, i) => ({ href: l.href, num: `0${i + 2}`, en: l.label, sw: l.sw })),
+            { href: "/contact", num: "10", en: "Start a project", sw: "Wasiliana" },
+          ].map((l) => (
+            <TransitionLink
+              key={l.href + l.num}
+              href={l.href}
+              className="block display text-3xl sm:text-4xl py-2 hover:text-violL transition-colors"
+            >
+              {l.num} · {l.en} <span className="text-base font-sans opacity-40">({l.sw})</span>
+            </TransitionLink>
+          ))}
 
-          <div className="mt-8 flex items-center justify-between">
-            <span className="label">Currency</span>
-            <div className="flex items-center gap-2 num text-[12px]">
+          {/* Mobile currency selector */}
+          <div className="pt-6 mt-4 border-t border-white/10 flex items-center justify-between">
+            <span className="text-xs text-white/60 font-mono">Currency / Sarafu:</span>
+            <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 p-0.5 text-xs font-bold font-grotesk">
               <button
                 type="button"
                 onClick={() => geo.setCurrency("TZS")}
-                className={`px-2 py-1 border rounded-[2px] ${
-                  geo.currency === "TZS" ? "border-ink bg-ink text-paper" : "border-rule text-ink-3"
+                className={`px-3 py-1 rounded-full transition-all ${
+                  geo.currency === "TZS" ? "bg-viol text-white shadow-sm" : "text-white/60"
                 }`}
               >
-                TSh
+                TSh (TZS)
               </button>
               <button
                 type="button"
                 onClick={() => geo.setCurrency("USD")}
-                className={`px-2 py-1 border rounded-[2px] ${
-                  geo.currency === "USD" ? "border-ink bg-ink text-paper" : "border-rule text-ink-3"
+                className={`px-3 py-1 rounded-full transition-all ${
+                  geo.currency === "USD" ? "bg-viol text-white shadow-sm" : "text-white/60"
                 }`}
               >
-                USD
+                $ (USD)
               </button>
             </div>
           </div>
         </div>
-        <button
-          onClick={() => setMenuOpen(false)}
-          className="absolute top-4 right-[var(--pad)] w-9 h-9 flex items-center justify-center text-2xl leading-none"
-          aria-label="Close menu"
-        >
-          ×
-        </button>
       </div>
     </>
   );

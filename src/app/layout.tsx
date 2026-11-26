@@ -1,18 +1,38 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ContentProvider, NotifyProvider, SmoothScroll, PageTransition } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingAILazy from "@/components/FloatingAILazy";
 
-/* ============================================================
-   TYPE — self-hosted variable fonts (public/fonts).
-   Fraunces  : display, axes wght+SOFT+WONK+opsz (one file)
-   Instrument Sans : body/UI (one file)
-   Plex Mono : prices, dates, labels (two files)
-   No external font CDN — first paint is not blocked on a
-   third-party handshake, and the build works offline.
-   ============================================================ */
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  // Trimmed: display font only needs 2 weights on mobile (was 5).
+  weight: ["400", "600"],
+  variable: "--font-fraunces",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: true,
+});
+const inter = Inter({
+  subsets: ["latin"],
+  // Body font: 3 essential weights (was 5).
+  weight: ["400", "500", "700"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+});
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: true,
+});
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -22,7 +42,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#F4EFE6",
+  themeColor: "#0A1735",
 };
 
 export const metadata: Metadata = {
@@ -155,7 +175,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     ],
   };
   return (
-    <html lang="en">
+    <html lang="en" className={`${fraunces.variable} ${inter.variable} ${grotesk.variable}`}>
       <head>
         {/* FontAwesome is ~100KB+ render-blocking CSS. Defer it: load async
             via print-media swap so it never delays FCP/LCP on mobile.
@@ -179,26 +199,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <link rel="stylesheet" href="/fa/regular.min.css" />
           <link rel="stylesheet" href="/fa/brands.min.css" />
         </noscript>
-        {/* Self-hosted fonts: preload the two faces used above the fold */}
-        <link
-          rel="preload"
-          href="/fonts/fraunces-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/instrument-sans-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
         {/* Early connection for Cloudinary media host */}
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
       </head>
-      <body className="font-sans">
+      <body className="antialiased font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}

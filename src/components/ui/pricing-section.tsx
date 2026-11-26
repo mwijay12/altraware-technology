@@ -178,7 +178,7 @@ interface PricingSwitchProps {
 const CategorySwitch = ({ category, onChangeCategory }: PricingSwitchProps) => {
   return (
     <div className="flex justify-center">
-      <div className="relative z-20 mx-auto flex w-fit rounded-[3px] bg-paper-2 p-1 border border-rule">
+      <div className="relative z-20 mx-auto flex w-fit rounded-full bg-deep/8 p-1.5 border border-deep/15 shadow-sm">
         <button
           onClick={() => onChangeCategory("websites")}
           className={`relative z-10 w-fit sm:h-12 h-10 rounded-full sm:px-8 px-4 sm:py-2 py-1 text-sm sm:text-base font-bold transition-colors ${
@@ -190,7 +190,7 @@ const CategorySwitch = ({ category, onChangeCategory }: PricingSwitchProps) => {
           {category === "websites" && (
             <motion.span
               layoutId="pricingCategorySwitch"
-              className="absolute inset-0 rounded-[2px] bg-ink"
+              className="absolute inset-0 rounded-full bg-viol shadow-md shadow-viol/30"
               transition={{ type: "spring", stiffness: 500, damping: 32 }}
             />
           )}
@@ -210,7 +210,7 @@ const CategorySwitch = ({ category, onChangeCategory }: PricingSwitchProps) => {
           {category === "systems" && (
             <motion.span
               layoutId="pricingCategorySwitch"
-              className="absolute inset-0 rounded-[2px] bg-ink"
+              className="absolute inset-0 rounded-full bg-deep shadow-md shadow-deep/30"
               transition={{ type: "spring", stiffness: 500, damping: 32 }}
             />
           )}
@@ -241,7 +241,7 @@ export default function PricingSection() {
       },
     }),
     hidden: {
-      filter: "none",
+      filter: "blur(6px)",
       y: -15,
       opacity: 0,
     },
@@ -318,9 +318,9 @@ export default function PricingSection() {
             customVariants={revealVariants}
           >
             <Card
-              className={`relative h-full flex flex-col transition-colors duration-300 border ${
+              className={`relative h-full flex flex-col transition-all duration-300 hover:shadow-xl border-2 ${
                 plan.popular
-                  ? "border-ink bg-paper"
+                  ? "border-viol ring-4 ring-viol/10 bg-white shadow-lg"
                   : "border-deep/10 bg-white hover:border-deep/20"
               }`}
             >
@@ -330,7 +330,7 @@ export default function PricingSection() {
                     {plan.name}
                   </h3>
                   {plan.popular && (
-                    <span className="bg-ink text-paper px-2.5 py-1 rounded-[2px] text-[10px] font-medium tracking-[0.08em] uppercase">
+                    <span className="bg-viol text-white px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
                       {plan.badge || "Popular"}
                     </span>
                   )}
@@ -364,8 +364,8 @@ export default function PricingSection() {
                     href={plan.ctaHref}
                     className={`w-full py-3.5 px-5 rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all duration-200 ${
                       plan.popular
-                        ? "bg-ink hover:bg-clay text-paper"
-                        : "bg-ink hover:bg-clay text-paper"
+                        ? "bg-viol hover:bg-violD text-white shadow-md shadow-viol/30"
+                        : "bg-deep hover:bg-deep2 text-white shadow-md shadow-deep/20"
                     }`}
                   >
                     <span>{plan.ctaText}</span>
@@ -406,7 +406,7 @@ export default function PricingSection() {
       </div>
 
       {/* Trust reassurance banner */}
-      <div className="max-w-4xl mx-auto mt-16 p-6 rounded-[4px] bg-white border border-rule text-center relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="max-w-4xl mx-auto mt-16 p-6 rounded-2xl bg-white border border-deep/10 shadow-sm text-center relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-left">
           <div className="font-bold text-deep text-base">Je, unahitaji mfumo maalum au msaada wa kuchagua?</div>
           <div className="text-xs text-deep/60 mt-0.5">Wasiliana na wahandisi wetu Clemence & David kwa ushauri wa bure wa kiufundi.</div>
@@ -415,7 +415,7 @@ export default function PricingSection() {
           href="https://wa.me/255760224853?text=Habari%20Altraware,%20nahitaji%20ushauri%20kuhusu%20mfumo/tovuti"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-ink hover:bg-clay text-paper px-5 py-2.5 rounded-[3px] font-medium text-[13px] shrink-0 transition-colors"
+          className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] text-white px-5 py-2.5 rounded-full font-bold text-xs shrink-0 transition-all shadow-sm"
         >
           <i className="fa-brands fa-whatsapp text-sm" /> Ongea Nasi WhatsApp
         </a>
