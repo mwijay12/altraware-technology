@@ -146,29 +146,58 @@ counter animations, "SCROLL TO BEGIN", ✦ marquee, 4 of the 6 taglines.
 
 ## 4. ROLLOUT
 
-| Act | Scope | Files |
+| Act | Scope | Status |
 |---|---|---|
-| 0 | Tokens + type + primitives | `globals.css` @theme, `layout.tsx` fonts, `DESIGN.md` |
-| 1 | Home rebuild | `src/app/page.tsx` |
-| 2 | Shell | `Navbar.tsx`, `Footer.tsx`, `providers.tsx` (transition), `motion.tsx` (de-tilt) |
-| 3 | Page heroes | `about`, `services`, `pricing`, `process`, `impact`, `platforms`, `contact` |
-| 4 | Content truth pass | `lib/content.ts` — kill fabricated stats, stock testimonial, placeholder reels |
+| 0 | Tokens + type + primitives (`globals.css`, `layout.tsx`) | ✅ done |
+| 1 | Home rebuild (`src/app/page.tsx`) | ✅ done — 6 movements |
+| 2 | Shell: `Navbar`, `Footer`, `PageTransition`, overlays (`FloatingAI`, `ProjectModal`) | ✅ done |
+| 3 | Inner-page rebuilds (`about`, `services`, `pricing`, `process`, `impact`, `platforms`, `contact`) | ⬜ next — they inherit the palette and rhythm, but still carry v2 card markup |
+| 4 | Content truth pass (`lib/content.ts`) | ⏸ deferred by owner — invented figures stay for now, `npm run audit:design` keeps flagging them |
 
-**Verification each act:** `tsc --noEmit`, `next build`, `next lint`, plus rendered-HTML
-check for hue count / radius count / gradient count against the limits in this doc.
+### What Act 0–2 actually changed
+- Palette locked to paper / ink / clay / rule; `viol`, `violL`, `violD` are
+  **remapped** in `@theme` to clay and its tints, so ~600 legacy utility usages
+  across the inner pages resolve to the accent without touching their markup.
+- Self-hosted **Fraunces** (wght + SOFT + WONK), **Instrument Sans**, **Plex Mono**
+  from `public/fonts` — no Google Fonts request on first paint, and the build
+  works with no network.
+- Components live in `@layer components` so Tailwind utilities still override them,
+  and the default type scale is untouched so inner pages keep their sizing.
+- Home: 10 sections → 6, one three-column grid, 0 gradients / glass / orbs /
+  glow, one signature motion (pure CSS ink-part reveal, skipped under
+  `prefers-reduced-motion`).
+- Nav: masthead instead of a floating pill; scroll state written to a data
+  attribute instead of React state. Page transition: 180 ms ink veil instead of
+  a 700 ms violet column curtain.
+- `services`/`impact` no longer import the home page bundle
+  (`components/marketing.tsx`).
+
+**Verification each act:** `npx tsc --noEmit`, `npx next build`,
+`npx eslint src`, plus `npm run audit:design` against the running server.
 
 ---
 
-## 5. ACCEPTANCE TEST
+## 5. ACCEPTANCE TEST — `npm run audit:design`
 
-Open the home page and count:
+Executable, not a checklist you tick by eye. It counts signatures in the
+**rendered HTML** and fails the build if a rebuilt route regresses.
 
-- [ ] 0 gradients (except inside photos)
-- [ ] ≤ 1 hue of accent per screenful
-- [ ] 0 glass / backdrop-blur cards
-- [ ] 0 fake numbers
-- [ ] ≤ 1 element with looping animation
-- [ ] ≤ 1 three-column grid
-- [ ] ≤ 3 distinct corner radii in use
-- [ ] Every headline sentence-cased, ≤ 2 lines
-- [ ] Every claim traceable to a shipped thing or a named person
+```
+✓ /              clean (77.5 KB)
+~ /about         visual pass · legacy debt: violet class names: 24, …
+✗ /services      fabricated claims: +212%, 1.4s load
+```
+
+`✓` clean · `~` passes the visual tier, still owes v2 markup · `✗` fail.
+
+Tier 1 (fails everywhere): gradients · backdrop blur · glow shadows ·
+bounce/ping loops · fabricated figures.
+
+Tier 2 (fails on rebuilt routes only): violet class names · blur orbs ·
+three-column grids · `rounded-3xl` · `rounded-full`.
+
+Home page limits: **0** gradients, **0** glass, **0** orbs, **0** glow,
+**0** invented numbers, **1** three-column grid, **3** radii.
+
+Human check on top of the script: every headline sentence-cased and ≤ 2 lines,
+every claim traceable to a shipped thing or a named person.
