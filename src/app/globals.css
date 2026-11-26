@@ -1154,151 +1154,192 @@ textarea:focus {
     --ui-accent: #8B5CF6;
     --ui-grain: 0.035;
   }
+}
 
-  html[data-theme="light"] {
-    --ui-ground: #F6F3EC;
-    --ui-surface: #EEE9DF;
-    --ui-card: #FFFFFF;
-    --ui-ink: #14121A;
-    --ui-ink-soft: #56514B;
-    --ui-hairline: #D8D2C6;
-    --ui-inverse: #F6F3EC;
-    --ui-accent: #6D3DE0;   /* one step deeper so it passes contrast on cream */
-    --ui-grain: 0.018;
-  }
+/* ---- THEME LAYER (deliberately unlayered) ----
+   Tailwind emits its utilities into `@layer utilities`. A rule inside
+   `@layer base` loses to them no matter how specific it is, so every
+   `html[data-theme="light"]` override below has to sit OUTSIDE the
+   cascade layers to win against `.text-bone{color:…}`.
+   The `:root` custom properties above stay in `base` — they are
+   variables, not competing declarations. */
 
-  html[data-theme="light"] body {
-    background-color: var(--ui-ground);
-    color: var(--ui-ink);
-  }
 
-  /* ---------- 1. GROUNDS ----------
-     A "dark band" is a *device*, not a colour. In light mode it becomes a
-     deeper cream panel with dark ink, so the rhythm of the page survives
-     while nothing on the page is left with light text on a light field.
-     A true black band (`.band-hold`) opts out — used for the hero film
-     strip and the footer, where the photograph needs the black. */
-  html[data-theme="light"] .bg-noir,
-  html[data-theme="light"] .bg-noir2,
-  html[data-theme="light"] .bg-noir3,
-  html[data-theme="light"] .bg-deep,
-  html[data-theme="light"] .bg-deep2,
-  html[data-theme="light"] .bg-deep3 {
-    background-color: var(--ui-surface);
-  }
+html[data-theme="light"] {
+  --ui-ground: #F6F3EC;
+  --ui-surface: #EEE9DF;
+  --ui-card: #FFFFFF;
+  --ui-ink: #14121A;
+  --ui-ink-soft: #56514B;
+  --ui-hairline: #D8D2C6;
+  --ui-inverse: #F6F3EC;
+  --ui-accent: #6D3DE0;   /* one step deeper so it passes contrast on cream */
+  --ui-grain: 0.018;
+}
 
-  html[data-theme="light"] .band-hold {
-    background-color: #0B0A0F;
-  }
+html[data-theme="light"] body {
+  background-color: var(--ui-ground);
+  color: var(--ui-ink);
+}
 
-  /* ---------- 2. INK ---------- */
-  html[data-theme="light"] .text-bone { color: var(--ui-ink); }
-  html[data-theme="light"] .text-ash  { color: var(--ui-ink-soft); }
-  html[data-theme="light"] .border-wire { border-color: var(--ui-hairline); }
+/* ---------- 1. GROUNDS ----------
+   A "dark band" is a *device*, not a colour. In light mode it becomes a
+   deeper cream panel with dark ink, so the rhythm of the page survives
+   while nothing on the page is left with light text on a light field.
+   A true black band (`.band-hold`) opts out — used for the hero film
+   strip and the footer, where the photograph needs the black. */
+html[data-theme="light"] .bg-noir,
+html[data-theme="light"] .bg-noir2,
+html[data-theme="light"] .bg-noir3,
+html[data-theme="light"] .bg-deep,
+html[data-theme="light"] .bg-deep2,
+html[data-theme="light"] .bg-deep3 {
+  background-color: var(--ui-surface);
+}
 
-  /* Legacy ink: `text-deep` means "body text", which is dark in light mode. */
-  html[data-theme="light"] :is(.text-deep, [class*="text-deep/"]) {
-    color: var(--ui-ink);
-  }
-  /* ...but inside a band that stayed dark, it must stay light. */
-  html[data-theme="light"] .band-hold :is(.text-deep, [class*="text-deep/"]) {
-    color: rgba(237, 233, 227, 0.72);
-  }
+html[data-theme="light"] .band-hold {
+  background-color: #0B0A0F;
+}
 
-  /* `text-white` was the old way to say "on a dark ground". On cream that
-     is invisible, so it inherits ink — unless it sits in a held band or on
-     a saturated fill, where white is still correct. */
-  html[data-theme="light"] :is(.text-white, [class*="text-white/"]) {
-    color: var(--ui-ink);
-  }
-  html[data-theme="light"] .band-hold :is(.text-white, [class*="text-white/"]),
-  html[data-theme="light"] :is(.bg-jewel, .bg-jeweldeep, .bg-viol, .bg-green-600, .bg-red-600) :is(.text-white, [class*="text-white/"]) {
-    color: #ffffff;
-  }
+/* ---------- 2. INK ---------- */
+html[data-theme="light"] .text-bone { color: var(--ui-ink); }
+html[data-theme="light"] .text-ash  { color: var(--ui-ink-soft); }
+html[data-theme="light"] .border-wire { border-color: var(--ui-hairline); }
 
-  /* The legacy `.on-dark` wrapper kept its black ground in light mode, so
-     the ink rules above must follow it back to bone. */
-  html[data-theme="light"] .on-dark {
-    background-color: #14121A;
-    color: #EDE9E3;
-  }
-  html[data-theme="light"] .on-dark :is(h1, h2, h3, h4, h5, h6) { color: #EDE9E3; }
-  html[data-theme="light"] .on-dark p { color: rgba(237, 233, 227, 0.78); }
-  html[data-theme="light"] .on-dark :is(.text-deep, [class*="text-deep/"]),
-  html[data-theme="light"] .on-dark :is(.text-white, [class*="text-white/"]) {
-    color: rgba(237, 233, 227, 0.78);
-  }
-  html[data-theme="light"] .on-dark :is(h1,h2,h3,h4,h5,h6)[class*="text-"] { color: #EDE9E3; }
+/* Legacy ink: `text-deep` means "body text", which is dark in light mode. */
+html[data-theme="light"] :is(.text-deep, [class*="text-deep/"]) {
+  color: var(--ui-ink);
+}
+/* ...but inside a band that stayed dark, it must stay light. */
+html[data-theme="light"] .band-hold :is(.text-deep, [class*="text-deep/"]) {
+  color: rgba(237, 233, 227, 0.72);
+}
 
-  /* ---------- 3. SURFACES + LINES ---------- */
-  html[data-theme="light"] .bg-cream { background-color: #FBF8F2; }
-  html[data-theme="light"] .bg-paper { background-color: #F1ECE2; }
+/* `text-white` was the old way to say "on a dark ground". On cream that
+   is invisible, so it inherits ink — unless it sits in a held band or on
+   a saturated fill, where white is still correct. */
+html[data-theme="light"] :is(.text-white, [class*="text-white/"]) {
+  color: var(--ui-ink);
+}
+html[data-theme="light"] .band-hold :is(.text-white, [class*="text-white/"]),
+html[data-theme="light"] :is(.bg-jewel, .bg-jeweldeep, .bg-viol, .bg-green-600, .bg-red-600) :is(.text-white, [class*="text-white/"]) {
+  color: #ffffff;
+}
 
-  html[data-theme="light"] :is(.border-deep, [class*="border-deep/"]) {
-    border-color: var(--ui-hairline);
-  }
-  html[data-theme="light"] :is(.border-white, [class*="border-white/"]) {
-    border-color: rgba(20, 18, 26, 0.14);
-  }
-  html[data-theme="light"] .on-dark :is(.border-white, [class*="border-white/"], .border-deep, [class*="border-deep/"]) {
-    border-color: rgba(237, 233, 227, 0.16);
-  }
+/* The legacy `.on-dark` wrapper kept its black ground in light mode, so
+   the ink rules above must follow it back to bone. */
+html[data-theme="light"] .on-dark {
+  background-color: #14121A;
+  color: #EDE9E3;
+}
+html[data-theme="light"] .on-dark :is(h1, h2, h3, h4, h5, h6) { color: #EDE9E3; }
+html[data-theme="light"] .on-dark p { color: rgba(237, 233, 227, 0.78); }
+html[data-theme="light"] .on-dark :is(.text-deep, [class*="text-deep/"]),
+html[data-theme="light"] .on-dark :is(.text-white, [class*="text-white/"]) {
+  color: rgba(237, 233, 227, 0.78);
+}
+html[data-theme="light"] .on-dark :is(h1,h2,h3,h4,h5,h6)[class*="text-"] { color: #EDE9E3; }
 
-  /* ---------- 4. TYPE TREATMENTS ---------- */
-  /* `u-outline` is a bone stroke; on cream it disappears. */
-  html[data-theme="light"] .u-outline { -webkit-text-stroke-color: #14121A; }
-  html[data-theme="light"] .u-outline-dim { -webkit-text-stroke-color: rgba(20, 18, 26, 0.38); }
-  html[data-theme="light"] .u-grain::after { opacity: var(--ui-grain); }
-  html[data-theme="light"] .grain,
-  html[data-theme="light"] .grain-cine { opacity: 0.5; mix-blend-mode: multiply; }
+/* ---------- 2b. THE DARK SCOPE ----------
+   In light mode most of the page is cream, so `text-bone` and `text-ash`
+   correctly become dark ink. But the 33 `.on-dark` bands keep their black
+   ground, and on those the same flip would paint dark ink on black — the
+   exact failure this whole layer exists to prevent.
 
-  /* Accent: the jewel violet is too light on cream. Go one step deeper. */
-  html[data-theme="light"] :is(.text-jewel, .text-viol) { color: var(--ui-accent); }
-  html[data-theme="light"] :is(.bg-jewel, .bg-viol) { background-color: var(--ui-accent); }
+   Everything inside a band that stayed dark is enumerated here, once,
+   instead of being patched utility by utility. */
+html[data-theme="light"] :is(.on-dark, .band-hold) .text-bone { color: #EDE9E3; }
+html[data-theme="light"] :is(.on-dark, .band-hold) .text-ash { color: #A8A29C; }
+html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-bone/"]) { color: rgba(237, 233, 227, 0.72); }
+html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-ash/"]) { color: rgba(168, 162, 156, 0.78); }
 
-  /* ---------- 4b. TINTED PANELS ----------
-     The legacy pages build cards out of `bg-white/[0.03]` — a white wash on
-     black. On cream that wash is invisible, so every card silently loses its
-     edge. Invert the wash: a black tint at the same strength keeps the exact
-     same visual weight against the new ground. */
-  html[data-theme="light"] :is(.bg-white\/5, .bg-white\/10, .bg-white\/20,
-      [class*="bg-white/["]) {
-    background-color: rgba(20, 18, 26, 0.045);
-  }
-  /* ...but not where the white wash is doing real work: it is a frosted
-     panel over a photograph or a saturated fill. Leave those at full white. */
-  html[data-theme="light"] :is(.bg-white\/90, .bg-white\/95) {
-    background-color: #ffffff;
-  }
-  html[data-theme="light"] .band-hold :is(.bg-white\/5, .bg-white\/10, [class*="bg-white/["]) {
-    background-color: rgba(255, 255, 255, 0.06);
-  }
-  /* The mirror case: `bg-deep/5` washes used as quiet insets on a light
-     card. In dark mode they are near-invisible anyway; on cream they read
-     correctly, so only the held bands need the light version. */
-  html[data-theme="light"] .band-hold :is(.bg-deep\/5, .bg-deep\/10) {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-  /* Hover states written as `hover:bg-white/10` would leave a hole. */
-  html[data-theme="light"] :is([class*="hover:bg-white/"]) {
-    transition: background-color .3s;
-  }
-  html[data-theme="light"] :is([class*="hover:bg-white/"]):hover {
-    background-color: rgba(20, 18, 26, 0.08);
-  }
+/* The band element *itself* carries the utility as often as its children
+   (`<section class="on-dark bg-deep text-white">`), so the scope has to
+   match self as well as descendants. */
+html[data-theme="light"] :is(.on-dark, .band-hold):is(.text-white, [class*="text-white/"]) { color: #EDE9E3; }
+html[data-theme="light"] :is(.on-dark, .band-hold):is(.text-deep, [class*="text-deep/"]) { color: #EDE9E3; }
+html[data-theme="light"] :is(.on-dark, .band-hold):is(.text-bone) { color: #EDE9E3; }
 
-  /* ---------- 5. FORM FIELDS ---------- */
-  /* The legacy inputs are transparent with white text. On cream that is
-     an empty box you cannot see into. */
-  html[data-theme="light"] :is(input, textarea, select) {
-    color: var(--ui-ink);
-  }
-  html[data-theme="light"] :is(input, textarea, select)::placeholder {
-    color: rgba(20, 18, 26, 0.42);
-  }
-  html[data-theme="light"] :is(input, textarea, select):focus {
-    border-color: var(--ui-accent);
-  }
+/* Hairlines: `wire` is a dark-mode line. On a black band it must stay. */
+html[data-theme="light"] :is(.on-dark, .band-hold) .border-wire,
+html[data-theme="light"] :is(.on-dark, .band-hold) [class*="border-wire/"] { border-color: rgba(237, 233, 227, 0.16); }
+
+/* Type treatments that assume a dark ground. */
+html[data-theme="light"] :is(.on-dark, .band-hold) .u-outline { -webkit-text-stroke-color: #EDE9E3; }
+html[data-theme="light"] :is(.on-dark, .band-hold) .u-outline-dim { -webkit-text-stroke-color: rgba(237, 233, 227, 0.38); }
+
+/* The accent sits on both grounds; keep the lighter violet where the
+   ground is still black so it does not sink into it. */
+html[data-theme="light"] :is(.on-dark, .band-hold) :is(.text-jewel, .text-viol) { color: #A78BFA; }
+
+/* ---------- 3. SURFACES + LINES ---------- */
+html[data-theme="light"] .bg-cream { background-color: #FBF8F2; }
+html[data-theme="light"] .bg-paper { background-color: #F1ECE2; }
+
+html[data-theme="light"] :is(.border-deep, [class*="border-deep/"]) {
+  border-color: var(--ui-hairline);
+}
+html[data-theme="light"] :is(.border-white, [class*="border-white/"]) {
+  border-color: rgba(20, 18, 26, 0.14);
+}
+html[data-theme="light"] .on-dark :is(.border-white, [class*="border-white/"], .border-deep, [class*="border-deep/"]) {
+  border-color: rgba(237, 233, 227, 0.16);
+}
+
+/* ---------- 4. TYPE TREATMENTS ---------- */
+/* `u-outline` is a bone stroke; on cream it disappears. */
+html[data-theme="light"] .u-outline { -webkit-text-stroke-color: #14121A; }
+html[data-theme="light"] .u-outline-dim { -webkit-text-stroke-color: rgba(20, 18, 26, 0.38); }
+html[data-theme="light"] .u-grain::after { opacity: var(--ui-grain); }
+html[data-theme="light"] .grain,
+html[data-theme="light"] .grain-cine { opacity: 0.5; mix-blend-mode: multiply; }
+
+/* Accent: the jewel violet is too light on cream. Go one step deeper. */
+html[data-theme="light"] :is(.text-jewel, .text-viol) { color: var(--ui-accent); }
+html[data-theme="light"] :is(.bg-jewel, .bg-viol) { background-color: var(--ui-accent); }
+
+/* ---------- 4b. TINTED PANELS ----------
+   The legacy pages build cards out of `bg-white/[0.03]` — a white wash on
+   black. On cream that wash is invisible, so every card silently loses its
+   edge. Invert the wash: a black tint at the same strength keeps the exact
+   same visual weight against the new ground. */
+html[data-theme="light"] :is(.bg-white\/5, .bg-white\/10, .bg-white\/20,
+    [class*="bg-white/["]) {
+  background-color: rgba(20, 18, 26, 0.045);
+}
+/* ...but not where the white wash is doing real work: it is a frosted
+   panel over a photograph or a saturated fill. Leave those at full white. */
+html[data-theme="light"] :is(.bg-white\/90, .bg-white\/95) {
+  background-color: #ffffff;
+}
+html[data-theme="light"] .band-hold :is(.bg-white\/5, .bg-white\/10, [class*="bg-white/["]) {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+/* The mirror case: `bg-deep/5` washes used as quiet insets on a light
+   card. In dark mode they are near-invisible anyway; on cream they read
+   correctly, so only the held bands need the light version. */
+html[data-theme="light"] .band-hold :is(.bg-deep\/5, .bg-deep\/10) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+/* Hover states written as `hover:bg-white/10` would leave a hole. */
+html[data-theme="light"] :is([class*="hover:bg-white/"]) {
+  transition: background-color .3s;
+}
+html[data-theme="light"] :is([class*="hover:bg-white/"]):hover {
+  background-color: rgba(20, 18, 26, 0.08);
+}
+
+/* ---------- 5. FORM FIELDS ---------- */
+/* The legacy inputs are transparent with white text. On cream that is
+   an empty box you cannot see into. */
+html[data-theme="light"] :is(input, textarea, select) {
+  color: var(--ui-ink);
+}
+html[data-theme="light"] :is(input, textarea, select)::placeholder {
+  color: rgba(20, 18, 26, 0.42);
+}
+html[data-theme="light"] :is(input, textarea, select):focus {
+  border-color: var(--ui-accent);
 }
 
 /* ============================================================
