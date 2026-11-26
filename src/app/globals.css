@@ -1486,3 +1486,29 @@ html[data-theme="light"] :is(input, textarea, select):focus {
   /* The no-JS / reduced-motion contract: never hide content. */
   .u-settle { opacity: 1; }
 }
+
+/* ---- figures: glyphs rise, the value never changes ------------------- */
+.u-figure {
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1;
+  /* the clip must contain the rising glyphs but not crop descenders */
+  padding-block: 0.08em;
+}
+.u-figure-ch {
+  display: inline-block;
+  transform: translateY(105%);
+  opacity: 0;
+  transition:
+    transform 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.42s ease-out;
+  transition-delay: calc(var(--i, 0) * 55ms);
+  will-change: transform, opacity;
+}
+.u-figure.is-in .u-figure-ch {
+  transform: translateY(0);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .u-figure-ch { transform: none; opacity: 1; transition: none; }
+}
