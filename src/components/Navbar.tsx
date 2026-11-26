@@ -143,11 +143,9 @@ export default function Navbar() {
         aria-hidden
       />
 
-      <header
-        id="site-header"
-        data-scrolled="false"
-        className="site-header fixed top-0 left-0 right-0 z-[100]"
-      >
+      {/* data-scrolled is written by the scroll listener, never by render,
+          so a re-render (menu, currency) cannot reset the masthead. */}
+      <header id="site-header" className="site-header fixed top-0 left-0 right-0 z-[100]">
         <div className="mx-auto max-w-[1240px] px-[var(--pad)]">
           <div className="h-[68px] md:h-[76px] flex items-center justify-between gap-6">
             {/* Wordmark */}
@@ -164,13 +162,13 @@ export default function Navbar() {
               <span className="font-grotesk font-medium tracking-[-0.01em] text-[17px] leading-none">
                 Altraware
               </span>
-              <span className="hidden sm:inline label !text-[10px] !tracking-[0.14em] text-ink-3 border-l border-rule pl-2.5 ml-1">
+              <span className="hidden xl:inline label !text-[10px] !tracking-[0.14em] text-ink-3 border-l border-rule pl-2.5 ml-1">
                 Dar es Salaam
               </span>
             </TransitionLink>
 
             {/* Section index */}
-            <nav className="hidden lg:flex items-center gap-7 text-[14px] text-ink-2" aria-label="Sections">
+            <nav className="hidden lg:flex items-center gap-6 text-[14px] text-ink-2" aria-label="Sections">
               {NAV_LINKS.map((l) => (
                 <TransitionLink
                   key={l.href}

@@ -57,17 +57,16 @@ export default function Home() {
             ============================================================ */}
         <section className="relative pt-[104px] md:pt-[132px] pb-10 md:pb-16">
           <div className="mx-auto max-w-[1240px] px-[var(--pad)]">
-            <div className="grid lg:grid-cols-[1.06fr_0.94fr] gap-10 lg:gap-16 items-end">
+            <div className="grid lg:grid-cols-[1fr_420px] gap-10 lg:gap-12 items-end">
               <div>
                 <div className="label flex items-center gap-3 mb-7">
                   <span className="w-6 h-px bg-ink-3 inline-block" aria-hidden />
                   Software studio · Dar es Salaam · Est. 2025
                 </div>
 
-                <h1 className="display text-[44px] sm:text-[64px] lg:text-[76px] leading-[0.98] tracking-[-0.02em]">
-                  Mizizi ya nyumbani.
-                  <br />
-                  <em className="text-clay">Ufundi wa kidunia.</em>
+                <h1 className="display text-[40px] sm:text-[50px] lg:text-[58px] leading-[1.02] tracking-[-0.02em]">
+                  <span className="block">Mizizi ya nyumbani.</span>
+                  <em className="block text-clay">Ufundi wa kidunia.</em>
                 </h1>
 
                 <p className="mt-7 text-[17px] md:text-[19px] text-ink-2 leading-[1.6] max-w-[46ch]">
