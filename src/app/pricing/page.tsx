@@ -173,7 +173,7 @@ export default function PricingPage() {
 
           {/* RESULT PANEL */}
           <Reveal delay={0.1}>
-            <div className="bg-deep text-white rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+            <div className="on-dark bg-deep text-white rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
               <div className="absolute -top-20 -right-20 w-64 h-64 bg-viol/30 blur-[80px] rounded-full" />
               <div className="relative">
                 <div className="text-[11px] tracking-widest font-grotesk text-white/50">ESTIMATED INVESTMENT RANGE</div>
@@ -255,7 +255,7 @@ export default function PricingPage() {
       </section>
 
       {/* SUPPORT PLANS */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 py-20 md:py-28 relative">
           <Reveal className="text-center text-[11px] font-grotesk font-bold tracking-[0.3em] text-white/40 mb-10">

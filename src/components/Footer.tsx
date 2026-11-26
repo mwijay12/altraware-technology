@@ -14,7 +14,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-deep3 text-white pt-16 pb-8 border-t border-white/10">
+    <footer className="band-hold bg-deep3 text-white pt-16 pb-8 border-t border-white/10">
       <div className="max-w-[1320px] mx-auto px-5 md:px-8">
         <div className="grid md:grid-cols-[1.3fr_1fr_1fr_1fr] gap-10">
           <div>

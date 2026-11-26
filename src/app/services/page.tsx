@@ -74,7 +74,7 @@ export default function ServicesPage() {
                     ))}
                   </div>
                   {s.startingPrice && (
-                    <div className="mt-6 inline-flex items-center gap-3 bg-deep text-white rounded-2xl px-5 py-4">
+                    <div className="on-dark mt-6 inline-flex items-center gap-3 bg-deep text-white rounded-2xl px-5 py-4">
                       <span className="text-white/60 text-sm">Starting from</span>
                       <span className="font-grotesk font-bold text-lg">{geo.fmt(s.startingPrice)}</span>
                     </div>
@@ -125,7 +125,7 @@ export default function ServicesPage() {
                 We build on Next.js 16 + TypeScript — the same foundation used by world-class teams — then tune every
                 byte for Tanzanian networks, devices and wallets.
               </p>
-              <div className="mt-7 bg-deep text-white rounded-2xl p-5 font-mono text-xs leading-relaxed">
+              <div className="on-dark mt-7 bg-deep text-white rounded-2xl p-5 font-mono text-xs leading-relaxed">
                 <div className="flex items-center gap-2 text-white/40 mb-3 text-[10px] tracking-widest font-sans font-bold">
                   <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" /> PRODUCTION · ALTRAWARE CLOUD
                 </div>
@@ -164,7 +164,7 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[900px] mx-auto px-5 py-24 text-center relative">
           <Reveal>

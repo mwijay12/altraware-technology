@@ -89,7 +89,7 @@ export default function BlogPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[900px] mx-auto px-5 py-24 text-center relative">
           <Reveal>

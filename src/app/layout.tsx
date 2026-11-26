@@ -167,8 +167,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     ],
   };
   return (
-    <html lang="en" className={`${syne.variable} ${grotesk.variable}`}>
+    // suppressHydrationWarning: the inline no-flash script below writes
+    // data-theme onto <html> before React hydrates.
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${syne.variable} ${grotesk.variable}`}
+    >
       <head>
+        {/* Theme is applied before first paint so there is never a flash of
+            the wrong ground. Dark (Usiku) is the default. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("altraware_theme");if(t==="light"||t==="dark"){document.documentElement.dataset.theme=t;}}catch(e){}})();`,
+          }}
+        />
         {/* FontAwesome is ~100KB+ render-blocking CSS. Defer it: load async
             via print-media swap so it never delays FCP/LCP on mobile.
             Icons render with a fallback until it arrives. */}
@@ -206,6 +219,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             .u-clip { clip-path: none !important; }
             .u-parallax { transform: none !important; }
             .u-marquee-track { animation: none !important; }
+            /* motion part two starts hidden too — reveal it or the headline
+               never appears when the bundle is blocked */
+            .u-settle { opacity: 1 !important; transform: none !important; letter-spacing: -0.035em !important; }
+            .u-overscan img, .u-overscan { transform: none !important; }
+            .u-magnet { transform: none !important; }
           `}</style>
         </noscript>
         <script

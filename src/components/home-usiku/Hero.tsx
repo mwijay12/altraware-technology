@@ -2,7 +2,7 @@
 
 import { TransitionLink } from "@/components/Navbar";
 import MediaImage from "@/components/MediaImage";
-import { MaskLine, useClipReveal, useParallax } from "@/components/usiku";
+import { MaskLine, useParallax, useDrift, useMagnet, useHeroFrame } from "@/components/usiku";
 import type { SiteContent } from "@/lib/content";
 
 /* ============================================================
@@ -15,7 +15,9 @@ import type { SiteContent } from "@/lib/content";
 export default function Hero({ content }: { content: SiteContent }) {
   const imgParallax = useParallax<HTMLDivElement>(0.06);
   const bloomParallax = useParallax<HTMLDivElement>(-0.12);
-  const clipRef = useClipReveal<HTMLDivElement>();
+  const frameRef = useHeroFrame<HTMLDivElement>();
+  const bloomDrift = useDrift<HTMLDivElement>(26);
+  const ctaMagnet = useMagnet<HTMLAnchorElement>(0.22);
 
   const line1 = content.hero.titleLine1.map((t) => t.text).join("");
   const line2 = content.hero.titleLine2.map((t) => t.text).join("");
@@ -31,7 +33,9 @@ export default function Hero({ content }: { content: SiteContent }) {
         className="u-parallax pointer-events-none absolute -top-[18%] left-1/2 -translate-x-1/2 w-[min(1100px,120vw)] h-[620px] rounded-full opacity-[0.22] blur-[120px]"
         style={{ background: "radial-gradient(circle, #8B5CF6 0%, #4C1D95 45%, transparent 72%)" }}
         aria-hidden="true"
-      />
+      >
+        <span ref={bloomDrift} className="u-drift block w-full h-full" />
+      </div>
 
       <div className="u-wrap relative">
         {/* coordinate rail — structure instead of a badge */}
@@ -49,10 +53,12 @@ export default function Hero({ content }: { content: SiteContent }) {
           <p className="u-lead max-w-[52ch]">{content.hero.subtitle}</p>
 
           <div className="flex flex-wrap gap-3">
-            <TransitionLink href="/contact" className="u-btn u-btn-primary">
-              {content.hero.primaryCta}
-              <span aria-hidden="true">→</span>
-            </TransitionLink>
+            <span ref={ctaMagnet} className="u-magnet inline-block">
+              <TransitionLink href="/contact" className="u-btn u-btn-primary">
+                {content.hero.primaryCta}
+                <span aria-hidden="true">→</span>
+              </TransitionLink>
+            </span>
             <TransitionLink href="/platforms" className="u-btn u-btn-ghost">
               {content.hero.secondaryCta}
             </TransitionLink>
@@ -64,8 +70,8 @@ export default function Hero({ content }: { content: SiteContent }) {
       <div ref={imgParallax} className="u-parallax mt-14 md:mt-20">
         <div className="u-wrap">
           <div
-            ref={clipRef}
-            className="u-clip u-frame relative h-[46vh] min-h-[280px] md:h-[54vh] rounded-sm"
+            className="u-clip u-frame u-overscan band-hold relative h-[46vh] min-h-[280px] md:h-[54vh] rounded-sm"
+            ref={frameRef}
           >
             <MediaImage
               src={content.hero.image}

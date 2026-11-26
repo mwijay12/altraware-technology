@@ -49,7 +49,7 @@ export default function PlatformsPage() {
   return (
     <div className="pt-[120px]">
       {/* HERO */}
-      <section className="bg-deep text-white relative overflow-hidden">
+      <section className="on-dark bg-deep text-white relative overflow-hidden">
         <div className="noise-blue absolute inset-0" />
         <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-viol/20 blur-[140px] rounded-full" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 py-16 md:py-24 relative text-center">
@@ -126,7 +126,7 @@ export default function PlatformsPage() {
       </section>
 
       {/* DEMO AREA */}
-      <section className="bg-deep text-white relative overflow-hidden pb-24">
+      <section className="on-dark bg-deep text-white relative overflow-hidden pb-24">
         <div className="noise-blue absolute inset-0" />
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 relative">
           {tab === "faida" ? <FaidaDemo notify={notify} /> : <CareDemo notify={notify} />}
@@ -161,7 +161,7 @@ export default function PlatformsPage() {
                         href={p.webUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-deep text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-viol transition-all shadow-sm"
+                        className="on-dark inline-flex items-center gap-2 bg-deep text-white px-5 py-3 rounded-full text-xs font-bold hover:bg-viol transition-all shadow-sm"
                       >
                         <i className="fa-solid fa-arrow-up-right-from-square text-[11px]" />
                         Open Live Web App
@@ -221,7 +221,7 @@ export default function PlatformsPage() {
             </p>
           </Reveal>
           <Reveal delay={0.15} className="mt-8">
-            <TransitionLink href="/contact" className="btn-magnetic inline-flex items-center gap-2 bg-deep text-white px-8 py-4 rounded-full font-bold text-sm">
+            <TransitionLink href="/contact" className="on-dark btn-magnetic inline-flex items-center gap-2 bg-deep text-white px-8 py-4 rounded-full font-bold text-sm">
               Book a demo at your premises <i className="fa-solid fa-arrow-right text-xs" />
             </TransitionLink>
           </Reveal>
@@ -290,7 +290,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
         <div className="bg-white text-deep rounded-3xl p-5 md:p-7 shadow-2xl">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-deep text-white flex items-center justify-center font-bold">F</div>
+              <div className="on-dark w-11 h-11 rounded-xl bg-deep text-white flex items-center justify-center font-bold">F</div>
               <div>
                 <div className="font-grotesk font-bold">Faida POS</div>
                 <div className="text-[11px] text-deep/50 font-mono">
@@ -452,7 +452,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
                 </div>
                 <div className="font-grotesk font-bold text-2xl mt-4">Simulated payment successful! ✓</div>
                 <p className="text-sm text-deep/55 mt-2">Demo receipt #FD-{receiptNo} · No money moved, no SMS sent</p>
-                <button className="mt-4 w-full bg-deep text-white font-bold py-3.5 rounded-xl hover:bg-viol transition-colors" onClick={done}>
+                <button className="on-dark mt-4 w-full bg-deep text-white font-bold py-3.5 rounded-xl hover:bg-viol transition-colors" onClick={done}>
                   New sale
                 </button>
               </div>
@@ -507,7 +507,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
             </div>
           </div>
           <div className="space-y-1 text-sm font-medium">
-            <div className="bg-deep text-white rounded-xl px-4 py-2.5 flex items-center gap-2.5"><i className="fa-solid fa-grid-2 text-xs" /> Dashboard</div>
+            <div className="on-dark bg-deep text-white rounded-xl px-4 py-2.5 flex items-center gap-2.5"><i className="fa-solid fa-grid-2 text-xs" /> Dashboard</div>
             <div className="px-4 py-2.5 text-deep/55 flex items-center gap-2.5 hover:bg-deep/5 rounded-xl cursor-pointer transition-colors">
               <i className="fa-solid fa-children text-xs" /> Children
               <span className="ml-auto text-[10px] bg-viol/10 text-viol font-bold px-2 py-0.5 rounded-full">48</span>
@@ -544,7 +544,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
                 />
               </div>
               <button
-                className="bg-deep text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 hover:bg-viol transition-colors"
+                className="on-dark bg-deep text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 hover:bg-viol transition-colors"
                 onClick={() => {
                   setSyncing(true);
                   window.setTimeout(() => {
@@ -559,7 +559,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-5">
-            <div className="bg-deep text-white rounded-2xl p-4">
+            <div className="on-dark bg-deep text-white rounded-2xl p-4">
               <div className="text-[10px] tracking-widest opacity-60 font-grotesk">PRESENT</div>
               <div className="font-grotesk font-bold text-3xl">{present.size}<span className="text-sm opacity-50">/8</span></div>
               <div className="h-1.5 bg-white/15 rounded-full mt-2 overflow-hidden">

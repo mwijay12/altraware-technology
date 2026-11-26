@@ -279,3 +279,194 @@ export function Ticker({
     </div>
   );
 }
+
+/* ============================================================
+   MOTION, PART TWO — the moves that make it feel alive.
+   ============================================================ */
+
+/**
+ * Headline settle: starts wide and skewed, lands tight and upright.
+ * Reads as type being placed rather than fading in.
+ */
+export function useSettle<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") {
+      el.classList.add("is-in");
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("is-in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    // If it is already on screen at mount the observer fires immediately;
+    // this is the fallback for a missed callback.
+    const t = window.setTimeout(() => el.classList.add("is-in"), 2600);
+    return () => {
+      io.disconnect();
+      clearTimeout(t);
+    };
+  }, []);
+  return ref;
+}
+
+/** Image overscan reveal — starts past its frame, settles flush. */
+export function useOverscan<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") {
+      el.classList.add("is-in");
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("is-in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    io.observe(el);
+    const t = window.setTimeout(() => el.classList.add("is-in"), 2000);
+    return () => {
+      io.disconnect();
+      clearTimeout(t);
+    };
+  }, []);
+  return ref;
+}
+
+/** A rule that draws itself. */
+export function useDraw<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") {
+      el.classList.add("is-in");
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("is-in");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return ref;
+}
+
+/**
+ * Magnetic pointer attraction for CTAs. Writes --mx/--my only, so the
+ * transform stays in CSS and never fights a transition.
+ */
+export function useMagnet<T extends HTMLElement>(strength = 0.28) {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersReduced()) return;
+    // Coarse pointers (touch) have no hover — skip the work entirely.
+    if (window.matchMedia("(hover: none)").matches) return;
+
+    const onMove = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      el.style.setProperty("--mx", `${(dx * strength).toFixed(1)}px`);
+      el.style.setProperty("--my", `${(dy * strength).toFixed(1)}px`);
+    };
+    const reset = () => {
+      el.style.setProperty("--mx", "0px");
+      el.style.setProperty("--my", "0px");
+    };
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", reset);
+    return () => {
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", reset);
+    };
+  }, [strength]);
+  return ref;
+}
+
+/**
+ * Cursor-aware decor drift for the hero bloom.
+ */
+export function useDrift<T extends HTMLElement>(strength = 22) {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersReduced()) return;
+    if (window.matchMedia("(hover: none)").matches) return;
+
+    let raf = 0;
+    const onMove = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5) * strength;
+        const y = (e.clientY / window.innerHeight - 0.5) * strength;
+        el.style.setProperty("--dx", `${x.toFixed(1)}px`);
+        el.style.setProperty("--dy", `${y.toFixed(1)}px`);
+      });
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, [strength]);
+  return ref;
+}
+
+/**
+ * Combined hero-frame behaviour: clip-path reveal + overscan settle on the
+ * same element. React 19 forbids writing to a ref returned by another hook,
+ * so the two behaviours are composed here instead of being stitched at the
+ * call site.
+ */
+export function useHeroFrame<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const reveal = () => {
+      el.classList.add("is-in");
+    };
+    if (prefersReduced() || typeof IntersectionObserver === "undefined") {
+      reveal();
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          reveal();
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12 }
+    );
+    io.observe(el);
+    const t = window.setTimeout(reveal, 1800);
+    return () => {
+      io.disconnect();
+      clearTimeout(t);
+    };
+  }, []);
+  return ref;
+}
