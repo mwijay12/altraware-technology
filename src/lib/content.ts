@@ -1033,12 +1033,23 @@ function isStaleMediaUrl(url: string): boolean {
   return false;
 }
 
+/* A caption that literally tells the owner to replace it ("replace with your
+   reel", "replace in admin") is a placeholder marker, not content. Those tiles
+   were shipped early on and are exactly the ones that read as broken. */
+function isPlaceholderCaption(caption: unknown): boolean {
+  if (typeof caption !== "string") return false;
+  return /\breplace (with|in)\b/i.test(caption);
+}
+
 /** Recursively drop media entries whose URL is stale; keep every text field. */
 function pruneStaleMedia<T>(value: T): T {
   if (Array.isArray(value)) {
     const kept = value.filter((item) => {
-      const url = (item as { url?: string } | null)?.url;
-      return !(typeof url === "string" && isStaleMediaUrl(url));
+      const entry = item as { url?: string; caption?: string } | null;
+      const url = entry?.url;
+      if (typeof url === "string" && isStaleMediaUrl(url)) return false;
+      if (isPlaceholderCaption(entry?.caption)) return false;
+      return true;
     });
     // A container of media that lost items still needs real media: if every
     // entry was stale, return [] so the caller falls back to the default.
@@ -1047,14 +1058,46 @@ function pruneStaleMedia<T>(value: T): T {
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (typeof v === "string" && (k === "url" || k === "image" || k === "cover" || k === "photo" || k === "poster" || k === "src")) {
-        if (isStaleMediaUrl(v)) continue;
+      // Drop stale media wherever it sits — url, image, cover, previewImage,
+      // liveDemoPoster, hero.image. isStaleMediaUrl only matches placeholder
+      // films and undersized Cloudinary requests, so prose is never at risk.
+      if (typeof v === "string" && isStaleMediaUrl(v)) {
+        // Omit the key so applyOverrides() can fall back to the shipped value
+        // instead of leaving a stale URL (or an empty string) in place.
+        continue;
       }
       out[k] = pruneStaleMedia(v);
     }
     return out as unknown as T;
   }
   return value;
+}
+
+/**
+ * Saved collections (services, projects) are matched to the defaults by id.
+ * If sanitising stripped an item's media, the shipped media is restored, so a
+ * tile is never left pictureless just because its saved copy was stale.
+ */
+function reconcileMedia<T>(key: string, saved: unknown, defaults: unknown): unknown {
+  if (key !== "services" && key !== "projects") return saved;
+  if (!Array.isArray(saved) || !Array.isArray(defaults)) return saved;
+  const byId = new Map<string, Record<string, unknown>>();
+  for (const d of defaults) {
+    const id = (d as { id?: string })?.id;
+    if (typeof id === "string") byId.set(id, d as Record<string, unknown>);
+  }
+  return saved.map((item) => {
+    const it = item as Record<string, unknown>;
+    const def = byId.get(String(it?.id));
+    if (!def) return item;
+    const savedMedia = it.media as unknown[] | undefined;
+    const defMedia = def.media as unknown[] | undefined;
+    if (!defMedia || !defMedia.length) return item;
+    if (!Array.isArray(savedMedia) || savedMedia.length === 0) {
+      return { ...it, media: defMedia };
+    }
+    return item;
+  });
 }
 
 /**
@@ -1073,7 +1116,16 @@ export function applyOverrides(
     if (value === undefined) continue;
     const def = (base as unknown as Record<string, unknown>)[key];
     if (Array.isArray(value) && value.length === 0 && Array.isArray(def)) continue;
-    merged[key] = value;
+    const isPlainObject =
+      value !== null && typeof value === "object" && !Array.isArray(value) &&
+      def !== null && typeof def === "object" && !Array.isArray(def);
+    if (isPlainObject) {
+      // Shallow-merge so a key dropped by pruning (e.g. images.liveDemoPoster)
+      // falls back to the shipped value instead of vanishing.
+      merged[key] = { ...(def as Record<string, unknown>), ...(value as Record<string, unknown>) };
+      continue;
+    }
+    merged[key] = reconcileMedia(key, value, def);
   }
   return merged as unknown as SiteContent;
 }
