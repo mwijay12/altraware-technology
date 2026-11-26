@@ -54,7 +54,7 @@ export default function BlogPostPage() {
 
       {/* COVER */}
       <section className="max-w-[1000px] mx-auto px-5 md:px-8">
-        <ImgReveal src={post.cover} alt={post.title} className="rounded-3xl h-[340px] md:h-[440px] border-8 border-white shadow-2xl shadow-deep/20" imgClassName="w-full h-full object-cover" />
+        <ImgReveal src={post.cover} alt={post.title} className="rounded-3xl h-[340px] md:h-[440px] border-8 border-white" imgClassName="w-full h-full object-cover" />
       </section>
 
       {/* BODY */}

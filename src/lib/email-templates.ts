@@ -184,7 +184,7 @@ export function renderClientConfirmationEmail(data: EmailInquiryData): { subject
                           <div style="font-size:12px;color:#64748B;font-weight:600;margin-bottom:6px;text-transform:uppercase;">
                             Client Brief &amp; Requirements:
                           </div>
-                          <div style="font-size:13px;color:#334155;line-height:1.6;background-color:#FFFFFF;padding:12px 14px;border-radius:8px;border:1px solid #CBD5E1;border-left:3px solid #7C3AED;">
+                          <div style="font-size:13px;color:#334155;line-height:1.6;background-color:#FFFFFF;padding:12px 14px;border-radius:8px;border:1px solid #CBD5E1;border-left:1px solid #A63D2A;">
                             ${safeMessage}
                           </div>
                         </td>
@@ -206,7 +206,7 @@ export function renderClientConfirmationEmail(data: EmailInquiryData): { subject
               <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:16px;">
                 <tr>
                   <td width="36" valign="top">
-                    <div style="width:28px;height:28px;background-color:#7C3AED;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
+                    <div style="width:28px;height:28px;background-color:#A63D2A;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
                       1
                     </div>
                   </td>
@@ -225,7 +225,7 @@ export function renderClientConfirmationEmail(data: EmailInquiryData): { subject
               <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:16px;">
                 <tr>
                   <td width="36" valign="top">
-                    <div style="width:28px;height:28px;background-color:#7C3AED;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
+                    <div style="width:28px;height:28px;background-color:#A63D2A;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
                       2
                     </div>
                   </td>
@@ -244,7 +244,7 @@ export function renderClientConfirmationEmail(data: EmailInquiryData): { subject
               <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:28px;">
                 <tr>
                   <td width="36" valign="top">
-                    <div style="width:28px;height:28px;background-color:#7C3AED;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
+                    <div style="width:28px;height:28px;background-color:#A63D2A;color:#FFFFFF;font-size:12px;font-weight:800;border-radius:50%;text-align:center;line-height:28px;">
                       3
                     </div>
                   </td>

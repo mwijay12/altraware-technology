@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useContent } from "@/components/providers";
 
 /* ============================================================
    Floating AI assistant — "Altra"
@@ -65,7 +64,6 @@ function FormattedMessage({ text }: { text: string }) {
 
 export default function FloatingAI() {
   const pathname = usePathname();
-  const { content } = useContent();
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -184,20 +182,17 @@ export default function FloatingAI() {
       {/* Floating launcher button (z-[120] to be above navbar) */}
       <button
         onClick={() => setOpen(!open)}
-        className={`fixed z-[120] w-14 h-14 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center text-white ${
+        className={`fixed z-[120] w-14 h-14 rounded-full border transition-all duration-300 flex items-center justify-center ${
           open
-            ? "bg-deep rotate-90"
-            : "bg-gradient-to-br from-viol to-violD shadow-viol/40 hover:scale-110 active:scale-95"
+            ? "bg-ink text-paper border-ink rotate-90"
+            : "bg-paper text-ink border-rule hover:border-ink hover:bg-paper-2"
         }`}
         style={{ bottom: "24px", right: "24px" }}
         aria-label="Open AI assistant"
       >
         <i className={`fa-solid ${open ? "fa-xmark text-xl" : "fa-wand-magic-sparkles text-xl"}`} />
         {!open && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white" />
-          </span>
+          <span aria-hidden className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-clay border-2 border-paper" />
         )}
       </button>
 
@@ -206,20 +201,19 @@ export default function FloatingAI() {
         <div
           data-lenis-prevent
           onWheel={(e) => e.stopPropagation()}
-          className="fixed z-[125] bottom-[92px] right-4 md:right-6 w-[calc(100vw-32px)] max-w-[390px] bg-white rounded-3xl shadow-2xl border border-deep/15 overflow-hidden flex flex-col transition-all max-h-[82vh] overscroll-contain"
+          className="fixed z-[125] bottom-[92px] right-4 md:right-6 w-[calc(100vw-32px)] max-w-[390px] bg-paper rounded-[6px] shadow-[0_24px_60px_-24px_rgba(22,19,13,.35)] border border-rule overflow-hidden flex flex-col transition-all max-h-[82vh] overscroll-contain"
           style={{ animation: "chatIn .3s cubic-bezier(.2,.8,.2,1)" }}
         >
           {/* Header */}
-          <div className="bg-deep text-white px-5 py-4 flex items-center gap-3 relative overflow-hidden shrink-0">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-viol/40 blur-2xl rounded-full pointer-events-none" />
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-viol to-violL flex items-center justify-center shrink-0 relative shadow-inner">
+          <div className="bg-forest text-paper px-5 py-4 flex items-center gap-3 relative overflow-hidden shrink-0">
+            <div className="w-9 h-9 rounded-[3px] border border-paper/25 flex items-center justify-center shrink-0 relative">
               <i className="fa-solid fa-wand-magic-sparkles text-sm" />
             </div>
             <div className="relative">
-              <div className="font-grotesk font-bold text-sm">Altra — Live AI Assistant</div>
-              <div className="text-[11px] text-white/70 flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Mercury-2.5 & DeepSeek · Online
+              <div className="font-grotesk font-medium text-sm">Altra — studio assistant</div>
+              <div className="text-[11px] text-paper/60 flex items-center gap-1.5">
+                <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-paper/70" />
+                Online · Kiswahili & English
               </div>
             </div>
 
@@ -228,7 +222,7 @@ export default function FloatingAI() {
               href="https://wa.me/255792867427?text=Habari%20Altraware%2C%20nina%20swali%20kuhusu%20huduma%20zenu."
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-auto mr-1.5 w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center text-sm shadow transition-transform hover:scale-110"
+              className="ml-auto mr-1.5 w-8 h-8 rounded-[3px] border border-paper/25 hover:border-paper/60 text-paper/80 hover:text-paper flex items-center justify-center text-sm transition-colors"
               title="Chat WhatsApp na Waasisi"
             >
               <i className="fa-brands fa-whatsapp" />
@@ -236,7 +230,7 @@ export default function FloatingAI() {
 
             <button
               onClick={() => setOpen(false)}
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-[3px] border border-paper/20 hover:border-paper/50 text-paper/70 hover:text-paper flex items-center justify-center transition-colors"
               aria-label="Close chat"
             >
               <i className="fa-solid fa-xmark text-sm" />
@@ -248,15 +242,15 @@ export default function FloatingAI() {
             ref={bodyRef}
             data-lenis-prevent
             onWheel={(e) => e.stopPropagation()}
-            className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-cream/70 text-deep text-[13px] leading-relaxed max-h-[380px] min-h-[260px] overscroll-contain select-text"
+            className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-paper text-ink text-[13px] leading-relaxed max-h-[380px] min-h-[260px] overscroll-contain select-text"
           >
             {msgs.map((m, i) => (
               <div key={i} className={`flex flex-col ${m.from === "user" ? "items-end" : "items-start"}`}>
                 <div
-                  className={`max-w-[88%] px-4 py-3 rounded-2xl shadow-sm ${
+                  className={`max-w-[88%] px-3.5 py-2.5 rounded-[4px] ${
                     m.from === "user"
-                      ? "bg-deep text-white rounded-br-sm"
-                      : "bg-white border border-deep/10 text-deep rounded-bl-sm"
+                      ? "bg-ink text-paper"
+                      : "bg-white border border-rule text-ink"
                   }`}
                 >
                   <FormattedMessage text={m.text} />
@@ -266,13 +260,13 @@ export default function FloatingAI() {
 
             {typing && (
               <div className="flex justify-start">
-                <div className="bg-white border border-deep/10 px-4 py-3 rounded-2xl rounded-bl-sm flex items-center gap-2 shadow-sm">
-                  <span className="text-[11px] text-deep/50 font-medium">Altra is typing</span>
+                <div className="bg-white border border-rule px-3.5 py-2.5 rounded-[4px] flex items-center gap-2">
+                  <span className="text-[11px] text-ink-3 font-medium">Altra is typing</span>
                   <div className="flex gap-1">
                     {[0, 0.15, 0.3].map((d) => (
                       <span
                         key={d}
-                        className="w-1.5 h-1.5 rounded-full bg-viol animate-bounce"
+                        className="w-1.5 h-1.5 rounded-full bg-ink-3 animate-bounce"
                         style={{ animationDelay: `${d}s` }}
                       />
                     ))}
@@ -284,15 +278,15 @@ export default function FloatingAI() {
 
           {/* Quick reply tags */}
           {msgs.length > 0 && msgs[msgs.length - 1].quick && !typing && (
-            <div className="px-3.5 py-2 flex flex-wrap gap-1.5 bg-cream/90 border-t border-deep/5 shrink-0">
+            <div className="px-3.5 py-2 flex flex-wrap gap-1.5 bg-paper-2/60 border-t border-rule shrink-0">
               {msgs[msgs.length - 1].quick!.map((q) => (
                 <button
                   key={q}
                   onClick={() => send(q)}
-                  className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 shadow-sm ${
+                  className={`text-[11px] font-medium px-3 py-1.5 rounded-[2px] border transition-colors flex items-center gap-1.5 ${
                     q.includes("WhatsApp")
-                      ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                      : "text-viol bg-white border border-viol/20 hover:bg-viol hover:text-white"
+                      ? "bg-forest text-paper border-forest hover:bg-ink"
+                      : "text-ink-2 bg-white border-rule hover:border-ink hover:text-ink"
                   }`}
                 >
                   {q.includes("WhatsApp") && <i className="fa-brands fa-whatsapp text-xs" />}
@@ -303,16 +297,15 @@ export default function FloatingAI() {
           )}
 
           {/* WhatsApp Direct Action Bar */}
-          <div className="px-4 py-2 bg-emerald-50 border-t border-emerald-100 flex items-center justify-between shrink-0">
-            <span className="text-[11px] font-semibold text-emerald-900 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="px-4 py-2 bg-paper-2/70 border-t border-rule flex items-center justify-between shrink-0">
+            <span className="text-[11px] text-ink-2 flex items-center gap-1.5">
               Unahitaji jibu la haraka?
             </span>
             <a
               href="https://wa.me/255792867427?text=Habari%20Altraware%2C%20ninaongea%20na%20AI%20yenu%20na%20ningependa%20kuwasiliana%20nanyi."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1 rounded-full shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium text-ink border-b border-ink/30 hover:border-ink px-0.5 py-0.5 transition-colors"
             >
               <i className="fa-brands fa-whatsapp" />
               Chat WhatsApp
@@ -321,7 +314,7 @@ export default function FloatingAI() {
 
           {/* Input Form */}
           <form
-            className="p-3 border-t border-deep/10 bg-white flex gap-2 shrink-0 items-center"
+            className="p-3 border-t border-rule bg-paper flex gap-2 shrink-0 items-center"
             onSubmit={(e) => {
               e.preventDefault();
               send(input);
@@ -331,12 +324,12 @@ export default function FloatingAI() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Uliza chochote kwa Kiswahili au English..."
-              className="flex-1 bg-cream border border-deep/15 rounded-full px-4 py-2.5 text-[13px] focus:border-viol focus:bg-white outline-none transition-colors"
+              className="flex-1 bg-white border border-rule rounded-[3px] px-3.5 py-2.5 text-[13px] focus:border-ink outline-none transition-colors"
             />
             <button
               type="submit"
               disabled={!input.trim() || typing}
-              className="w-10 h-10 rounded-full bg-viol text-white flex items-center justify-center hover:bg-violD disabled:opacity-40 disabled:hover:bg-viol transition-colors shrink-0 shadow-md"
+              className="w-10 h-10 rounded-[3px] bg-ink text-paper flex items-center justify-center hover:bg-clay disabled:opacity-35 disabled:hover:bg-ink transition-colors shrink-0"
               aria-label="Send"
             >
               <i className="fa-solid fa-paper-plane text-xs" />

@@ -1138,7 +1138,7 @@ function BlogTab({
           <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
             <input
               type="checkbox"
-              className="accent-[#7C3AED] w-4 h-4"
+              className="accent-[#A63D2A] w-4 h-4"
               checked={editing.published}
               onChange={(e) => setEditing({ ...editing, published: e.target.checked })}
             />
