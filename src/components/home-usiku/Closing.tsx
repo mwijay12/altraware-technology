@@ -61,7 +61,7 @@ export default function Closing({ content }: { content: SiteContent }) {
                   “{quote?.quote}”
                 </p>
               </blockquote>
-              <div className="grid grid-cols-3 gap-6 mt-10">
+              <div className="grid grid-cols-3 gap-x-5 gap-y-8 mt-10">
                 {(content.impact.stats ?? []).slice(0, 3).map((s) => (
                   <div key={s.label}>
                     <StatFigure
