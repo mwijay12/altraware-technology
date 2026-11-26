@@ -604,11 +604,28 @@ export default function Home() {
                             <img
                               src={p.media[0].url}
                               alt={p.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                              // object-top, not object-cover's default centre: product
+                              // screenshots put the headline and nav in the top third,
+                              // so centring a 16:9 shot in a 2.2:1 band cuts the
+                              // headline in half and reads as a broken image.
+                              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                               loading="lazy" decoding="async"
                               onError={(e) => {
+                                // Keep the box, never collapse it to nothing — a blank
+                                // grey rectangle looks like a bug. Show the title instead
+                                // so a failed load still tells the visitor what shipped.
                                 e.currentTarget.style.display = "none";
-                                e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]", "flex", "items-center", "justify-center");
+                                const box = e.currentTarget.parentElement;
+                                if (!box || box.dataset.fallback) return;
+                                box.dataset.fallback = "1";
+                                box.classList.add(
+                                  "bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]",
+                                  "flex", "items-center", "justify-center", "p-6", "text-center"
+                                );
+                                const label = document.createElement("span");
+                                label.className = "text-white/80 font-grotesk text-xs tracking-[0.2em] uppercase";
+                                label.textContent = p.title;
+                                box.appendChild(label);
                               }}
                             />
                           )}

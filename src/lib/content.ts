@@ -639,7 +639,10 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["SaaS", "Retail POS", "Flutter", "AI Advisor", "M-Pesa", "Offline-first"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497492/faidahq.png", caption: "Faida POS — Profit Headquarters Terminal & Dashboard" },
+        // Served from /public, not Cloudinary: this is the hero screenshot of our
+        // flagship product, so it must never depend on a third-party host or on a
+        // 600px-wide source being upscaled into a retina card.
+        { type: "image", url: "/faidahq.png", caption: "Faida POS — Profit Headquarters Terminal & Dashboard" },
         { type: "video", url: "https://media.w3.org/2010/05/bunny/movie.mp4", caption: "Faida POS live walkthrough demo" },
       ],
     },
@@ -890,7 +893,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
   },
   images: {
-    liveDemoPoster: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497492/faidahq.png",
+    liveDemoPoster: "/faidahq.png",
     heroDar: "https://images.unsplash.com/photo-1609198092458-38a293c7ac4b?q=80&w=900&auto=format&fit=crop",
     streetTz: "https://images.unsplash.com/photo-1523805009345-7448845a9e53?q=80&w=700&auto=format&fit=crop",
     mediaBanner: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop",
