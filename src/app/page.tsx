@@ -88,25 +88,35 @@ export function ServicesAccordion({ preview = false }: { preview?: boolean }) {
               <span className="w-10 h-[2px] bg-viol inline-block" />
               <span>Act II — What We Build · Three Crafts</span>
             </div>
-            <h2 className="display text-4xl md:text-6xl font-medium">
-              <span className="block">
-                <TextEffect as="span" per="word" preset="fade" viewport={{ once: true }}>
-                  Three crafts.
-                </TextEffect>
-              </span>
-              <span className="block mt-1">
-                <i className="font-light text-deep/50">
-                  <TextEffect as="span" per="word" preset="slide" delay={0.2} viewport={{ once: true }}>
-                    One standard:
+            {/* In preview mode (the home page) the accordion carries the
+                headline. On /services the page hero already says exactly
+                this sentence — printing it twice on one scroll was the
+                loudest remaining duplication on the site. */}
+            {preview ? (
+              <h2 className="display text-4xl md:text-6xl font-medium">
+                <span className="block">
+                  <TextEffect as="span" per="word" preset="fade" viewport={{ once: true }}>
+                    Three crafts.
                   </TextEffect>
-                </i>{" "}
-                <i className="text-viol">
-                  <TextEffect as="span" per="word" preset="blur" delay={0.4} viewport={{ once: true }}>
-                    excellent.
-                  </TextEffect>
-                </i>
-              </span>
-            </h2>
+                </span>
+                <span className="block mt-1">
+                  <i className="font-light text-deep/50">
+                    <TextEffect as="span" per="word" preset="slide" delay={0.2} viewport={{ once: true }}>
+                      One standard:
+                    </TextEffect>
+                  </i>{" "}
+                  <i className="text-viol">
+                    <TextEffect as="span" per="word" preset="blur" delay={0.4} viewport={{ once: true }}>
+                      excellent.
+                    </TextEffect>
+                  </i>
+                </span>
+              </h2>
+            ) : (
+              <h2 className="display text-3xl md:text-5xl font-medium">
+                Pick a craft — <i className="text-viol">see the detail.</i>
+              </h2>
+            )}
           </Reveal>
           <Reveal delay={0.1}>
             <p className="text-deep/60 max-w-sm text-[15px]">
@@ -172,12 +182,15 @@ export function ServicesAccordion({ preview = false }: { preview?: boolean }) {
                             </div>
                           </div>
                         ))}
-                        <TransitionLink
-                          href="/services"
+                        {/* On /services the detail block is further down the
+                            same page, so navigating to "/services" was a
+                            dead end that reloaded the page you were on. */}
+                        <a
+                          href={preview ? "/services" : `#${s.id}`}
                           className="text-center bg-viol hover:bg-violD transition-colors text-white text-xs font-bold py-2.5 rounded-xl mt-1"
                         >
-                          Explore {s.title} details →
-                        </TransitionLink>
+                          {preview ? `Explore ${s.title} details →` : `Jump to ${s.title} ↓`}
+                        </a>
                       </div>
                     </div>
                   </div>
