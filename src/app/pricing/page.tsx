@@ -79,7 +79,7 @@ export default function PricingPage() {
         </div>
         <div className="max-w-[1320px] mx-auto px-5 md:px-8 grid lg:grid-cols-[1fr_1fr] gap-6 items-start">
           {/* ESTIMATOR */}
-          <Reveal className="bg-white border border-deep/10 rounded-3xl p-6 md:p-8">
+          <Reveal className="bg-white border border-deep/10 rounded-3xl p-6 md:p-8 shadow-xl shadow-deep/5">
             <div className="flex items-center justify-between mb-6">
               <div className="font-grotesk font-bold text-lg flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-viol text-white flex items-center justify-center text-sm">
@@ -145,12 +145,12 @@ export default function PricingPage() {
             </div>
             <div className="space-y-2.5">
               <label className="flex items-center gap-3 bg-cream border border-deep/10 rounded-xl px-4 py-3 cursor-pointer">
-                <input type="checkbox" className="accent-[#A63D2A] w-4 h-4" checked={includeVat} onChange={(e) => setIncludeVat(e.target.checked)} />
+                <input type="checkbox" className="accent-[#7C3AED] w-4 h-4" checked={includeVat} onChange={(e) => setIncludeVat(e.target.checked)} />
                 <span className="text-sm">Include VAT ({pricing.estimator.vatPercent}%)</span>
                 <span className="ml-auto text-xs font-mono text-deep/45">added on top</span>
               </label>
               <label className="flex items-center gap-3 bg-cream border border-deep/10 rounded-xl px-4 py-3 cursor-pointer">
-                <input type="checkbox" className="accent-[#A63D2A] w-4 h-4" checked={includeSupport} onChange={(e) => setIncludeSupport(e.target.checked)} />
+                <input type="checkbox" className="accent-[#7C3AED] w-4 h-4" checked={includeSupport} onChange={(e) => setIncludeSupport(e.target.checked)} />
                 <span className="text-sm">Include monthly support plan</span>
               </label>
               {includeSupport && (
@@ -173,7 +173,7 @@ export default function PricingPage() {
 
           {/* RESULT PANEL */}
           <Reveal delay={0.1}>
-            <div className="bg-deep text-white rounded-3xl p-6 md:p-8 relative overflow-hidden">
+            <div className="bg-deep text-white rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
               <div className="absolute -top-20 -right-20 w-64 h-64 bg-viol/30 blur-[80px] rounded-full" />
               <div className="relative">
                 <div className="text-[11px] tracking-widest font-grotesk text-white/50">ESTIMATED INVESTMENT RANGE</div>
@@ -230,7 +230,7 @@ export default function PricingPage() {
                   </div>
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-clay rounded-[2px] transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-violL to-viol rounded-full transition-all duration-500"
                       style={{ width: `${estimate.complexity * 10}%` }}
                     />
                   </div>
@@ -240,7 +240,7 @@ export default function PricingPage() {
                   href={`/contact?estimate=${encodeURIComponent(
                     `I'm interested in a ${typeId} project (${geo.fmtTag(estimate.subtotal)} – ${geo.fmtTag(estimate.highEnd)}). Features: ${estimate.selectedFeatures.join(", ") || "standard"}.`
                   )}`}
-                  className="mt-6 block text-center bg-viol hover:bg-violD transition-colors text-white text-sm font-bold py-4 rounded-xl"
+                  className="mt-6 block text-center bg-viol hover:bg-violD transition-colors text-white text-sm font-bold py-4 rounded-xl shadow-lg shadow-viol/30"
                   onClick={() => notify("Estimate attached to your brief ✓")}
                 >
                   Use this estimate in your brief ↓
@@ -266,7 +266,7 @@ export default function PricingPage() {
               <Reveal key={p.id} delay={i * 0.08}>
                 <div
                   className={`rounded-3xl p-7 h-full relative overflow-hidden ${
-                    p.popular ? "bg-viol" : "bg-white/[0.06] border border-white/10 hover:border-violL/50 transition-colors"
+                    p.popular ? "bg-viol shadow-2xl shadow-viol/30" : "bg-white/[0.06] border border-white/10 hover:border-violL/50 transition-colors"
                   }`}
                 >
                   {p.popular && (
