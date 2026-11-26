@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard, ImgReveal, MediaBlock } from "@/components/motion";
 import { useContent } from "@/components/providers";
-import { ServicesAccordion } from "@/app/page";
+import { ServicesAccordion } from "@/components/marketing";
 import { useVisitorCurrency } from "@/lib/geo-pricing";
 import { TextEffect } from "@/components/ui/text-effect";
 

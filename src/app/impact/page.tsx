@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard, Counter } from "@/components/motion";
 import { useContent } from "@/components/providers";
-import { TestimonialCarousel } from "@/app/page";
+import { TestimonialCarousel } from "@/components/marketing";
 import { TextEffect } from "@/components/ui/text-effect";
 import ProjectModal from "@/components/ui/ProjectModal";
 import type { Project } from "@/lib/content";
