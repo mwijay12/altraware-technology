@@ -1,5 +1,6 @@
 "use client";
 
+import MediaImage from "@/components/MediaImage";
 import { useParams } from "next/navigation";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, ImgReveal } from "@/components/motion";
@@ -86,8 +87,7 @@ export default function BlogPostPage() {
                   <TransitionLink href={`/blog/${p.slug}`} className="block group">
                     <div className="bg-cream border border-deep/10 rounded-3xl overflow-hidden group-hover:border-viol transition-colors">
                       <div className="h-40 overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.cover} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" decoding="async" />
+                        <MediaImage src={p.cover} alt={p.title} label={p.title} className="w-full h-full" sizes="(max-width: 767px) 100vw, 33vw" imgClassName="group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-5">
                         <div className="font-grotesk font-bold text-lg leading-snug">{p.title}</div>

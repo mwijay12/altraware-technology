@@ -1,5 +1,6 @@
 "use client";
 
+import MediaImage from "@/components/MediaImage";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard, ImgReveal, Counter, MediaBlock } from "@/components/motion";
 import { useContent } from "@/components/providers";
@@ -81,7 +82,13 @@ export default function AboutPage() {
               <Reveal key={f.name} delay={i * 0.1}>
                 <TiltCard intensity={8} className="bg-white border border-deep/10 rounded-3xl p-8 text-center h-full">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={f.photo} alt={f.name} className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-viol/20" />
+                  <MediaImage
+                    src={f.photo}
+                    alt={f.name}
+                    label={f.name}
+                    className="w-24 h-24 rounded-full mx-auto border-4 border-viol/20"
+                    sizes="96px"
+                  />
                   <div className="font-grotesk font-bold text-xl mt-5">{f.name}</div>
                   <div className="text-xs font-grotesk font-bold tracking-widest text-viol mt-1">{f.role.toUpperCase()}</div>
                   <p className="text-sm text-deep/60 mt-3">{f.bio}</p>

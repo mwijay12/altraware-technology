@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { TransitionLink } from "@/components/Navbar";
-import { Reveal, TiltCard, Counter, ImgReveal, Marquee, MediaBlock } from "@/components/motion";
+import { Reveal, TiltCard, Counter, ImgReveal, Marquee } from "@/components/motion";
 import { useContent, useNotify } from "@/components/providers";
 import { TextEffect } from "@/components/ui/text-effect";
 import { ScrollVelocity } from "@/components/ui/scroll-velocity";
@@ -12,6 +11,7 @@ import { TextGradientScroll } from "@/components/ui/text-gradient-scroll";
 import { type Project } from "@/lib/content";
 import { useVisitorCurrency } from "@/lib/geo-pricing";
 import ProjectModal from "@/components/ui/ProjectModal";
+import MediaImage from "@/components/MediaImage";
 
 /* Mobile Lighthouse: avoid downloading the desktop hero visual on phones
    and avoid infinite typewriter re-renders. These hooks gate heavy UI. */
@@ -245,15 +245,13 @@ export default function Home() {
           {isDesktop && (
           <div className={`hero-el relative transition-all duration-700 delay-200 ${heroReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
             <TiltCard intensity={10} className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-deep/20 border-8 border-white">
-              <Image
+              <MediaImage
                 src={content.hero.image}
                 alt={`${content.hero.imageCaption || "Dar es Salaam, Tanzania"} — Altraware Technology software company`}
-                width={800}
-                height={520}
-                sizes="(min-width: 1024px) 40vw, 0px"
-                loading="eager"
-                decoding="async"
-                className="w-full h-[520px] object-cover"
+                label={content.hero.imageCaption || "Dar es Salaam · Tanzania"}
+                className="h-[520px]"
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-deep/15 to-transparent z-[3]" />
               <div className="absolute bottom-5 left-5 right-5 z-[4] flex items-end justify-between">
@@ -423,8 +421,13 @@ export default function Home() {
                     “Our duka used to close the books at midnight. Now Faida does it before we lock the door — and sends the report to my phone.”
                   </p>
                   <div className="flex items-center gap-3 mt-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={content.images.clientAvatar} className="w-10 h-10 rounded-full object-cover border-2 border-violL" alt="Neema Mwakalinga, duka owner in Kariakoo Dar es Salaam — Faida POS client review" />
+                    <MediaImage
+                      src={content.images.clientAvatar}
+                      alt="Neema Mwakalinga, duka owner in Kariakoo Dar es Salaam — Faida POS client review"
+                      label="Duka Owner"
+                      className="w-10 h-10 rounded-full border-2 border-violL shrink-0"
+                      sizes="40px"
+                    />
                     <div>
                       <div className="text-sm font-bold">Neema Mwakalinga</div>
                       <div className="text-xs text-white/50">Duka Owner · Kariakoo, Dar es Salaam</div>
@@ -501,16 +504,13 @@ export default function Home() {
                       <span className="text-[10px] font-mono px-3 text-center text-white/50">Video — tap Projects to watch</span>
                     </div>
                   ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <MediaImage
                       src={m.url}
                       alt={m.caption}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      loading="lazy" decoding="async"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-slate-900", "to-indigo-950");
-                      }}
+                      label={m.caption}
+                      focus="top"
+                      sizes="(max-width: 767px) 50vw, 25vw"
+                      imgClassName="group-hover:scale-105 transition-transform duration-700"
                     />
                   )}
                   <span className="absolute bottom-2 left-2 right-2 md:bottom-3 md:left-3 md:right-3 bg-deep/90 backdrop-blur-md text-white text-[11px] md:text-sm font-semibold px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl truncate border border-white/10 shadow-sm">
@@ -600,16 +600,16 @@ export default function Home() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <MediaImage
                               src={p.media[0].url}
                               alt={p.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                              loading="lazy" decoding="async"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                                e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]", "flex", "items-center", "justify-center");
-                              }}
+                              label={p.title}
+                              // Product screenshots keep their headline and nav in the
+                              // top third; centring a 16:9 shot in a 2.2:1 band sliced
+                              // the headline in half and read as a broken image.
+                              focus="top"
+                              sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                              imgClassName="group-hover:scale-105 transition-transform duration-700"
                             />
                           )}
 
@@ -816,8 +816,14 @@ export default function Home() {
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {content.impact.sectors.map((s) => (
                   <div key={s.label} className="rounded-2xl overflow-hidden h-28 relative group">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={`${s.label} software solutions in Tanzania by Altraware Technology`} loading="lazy" decoding="async" />
+                    <MediaImage
+                      src={s.image}
+                      alt={`${s.label} software solutions in Tanzania by Altraware Technology`}
+                      label={s.label}
+                      className="w-full h-full"
+                      sizes="(max-width: 767px) 100vw, 33vw"
+                      imgClassName="group-hover:scale-110 transition-transform duration-700"
+                    />
                     <div className="absolute inset-0 bg-deep/50 flex items-end p-3 text-white text-[11px] font-bold">{s.label}</div>
                   </div>
                 ))}

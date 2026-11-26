@@ -1,5 +1,6 @@
 "use client";
 
+import { cld, isPlaceholderVideo } from "@/lib/media";
 import { useEffect, useState } from "react";
 import type { Project } from "@/lib/content";
 import Link from "next/link";
@@ -89,7 +90,7 @@ export default function ProjectModal({
           {currentMedia && (
             <div className="space-y-3">
               <div className="relative rounded-2xl overflow-hidden border border-deep/10 bg-[#071126] aspect-video max-h-[380px] flex items-center justify-center shadow-inner">
-                {currentMedia.type === "video" ? (
+                {currentMedia.type === "video" && !isPlaceholderVideo(currentMedia.url) ? (
                   <video
                     src={currentMedia.url}
                     controls
@@ -98,11 +99,11 @@ export default function ProjectModal({
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={currentMedia.url}
+                  <ModalImage
+                    url={currentMedia.url}
                     alt={currentMedia.caption || project.title}
-                    className="w-full h-full object-cover sm:object-contain"
+                    label={project.title}
+                    contain
                   />
                 )}
                 {currentMedia.caption && (
@@ -130,8 +131,7 @@ export default function ProjectModal({
                           <i className="fa-solid fa-play text-white text-xs" />
                         </div>
                       ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.url} alt="" className="w-full h-full object-cover" />
+                        <ModalImage url={m.url} alt={m.caption || project.title} label={project.title} thumb />
                       )}
                     </button>
                   ))}
@@ -246,5 +246,55 @@ export default function ProjectModal({
         </div>
       </div>
     </div>
+  );
+}
+
+/* ============================================================
+   ModalImage — the modal is the largest view of a screenshot, so
+   this is where a missing or soft source was most obvious. Uses a
+   retina srcSet and names itself if it fails to load.
+   ============================================================ */
+function ModalImage({
+  url,
+  alt,
+  label,
+  contain = false,
+  thumb = false,
+}: {
+  url: string;
+  alt: string;
+  label: string;
+  contain?: boolean;
+  thumb?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <div className={`w-full h-full bg-gradient-to-br from-[#0A1735] to-[#1E1B4B] flex items-center justify-center p-4 text-center`}>
+        <span className={`text-white/70 font-grotesk uppercase tracking-[0.2em] leading-relaxed ${thumb ? "text-[7px]" : "text-[11px]"}`}>
+          {label}
+        </span>
+      </div>
+    );
+  }
+
+  const widths = thumb ? [160, 320] : [640, 960, 1280];
+  const srcSet = url.includes("res.cloudinary.com")
+    ? widths.map((w) => `${cld(url, w)} ${w}w`).join(", ")
+    : undefined;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={srcSet ? cld(url, widths[1]) : url}
+      srcSet={srcSet}
+      sizes={thumb ? "80px" : "(max-width: 767px) 100vw, 900px"}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className={`w-full h-full ${contain ? "object-cover sm:object-contain" : "object-cover"}`}
+    />
   );
 }

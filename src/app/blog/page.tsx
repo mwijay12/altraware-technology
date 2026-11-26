@@ -1,5 +1,6 @@
 "use client";
 
+import MediaImage from "@/components/MediaImage";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TransitionLink } from "@/components/Navbar";
@@ -56,8 +57,7 @@ export default function BlogPage() {
                 <TransitionLink href={`/blog/${p.slug}`} className="block h-full">
                   <TiltCard intensity={6} className="bg-white border border-deep/10 rounded-3xl overflow-hidden h-full hover:border-viol transition-colors">
                     <div className="relative h-48 overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={p.cover} alt={p.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                      <MediaImage src={p.cover} alt={p.title} label={p.title} className="w-full h-full" sizes="(max-width: 767px) 100vw, 33vw" />
                       <div className="absolute top-3 left-3 flex gap-1.5">
                         {p.tags.map((t) => (
                           <span key={t} className="bg-deep/85 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
