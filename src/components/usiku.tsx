@@ -480,16 +480,16 @@ export function useHeroFrame<T extends HTMLElement>() {
  * too large for the long line — which is what clipped the closing headline
  * on the home page — or too small to be a display headline on the short one.
  *
- * The CSS cap is now set so the longest string fits unaided (the no-JS
- * baseline). This hook then measures and, for shorter strings, scales *up*
- * towards the same optical width. Both lines end up filling the column, so
+ * `max` must equal the CSS cap in rem-to-px terms. It is a hard ceiling:
+ * without it the hook happily grows "MIZIZI." to 300px, which looks
+ * spectacular and breaks the page. 88px = the 5.5rem cap in .u-mega. Both lines end up filling the column, so
  * the type looks deliberate at every length instead of small-then-clipped.
  *
  * Re-runs on resize and once webfonts settle — Syne changes metrics
  * substantially against the fallback, so measuring before it loads is
  * measuring the wrong face.
  */
-export function useFitText<T extends HTMLElement>(min = 28, max = 320) {
+export function useFitText<T extends HTMLElement>(min = 28, max = 88) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
@@ -773,7 +773,7 @@ export function useHeadline<T extends HTMLElement>(scrub = true) {
  * single hook that owns one ref and runs both behaviours against it — not a
  * composition of the two above.
  */
-export function useFitHeadline<T extends HTMLElement>(min = 24, max = 320) {
+export function useFitHeadline<T extends HTMLElement>(min = 24, max = 88) {
   const ref = useRef<T>(null);
 
   useEffect(() => {

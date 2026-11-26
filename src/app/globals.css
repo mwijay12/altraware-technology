@@ -852,9 +852,12 @@ textarea:focus {
        minus padding leaves ~1208px, so the largest size it can hold is
        93.8px. The previous 9.5rem (152px) needed 1597px and was clipped
        by the section's overflow-hidden — that is the cut-off headline.
-       This cap is the value that fits the longest string unaided; short
-       lines like "MIZIZI." are scaled *up* to it by useFitText. */
-    font-size: clamp(2.25rem, 6vw, 5.875rem);
+       Correcting the arithmetic twice: 5.875rem (94px) still needs 1211px
+       against a 1208px wrap — one pixel over, which still clips. 5.5rem
+       (88px) needs 1134px and leaves real headroom for the wider fallback
+       face before Syne loads. Lines that are shorter than this scale *up*
+       to it via useFitText, so nothing reads small. */
+    font-size: clamp(2.25rem, 5.6vw, 5.5rem);
     color: var(--color-bone);
   }
 
