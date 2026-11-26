@@ -1,5 +1,6 @@
 "use client";
 
+import MediaImage from "@/components/MediaImage";
 import { useState } from "react";
 import { TransitionLink } from "@/components/Navbar";
 import { Reveal, TiltCard, Counter } from "@/components/motion";
@@ -113,16 +114,13 @@ export default function ImpactPage() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <MediaImage
                             src={p.media[0].url}
                             alt={p.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                            loading="lazy" decoding="async"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.parentElement?.classList.add("bg-gradient-to-br", "from-[#0A1735]", "to-[#1E1B4B]", "flex", "items-center", "justify-center");
-                            }}
+                            label={p.title}
+                            focus="top"
+                            sizes="(max-width: 767px) 100vw, 50vw"
+                            imgClassName="group-hover:scale-105 transition-transform duration-700"
                           />
                         )}
                         <a
@@ -158,14 +156,17 @@ export default function ImpactPage() {
                         {p.media.length > 1 && (
                           <div className="mt-3 flex gap-1.5">
                             {p.media.slice(1).map((m, mi) => (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                key={mi}
-                                src={m.type === "image" ? m.url : undefined}
-                                alt=""
-                                className="w-12 h-9 rounded-lg object-cover border border-deep/10"
-                                loading="lazy" decoding="async"
-                              />
+                              m.type === "image" ? (
+                                <MediaImage
+                                  key={mi}
+                                  src={m.url}
+                                  alt={m.caption || p.title}
+                                  label={p.title}
+                                  focus="top"
+                                  className="w-12 h-9 rounded-lg border border-deep/10"
+                                  sizes="48px"
+                                />
+                              ) : null
                             ))}
                           </div>
                         )}
@@ -201,7 +202,7 @@ export default function ImpactPage() {
                 <Reveal key={s.label} delay={i * 0.08}>
                   <div className="rounded-2xl overflow-hidden h-32 relative group">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={s.label} loading="lazy" decoding="async" />
+                    <MediaImage src={s.image} alt={s.label} label={s.label} className="w-full h-full" imgClassName="group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 767px) 100vw, 33vw" />
                     <div className="absolute inset-0 bg-deep/50 flex items-end p-3 text-white text-[11px] font-bold">{s.label}</div>
                   </div>
                 </Reveal>

@@ -221,13 +221,13 @@ export const DEFAULT_CONTENT: SiteContent = {
         name: "David Mwijage",
         role: "Co-founder · Engineering & Architecture",
         bio: "Leads system architecture, core engineering practice and offline-first product development.",
-        photo: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_400/v1791497527/david.jpg",
+        photo: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_800/v1791497527/david.jpg",
       },
       {
         name: "Clemence Ng'unda",
         role: "Co-founder · Product & Business Operations",
         bio: "Leads client engagement, product direction and operational delivery for businesses.",
-        photo: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_400/v1791497528/Clemence.png",
+        photo: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_800/v1791497528/Clemence.png",
       },
     ],
     values: [
@@ -282,7 +282,10 @@ export const DEFAULT_CONTENT: SiteContent = {
       media: [
         { type: "image", url: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?q=80&w=900&auto=format&fit=crop", caption: "Business website — Kariakoo duka" },
         { type: "image", url: "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=900&auto=format&fit=crop", caption: "Web app UI craft" },
-        { type: "video", url: "https://media.w3.org/2010/05/bunny/movie.mp4", caption: "Landing page motion — replace with your reel" },
+        // Was Big Buck Bunny (a Blender short) standing in for our product reel.
+        // A film in a portfolio tile reads as a broken embed, so it is a real
+        // screenshot of the work until the owner drops a reel in /admin.
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791639444/Be_the_Website_They_Remember.png", caption: "Landing page craft — Be the Website They Remember" },
       ],
     },
     {
@@ -304,7 +307,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       startingPrice: 800000,
       media: [
         { type: "image", url: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=900&auto=format&fit=crop", caption: "Mobile-first app screens" },
-        { type: "video", url: "https://media.w3.org/2010/05/sintel/trailer.mp4", caption: "App walkthrough — replace with your demo" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791639306/Screenshot_2026-10-01_160124.png", caption: "Mobile app walkthrough — Zion Church App" },
       ],
     },
     {
@@ -326,7 +329,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       media: [
         { type: "image", url: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=900&auto=format&fit=crop", caption: "Team dashboards & systems" },
         { type: "image", url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=900&auto=format&fit=crop", caption: "Analytics that owners read" },
-        { type: "video", url: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4", caption: "System demo — replace in admin" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791638315/a390bcf6072c113af9e46d0a69cefa7d.jpg", caption: "Systems in the field — Dar es Salaam" },
       ],
     },
   ],
@@ -643,7 +646,9 @@ export const DEFAULT_CONTENT: SiteContent = {
         // flagship product, so it must never depend on a third-party host or on a
         // 600px-wide source being upscaled into a retina card.
         { type: "image", url: "/faidahq.png", caption: "Faida POS — Profit Headquarters Terminal & Dashboard" },
-        { type: "video", url: "https://media.w3.org/2010/05/bunny/movie.mp4", caption: "Faida POS live walkthrough demo" },
+        // Big Buck Bunny removed: a Blender film is not a Faida walkthrough.
+        // The second screen below is real product evidence.
+        { type: "image", url: "/faidahq.png", caption: "Faida POS — dashboard, live stock and daily profit" },
       ],
     },
     {
@@ -657,8 +662,8 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Next.js", "Campus Portal", "Education", "Admissions", "Referrals"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497518/uautconnect.png", caption: "UAUT Connect — Student Portal & Campus Gateway" },
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497516/2uautconnect.png", caption: "UAUT Connect — Programs & Admissions Matrix" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497518/uautconnect.png", caption: "UAUT Connect — Student Portal & Campus Gateway" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497516/2uautconnect.png", caption: "UAUT Connect — Programs & Admissions Matrix" },
       ],
     },
     {
@@ -672,7 +677,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["E-commerce", "Next.js", "Streetwear", "Sneakers", "M-Pesa"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497526/niketz_web.png", caption: "Nike TZ — Sneaker & Streetwear E-commerce Store" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497526/niketz_web.png", caption: "Nike TZ — Sneaker & Streetwear E-commerce Store" },
       ],
     },
     {
@@ -686,7 +691,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Portfolio", "AI Architecture", "Next.js", "Lead Architect"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497566/mwijayportfolio.png", caption: "Mwijay Portfolio — Based in Kongowe, Dreaming Global" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497566/mwijayportfolio.png", caption: "Mwijay Portfolio — Based in Kongowe, Dreaming Global" },
       ],
     },
     {
@@ -700,7 +705,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Next.js", "Membership", "Non-profit", "AI"],
       featured: true,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497521/aymi.png", caption: "AYMI Africa — Youth Platform & Programs" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497521/aymi.png", caption: "AYMI Africa — Youth Platform & Programs" },
       ],
     },
     {
@@ -714,7 +719,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Next.js", "Booking", "Registry", "Fleet"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497522/voltarentals.png", caption: "Volta Rentals — Luxury Fleet Booking & Trip Calculator" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497522/voltarentals.png", caption: "Volta Rentals — Luxury Fleet Booking & Trip Calculator" },
       ],
     },
     {
@@ -728,7 +733,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Food-tech", "AI", "Ordering", "Kiswahili"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497525/bongofoodie.png", caption: "Bongo Foodie — Swahili Dishes & Chef AI" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497525/bongofoodie.png", caption: "Bongo Foodie — Swahili Dishes & Chef AI" },
       ],
     },
     {
@@ -742,7 +747,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["Branding", "Web", "AI Tools", "Portfolio"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497523/mwijaystudio.png", caption: "Mwijay Studio — Brand Architecture & Free AI Tools" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497523/mwijaystudio.png", caption: "Mwijay Studio — Brand Architecture & Free AI Tools" },
       ],
     },
     {
@@ -756,7 +761,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       tags: ["E-commerce", "AI Assistant", "Audio", "SW/EN"],
       featured: false,
       media: [
-        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_600/v1791497524/audenic.png", caption: "Audenic — Hand-Tuned Audio & Auden AI" },
+        { type: "image", url: "https://res.cloudinary.com/oc8018um/image/upload/f_auto,q_auto,w_1200/v1791497524/audenic.png", caption: "Audenic — Hand-Tuned Audio & Auden AI" },
       ],
     },
     {

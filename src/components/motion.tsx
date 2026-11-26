@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cld, isPlaceholderVideo } from "@/lib/media";
 
 /* ============================================================
    Reveal — GSAP scroll-triggered fade/slide-in.
@@ -200,10 +201,40 @@ export function ImgReveal({
     return () => obs.disconnect();
   }, []);
 
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    // Never leave a bare box: name what should be there.
+    return (
+      <div
+        ref={ref}
+        className={`img-reveal bg-gradient-to-br from-[#0A1735] to-[#1E1B4B] flex items-center justify-center p-5 text-center ${className}`}
+        data-media-fallback="1"
+      >
+        <span className="text-white/70 font-grotesk text-[10px] tracking-[0.2em] uppercase leading-relaxed">
+          {alt}
+        </span>
+      </div>
+    );
+  }
+
+  const srcSet = src.includes("res.cloudinary.com")
+    ? [400, 640, 840, 1200].map((w) => `${cld(src, w)} ${w}w`).join(", ")
+    : undefined;
+
   return (
     <div ref={ref} className={`img-reveal ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} loading="lazy" decoding="async" className={imgClassName} />
+      <img
+        src={srcSet ? cld(src, 840) : src}
+        srcSet={srcSet}
+        sizes={srcSet ? "(max-width: 767px) 100vw, 50vw" : undefined}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        className={imgClassName}
+      />
     </div>
   );
 }
@@ -231,6 +262,37 @@ export function Marquee({
   );
 }
 
+/* One media cell that cannot fail silently: if the URL never loads it names
+   itself instead of collapsing to an empty rectangle. */
+function MediaBlockImage({ url, caption }: { url: string; caption: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className="w-full h-48 bg-gradient-to-br from-[#0A1735] to-[#1E1B4B] flex items-center justify-center p-4 text-center">
+        <span className="text-white/70 font-grotesk text-[10px] tracking-[0.2em] uppercase leading-relaxed">
+          {caption}
+        </span>
+      </div>
+    );
+  }
+  const srcSet = url.includes("res.cloudinary.com")
+    ? [400, 640, 840].map((w) => `${cld(url, w)} ${w}w`).join(", ")
+    : undefined;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={srcSet ? cld(url, 840) : url}
+      srcSet={srcSet}
+      sizes={srcSet ? "(max-width: 640px) 100vw, 33vw" : undefined}
+      alt={caption}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="w-full h-48 object-cover object-top group-hover:scale-105 transition-transform duration-700"
+    />
+  );
+}
+
 /* ============================================================
    MediaBlock — images + playable video, fully admin-editable.
    Renders a responsive strip of media items; each video has
@@ -253,7 +315,7 @@ export function MediaBlock({
     <div className={`grid gap-4 ${items.length >= 3 ? "sm:grid-cols-3" : items.length === 2 ? "sm:grid-cols-2" : ""} ${className}`}>
       {items.map((m, i) => (
         <figure key={i} className={`rounded-2xl overflow-hidden group relative ${dark ? "bg-white/5" : "bg-deep/5"}`}>
-          {m.type === "video" ? (
+          {m.type === "video" && !isPlaceholderVideo(m.url) ? (
             <video
               src={m.url}
               controls
@@ -264,8 +326,9 @@ export function MediaBlock({
               className="w-full h-48 object-cover group-hover:scale-[1.02] transition-transform duration-500"
             />
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={m.url} alt={m.caption} loading="lazy" className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700" />
+            // A placeholder film (Big Buck Bunny et al) must never render as a
+            // product demo — fall through to an image panel instead.
+            <MediaBlockImage url={m.url} caption={m.caption} />
           )}
           {m.caption && (
             <figcaption className={`px-3 py-2 text-[11px] font-medium ${dark ? "text-white/50" : "text-deep/50"}`}>
