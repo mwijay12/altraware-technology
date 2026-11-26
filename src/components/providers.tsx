@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   DEFAULT_CONTENT,
+  applyOverrides,
   loadOverrides,
   saveOverrides,
   fetchRemoteContent,
@@ -30,41 +31,18 @@ const ContentContext = createContext<ContentCtx>({
 });
 export const useContent = () => useContext(ContentContext);
 
-/* A saved document from Firestore or localStorage can legitimately be a partial
-   edit (the admin may have changed only the hero), but a top-level spread would
-   then drop whole branches with it. That is how the live site ended up serving
-   stale Cloudinary URLs for the work grid while `/faidahq.png` sat unused in
-   /public: the saved `images` block never made it through the merge.
-   Fill any missing branch from DEFAULT_CONTENT instead of deleting it. */
-function mergeContent(
-  base: SiteContent,
-  patch: Partial<SiteContent> | null | undefined
-): SiteContent {
-  if (!patch) return base;
-  const merged = { ...base, ...patch } as SiteContent;
-  for (const key of Object.keys(base) as (keyof SiteContent)[]) {
-    const b = base[key];
-    const p = patch[key];
-    if (b && typeof b === "object" && !Array.isArray(b) && (p === undefined || p === null)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (merged as any)[key] = b;
-    }
-  }
-  return merged;
-}
-
 export function ContentProvider({ children }: { children: React.ReactNode }) {
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
 
   useEffect(() => {
     // 1. Instant local cache for zero delay
     const ov = loadOverrides();
-    if (ov) setContent((prev) => mergeContent(prev, ov));
+    if (ov) setContent((prev) => applyOverrides(prev, ov));
 
     // 2. Real-time Firebase Firestore live listener (instant updates without refresh)
     const unsub = subscribeRemoteContent((remote) => {
-      setContent((prev) => mergeContent(prev, remote));
-      saveOverrides(mergeContent(DEFAULT_CONTENT, remote));
+      setContent((prev) => applyOverrides(prev, remote));
+      saveOverrides(applyOverrides(DEFAULT_CONTENT, remote));
     });
 
     // 3. Fallback sync: if Firestore is empty but this browser has local edits,
@@ -72,7 +50,7 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
     // is signed in, so visitors never see console errors.
     fetchRemoteContent().then((remote) => {
       if (!remote && ov) {
-        saveRemoteContent(mergeContent(DEFAULT_CONTENT, ov));
+        saveRemoteContent(applyOverrides(DEFAULT_CONTENT, ov));
       }
     });
 
