@@ -566,43 +566,52 @@ export function useFitText<T extends HTMLElement>(min = 28, max = 320) {
  *  - it re-arms when it leaves the viewport, which is what makes it feel
  *    alive on the way back up.
  */
-export function useCountUp<T extends HTMLElement>(value: number, suffix = "") {
+export function useCountUp<T extends HTMLElement>(value: number) {
   const ref = useRef<T>(null);
-  // The figure lives in React state. Earlier versions wrote el.textContent
-  // directly, which fights the reconciler — React re-rendered `15`, the rAF
-  // loop wrote a partial value, and the two interleaved into the "-9+"
-  // fragments seen on the live page. State is the only correct place for a
-  // value the component also claims in its JSX.
+  // The figure lives in React state. An earlier version wrote
+  // `el.textContent` from an rAF loop while React also owned that text,
+  // which is what produced "-9+" and "-13+" on the live page: two writers
+  // on one node, interleaving at frame granularity.
   const [shown, setShown] = useState(value);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Initial state IS `value`, so reduced-motion and missing-observer both
-    // simply never start the loop — no state write needed here.
+    if (!Number.isFinite(value)) return;
     if (prefersReduced() || typeof IntersectionObserver === "undefined") return;
 
     let raf = 0;
+    // Every start gets a ticket. A frame whose ticket is stale aborts
+    // without writing, so a cancelled run can never land a value on top of
+    // a newer one — that race is what put a shrinking figure on screen.
+    let generation = 0;
+
+    const from = () => (value > 10 ? Math.round(value * 0.72) : value);
 
     const run = () => {
-      const from = value > 10 ? value * 0.72 : value;
+      const ticket = ++generation;
+      const start = from();
       const t0 = performance.now();
       const step = (now: number) => {
+        if (ticket !== generation) return;
         const p = Math.min(1, (now - t0) / 1100);
         const eased = 1 - Math.pow(1 - p, 3);
-        setShown(Math.round(from + (value - from) * eased));
+        const next = Math.round(start + (value - start) * eased);
+        setShown(Math.max(0, Math.min(value, next)));
         if (p < 1) raf = requestAnimationFrame(step);
-        else setShown(value); // land exactly, never on a rounding artefact
+        else setShown(value);
       };
       raf = requestAnimationFrame(step);
     };
 
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) run();
-        else {
+        if (e.isIntersecting) {
+          run();
+        } else {
+          generation += 1; // invalidate any frame still in flight
           cancelAnimationFrame(raf);
-          setShown(Math.round(value * (value > 10 ? 0.72 : 1)));
+          setShown(from());
         }
       },
       { threshold: 0.35 }
@@ -610,13 +619,15 @@ export function useCountUp<T extends HTMLElement>(value: number, suffix = "") {
     io.observe(el);
 
     return () => {
+      generation += 1;
       io.disconnect();
       cancelAnimationFrame(raf);
     };
-  }, [value, suffix]);
+  }, [value]);
 
   return { ref, shown };
 }
+
 
 /**
  * StatFigure — a number that counts up every time it enters the viewport.
@@ -638,20 +649,20 @@ export function StatFigure({
   suffix?: string;
   className?: string;
 }) {
-  // Only a real quantity counts. "2G" and "24/7" are labels, not amounts —
-  // and counting them produced "1G" mid-tween, plus the leading-minus
-  // fragments ("-9+") seen on the live page.
+  // Only a real quantity counts. "2G" and "24/7" are labels, not amounts.
   const countable = typeof value === "number" && Number.isFinite(value);
   const { ref, shown } = useCountUp<HTMLSpanElement>(countable ? value : 0);
 
-  const text = countable ? `${shown}${suffix}` : `${value}${suffix}`;
-
+  // ONE text node. The previous version rendered an sr-only copy alongside
+  // the visible one, which meant every text extractor, crawler and reader
+  // mode saw the figure twice ("111", "2G2G") — the same ghost-copy mistake
+  // that TextGradientScroll had. The visible text *is* the accessible text.
+  //
+  // The server renders `value`; useCountUp replaces it with a tweened state
+  // value after hydration. There is never a second copy to disagree with.
   return (
     <div className={`${className} tabular-nums whitespace-nowrap`}>
-      <span ref={ref} className="sr-only">
-        {countable ? `${value}${suffix}` : `${value}${suffix}`}
-      </span>
-      <span aria-hidden={countable ? "true" : undefined}>{text}</span>
+      <span ref={ref}>{countable ? `${shown}${suffix}` : `${value}${suffix}`}</span>
     </div>
   );
 }
