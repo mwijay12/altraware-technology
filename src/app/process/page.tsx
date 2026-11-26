@@ -121,7 +121,7 @@ export default function ProcessPage() {
         <div className="max-w-[1320px] mx-auto px-5 md:px-8">
           <Reveal className="mb-6">
             <div className="eyebrow text-viol flex items-center gap-3">
-              <span className="w-10 h-[2px] bg-viol inline-block" /> Delivery, seen live — replace these in admin
+              <span className="w-10 h-[2px] bg-viol inline-block" /> Delivery, seen live
             </div>
           </Reveal>
           <MediaBlock items={content.services[2].media ?? []} />
