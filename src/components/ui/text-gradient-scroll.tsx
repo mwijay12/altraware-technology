@@ -88,7 +88,12 @@ const Word = ({ children, progress, range }: WordType) => {
 
   return (
     <span className="relative me-2 mt-2">
-      <span style={{ position: "absolute", opacity: 0.1 }}>{children}</span>
+      {/* ghost copy that the scroll gradient fades in over. It is purely
+          decorative, so it must be hidden from assistive tech and from
+          copy-paste — otherwise every word in the paragraph is read twice. */}
+      <span aria-hidden="true" style={{ position: "absolute", opacity: 0.1 }}>
+        {children}
+      </span>
       <motion.span style={{ transition: "all .5s", opacity: opacity }}>
         {children}
       </motion.span>
@@ -125,7 +130,8 @@ const Char = ({ children, progress, range }: CharType) => {
   return (
     <span>
       <span
-        className={cn("absolute", {
+        aria-hidden="true"
+        className={cn("absolute select-none", {
           "opacity-0": textOpacity == "none",
           "opacity-10": textOpacity == "soft",
           "opacity-30": textOpacity == "medium",
