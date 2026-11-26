@@ -36,7 +36,7 @@ export default function Statement({ content }: { content: SiteContent }) {
             </Rise>
 
             <Rise delay={0.16}>
-              <div className="grid grid-cols-3 gap-6 mt-10 max-w-md">
+              <div className="grid grid-cols-3 gap-x-5 gap-y-8 mt-10 max-w-md">
                 {[
                   { n: 11, l: "In production" },
                   { n: 2, l: "Languages" },

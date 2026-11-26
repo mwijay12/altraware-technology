@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /* ============================================================
    USIKU motion primitives.
@@ -568,34 +568,31 @@ export function useFitText<T extends HTMLElement>(min = 28, max = 320) {
  */
 export function useCountUp<T extends HTMLElement>(value: number, suffix = "") {
   const ref = useRef<T>(null);
+  // The figure lives in React state. Earlier versions wrote el.textContent
+  // directly, which fights the reconciler — React re-rendered `15`, the rAF
+  // loop wrote a partial value, and the two interleaved into the "-9+"
+  // fragments seen on the live page. State is the only correct place for a
+  // value the component also claims in its JSX.
+  const [shown, setShown] = useState(value);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Initial state IS `value`, so reduced-motion and missing-observer both
+    // simply never start the loop — no state write needed here.
     if (prefersReduced() || typeof IntersectionObserver === "undefined") return;
 
-    const render = (n: number) => {
-      el.textContent = `${Math.round(n)}${suffix}`;
-    };
-
     let raf = 0;
-    let running = false;
 
     const run = () => {
-      if (running) return;
-      running = true;
       const from = value > 10 ? value * 0.72 : value;
       const t0 = performance.now();
       const step = (now: number) => {
         const p = Math.min(1, (now - t0) / 1100);
         const eased = 1 - Math.pow(1 - p, 3);
-        render(from + (value - from) * eased);
-        if (p < 1) {
-          raf = requestAnimationFrame(step);
-        } else {
-          render(value);
-          running = false;
-        }
+        setShown(Math.round(from + (value - from) * eased));
+        if (p < 1) raf = requestAnimationFrame(step);
+        else setShown(value); // land exactly, never on a rounding artefact
       };
       raf = requestAnimationFrame(step);
     };
@@ -604,22 +601,21 @@ export function useCountUp<T extends HTMLElement>(value: number, suffix = "") {
       ([e]) => {
         if (e.isIntersecting) run();
         else {
-          // reset below the final figure so the next entry counts again
           cancelAnimationFrame(raf);
-          running = false;
-          render(value * (value > 10 ? 0.72 : 1));
+          setShown(Math.round(value * (value > 10 ? 0.72 : 1)));
         }
       },
       { threshold: 0.35 }
     );
     io.observe(el);
+
     return () => {
       io.disconnect();
       cancelAnimationFrame(raf);
     };
   }, [value, suffix]);
 
-  return ref;
+  return { ref, shown };
 }
 
 /**
@@ -642,24 +638,20 @@ export function StatFigure({
   suffix?: string;
   className?: string;
 }) {
-  const numeric = typeof value === "number" ? value : parseFloat(value);
-  const countable = Number.isFinite(numeric) && String(numeric) === String(value).replace(/[^0-9.]/g, "");
-  const ref = useCountUp<HTMLDivElement>(countable ? numeric : 0, countable ? suffix : "");
+  // Only a real quantity counts. "2G" and "24/7" are labels, not amounts —
+  // and counting them produced "1G" mid-tween, plus the leading-minus
+  // fragments ("-9+") seen on the live page.
+  const countable = typeof value === "number" && Number.isFinite(value);
+  const { ref, shown } = useCountUp<HTMLSpanElement>(countable ? value : 0);
 
-  if (!countable) {
-    // "2G", "24/7" — not a quantity that counts. Draw it, do not tween it.
-    return (
-      <div className={className}>
-        {value}
-        {suffix}
-      </div>
-    );
-  }
+  const text = countable ? `${shown}${suffix}` : `${value}${suffix}`;
 
   return (
-    <div ref={ref} className={className}>
-      {value}
-      {suffix}
+    <div className={`${className} tabular-nums whitespace-nowrap`}>
+      <span ref={ref} className="sr-only">
+        {countable ? `${value}${suffix}` : `${value}${suffix}`}
+      </span>
+      <span aria-hidden={countable ? "true" : undefined}>{text}</span>
     </div>
   );
 }
