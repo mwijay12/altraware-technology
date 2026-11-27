@@ -65,7 +65,7 @@ export default function ProcessPage() {
                 </TextEffect>
               </span>
               <span className="block mt-1">
-                <i className="font-light text-deep/40">
+                <i className="font-light text-bone/40">
                   <TextEffect as="span" per="word" preset="slide" delay={0.2}>
                     Just a clear
                   </TextEffect>
@@ -77,7 +77,7 @@ export default function ProcessPage() {
                 </i>
               </span>
             </h1>
-            <p className="text-deep/60 mt-6 max-w-xl text-[15px] md:text-base leading-relaxed">
+            <p className="text-bone/60 mt-6 max-w-xl text-[15px] md:text-base leading-relaxed">
               Every project follows five written phases. You approve each step before we bill the next. Scroll to walk
               the path.
             </p>

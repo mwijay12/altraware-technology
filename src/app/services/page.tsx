@@ -39,7 +39,7 @@ export default function ServicesPage() {
                 </TextEffect>
               </span>
               <span className="block mt-1">
-                <i className="font-light text-deep/50">
+                <i className="font-light text-bone/50">
                   <TextEffect as="span" per="word" preset="slide" delay={0.2}>
                     One standard:
                   </TextEffect>

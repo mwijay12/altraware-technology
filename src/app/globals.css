@@ -1433,8 +1433,36 @@ html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone)
 /* Secondary copy on that white card keeps a step of hierarchy, but a
    readable one. */
 html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone)
-    :is([class*="text-deep/"], .text-bone, [class*="text-bone/"]) {
+    :is([class*="text-deep/"], [class*="text-bone/"]) {
   color: rgba(11, 10, 15, 0.72);
+}
+
+/* ---------- 2h. LIGHT-FILLED SECTIONS ARE LIGHT GROUNDS ----------
+   `bg-cream`, `bg-paper` and `bg-white` are *grounds*, and they stay light
+   in both themes — that is the legacy-repair decision documented above.
+   But the page-level ink is chosen by the THEME, not by the nearest ground,
+   so any element inside a cream section that does not set its own colour
+   inherits bone (#EDE9E3) — on cream that is 1.09:1.
+
+   This is not a corner case: /services has 71 such nodes, /impact 64,
+   /pricing 45. A tag chip, a caption, a price, a table cell — anything that
+   relied on inheritance.
+
+   The fix restores inheritance the way the page intends: inside a light
+   ground, the inherited colour is dark ink. Scoped to the ground elements
+   themselves so dark bands and cards are untouched. */
+[class*="bg-cream"], [class*="bg-paper"], [class*="bg-white"],
+[class*="bg-bone"] {
+  color: #0B0A0F;
+}
+/* In light mode the ground is light on purpose and the same ink applies;
+   this second rule exists so `--ui-ink` stays the single source of "dark
+   ink" if it is ever retuned. */
+html[data-theme="light"] [class*="bg-cream"],
+html[data-theme="light"] [class*="bg-paper"],
+html[data-theme="light"] [class*="bg-white"],
+html[data-theme="light"] [class*="bg-bone"] {
+  color: var(--ui-ink);
 }
 
 /* ---------- 3. SURFACES + LINES ---------- */
