@@ -1328,6 +1328,27 @@ html[data-theme="light"] [class*="bg-bone/"] {
   background-color: rgba(20, 18, 26, 0.08);
 }
 
+/* ---------- 2d-bis. DARK BANDS INVERT THE ROLE VARIABLES ----------
+   The primitives above read `--ui-*`. In light mode those hold dark ink,
+   which is right on cream and catastrophic on a band that kept its black
+   ground: .u-mega would be #14121A on #14121A.
+
+   So a dark band re-declares the same variables with their dark-mode
+   values. This is the whole reason to use variables instead of a list of
+   class overrides — one declaration repairs every descendant primitive,
+   including ones written later. */
+html[data-theme="light"] :is(.on-dark, .band-hold) {
+  --ui-ink: #EDE9E3;
+  --ui-ink-soft: #A8A29C;
+  --ui-hairline: rgba(237, 233, 227, 0.16);
+  --ui-soft-1: rgba(237, 233, 227, 0.82);
+  --ui-soft-2: rgba(237, 233, 227, 0.68);
+  --ui-soft-3: #A8A29C;
+  --ui-outline: #EDE9E3;
+  --ui-outline-dim: rgba(237, 233, 227, 0.38);
+  --ui-accent: #A78BFA;
+}
+
 /* ---------- 2e. THE OPACITY CLASSES (the ones that kept slipping through) ----------
    Every previous light-mode fix enumerated individual utilities:
    `.text-bone` here, `.text-bone/40,/45,/20` there. Each time, the ones
