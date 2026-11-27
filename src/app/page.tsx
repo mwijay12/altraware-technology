@@ -141,7 +141,7 @@ export function ServicesAccordion({ preview = false }: { preview?: boolean }) {
                   className="w-full flex items-center gap-5 md:gap-8 py-6 px-4 md:px-8 text-left cursor-pointer"
                   onClick={() => setOpen(open === s.id ? "" : s.id)}
                 >
-                  <span className="font-serif italic text-viol/60 text-xl hidden sm:block">{s.num}</span>
+                  <span className="font-serif italic text-viol text-xl hidden sm:block">{s.num}</span>
                   <span className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-lg shrink-0 ${s.accent ?? "bg-deep text-white"}`}>
                     <i className={`fa-solid ${s.icon}`} />
                   </span>
@@ -269,7 +269,7 @@ export function TestimonialCarousel() {
             />
           ))}
         </div>
-        <div className="ml-auto text-xs font-grotesk font-bold text-deep/40">
+        <div className="ml-auto text-xs font-grotesk font-bold text-deep/55">
           0{idx + 1} / 0{slides.length}
         </div>
       </div>

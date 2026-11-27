@@ -65,7 +65,7 @@ export default function ServicesPage() {
             <div key={s.id} id={s.id}>
               <div className="grid lg:grid-cols-2 gap-10 items-center">
                 <Reveal>
-                  <div className="font-serif italic text-viol/60 text-xl">{s.num}</div>
+                  <div className="font-serif italic text-viol text-xl">{s.num}</div>
                   <h2 className="display text-4xl md:text-5xl font-medium mt-2">{s.title}</h2>
                   <p className="text-deep/65 mt-4 leading-relaxed">{s.description}</p>
                   <div className="flex flex-wrap gap-2 mt-5">

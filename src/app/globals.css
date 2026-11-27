@@ -29,6 +29,18 @@
   --color-jewel: #8B5CF6;
   --color-jeweldeep: #4C1D95;
 
+  /* --- the accent, under the names the app actually uses ---
+     `viol` is referenced 246 times across the app (text-viol 108,
+     bg-viol 138) and `violL` 93 times, but neither was ever declared in
+     @theme — only a bare `--viol` on :root, which Tailwind does not turn
+     into utilities. So `.bg-viol`, `.text-viol`, `.text-violL` were never
+     emitted at all: every violet label, icon and filled button on the site
+     had no colour of its own and silently inherited whatever the ground
+     gave it. Declaring them here is the whole fix. */
+  --color-viol: #8B5CF6;
+  --color-violL: #C4B5FD;
+  --color-violD: #6D28D9;
+
   /* --- legacy remap: ground ---
      IMPORTANT: these are *presence* colours, not text colours.
      `deep` must stay DARK everywhere (it is used as a dark section ground
@@ -1277,6 +1289,17 @@ html[data-theme="light"] .band-hold :is(.text-white, [class*="text-white/"]),
 html[data-theme="light"] :is(.bg-jewel, .bg-jeweldeep, .bg-viol, .bg-green-600, .bg-red-600) :is(.text-white, [class*="text-white/"]) {
   color: #ffffff;
 }
+/* The list above is a whitelist of dark fills, and it keeps going stale —
+   `bg-deep/85` chips on /blog were flipping to ink and vanishing (1.39:1).
+   This is the general form: whatever element CARRIES the white also lays
+   down its own dark ground, so white is correct on it. Expressed as
+   attribute selectors because Tailwind tree-shakes `:is(.bg-deep …)`
+   utilities that a page happens not to use. */
+html[data-theme="light"] [class*="bg-deep"]:is(.text-white, [class*="text-white/"]),
+html[data-theme="light"] [class*="bg-night"]:is(.text-white, [class*="text-white/"]),
+html[data-theme="light"] [class*="bg-ink"]:is(.text-white, [class*="text-white/"]) {
+  color: #ffffff;
+}
 
 /* The legacy `.on-dark` wrapper kept its black ground in light mode, so
    the ink rules above must follow it back to bone. */
@@ -1320,9 +1343,40 @@ html[data-theme="light"] :is(.on-dark, .band-hold) [class*="border-wire/"] { bor
 html[data-theme="light"] :is(.on-dark, .band-hold) .u-outline { -webkit-text-stroke-color: #EDE9E3; }
 html[data-theme="light"] :is(.on-dark, .band-hold) .u-outline-dim { -webkit-text-stroke-color: rgba(237, 233, 227, 0.38); }
 
+/* `violL` is the light-on-dark accent (#C4B5FD, 10.7:1 on black) — but the
+   same class is used on cream (Footer links aside, /services uses it on
+   light surfaces), where it measures 1.64:1. In light mode the accent scale
+   flips with the ground, exactly like the ink scale already does. */
+html[data-theme="light"] .text-violL { color: var(--ui-accent); }
+html[data-theme="light"] :is(.on-dark, .band-hold) .text-violL { color: #C4B5FD; }
+
 /* The accent sits on both grounds; keep the lighter violet where the
    ground is still black so it does not sink into it. */
 html[data-theme="light"] :is(.on-dark, .band-hold) :is(.text-jewel, .text-viol) { color: #A78BFA; }
+/* …unless the element sits on a light fill of its own. `/platforms` lists
+   POS packages as `bg-[#F7F6F2]` buttons inside an `.on-dark` band; the
+   bone-violet above measured 2.52:1 on that cream. Same principle as every
+   other rule in this file: the nearest ground wins, not the theme. */
+html[data-theme="light"] [class*="bg-cream"] :is(.text-jewel, .text-viol),
+html[data-theme="light"] [class*="bg-paper"] :is(.text-jewel, .text-viol),
+html[data-theme="light"] [class*="bg-white"] :is(.text-jewel, .text-viol),
+html[data-theme="light"] [class*="bg-bone"] :is(.text-jewel, .text-viol),
+html[data-theme="light"] [class*="bg-[#F"] :is(.text-jewel, .text-viol),
+html[data-theme="light"] [class*="bg-[#f"] :is(.text-jewel, .text-viol) {
+  color: var(--ui-accent);
+}
+/* The accent can also sit on its own light fill (`bg-[#F7F6F2]`) rather than
+   inside a light section, so match the element itself as well as descendants.
+   `--ui-accent` must be reset too: `.on-dark` re-points it to #A78BFA for the
+   whole band, and a light chip inside inherits that (2.52:1 on cream). */
+html[data-theme="light"] :is([class*="bg-[#F"], [class*="bg-[#f"], .bg-white, .bg-cream, .bg-paper, .bg-bone):is(.text-jewel, .text-viol),
+html[data-theme="light"] :is([class*="bg-[#F"], [class*="bg-[#f"], .bg-white, .bg-cream, .bg-paper, .bg-bone) :is(.text-jewel, .text-viol),
+html[data-theme="light"] :is([class*="bg-[#F"], [class*="bg-[#f"], .bg-white, .bg-cream, .bg-paper, .bg-bone):is(.text-white, [class*="text-white/"]) {
+  color: #6D3DE0;
+}
+html[data-theme="light"] :is([class*="bg-[#F"], [class*="bg-[#f"], .bg-white, .bg-cream, .bg-paper, .bg-bone) {
+  --ui-accent: #6D3DE0;
+}
 
 /* ---------- 2c. FILLED CHIPS ----------
    `bg-bone text-noir` is the primary filled button (nav CTA, currency
@@ -1418,9 +1472,48 @@ html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-bone/2"], [
    `@layer components`, and an unlayered declaration wins over every layer
    regardless of specificity. My first attempt put this inside a layer and
    silently did nothing. */
+/* The mirror case: a DARK fill inside a light card. `/platforms` and
+   `/impact` render an avatar as `w-11 h-11 rounded-xl bg-deep text-white`
+   inside `div.bg-white`. The light-ground rule above sets ink on every
+   descendant of a white card, so those initials came out #0B0A0F on
+   #0B0A0F — 1.00:1. Whatever carries its own dark fill keeps white. */
+/* A dark fill needs white ink — in DARK mode, and on a held band in light
+   mode. In light mode `.bg-deep` is deliberately repainted to a deeper
+   cream panel (see section 1, GROUNDS), so white ink there would be
+   invisible: the same elements fall through to the ink rules above. */
+html:not([data-theme="light"]) :is([class*="bg-deep"], [class*="bg-noir"]):is(.text-white, [class*="text-white/"]),
+html[data-theme="light"] .band-hold :is([class*="bg-deep"], [class*="bg-noir"]):is(.text-white, [class*="text-white/"]),
+html[data-theme="light"] .bg-viol:is(.text-white, [class*="text-white/"]) {
+  color: #ffffff;
+}
+/* Light mode: `.bg-deep` is repainted to a cream panel, so its `text-white`
+   label must become INK — not bone. Bone on cream is 1.21:1, which is what
+   the "All posts" pill and the testimonial initials measured. */
+html[data-theme="light"] .on-dark :is([class*="bg-deep"]):is(.text-white, [class*="text-white/"]) {
+  color: var(--ui-ink);
+}
+html[data-theme="light"] :is(.bg-deep):is(.text-white, [class*="text-white/"]) {
+  color: var(--ui-ink);
+}
+/* `bg-deep/85` is 85% BLACK — still a dark chip — so it keeps white ink.
+   Only the fully opaque `.bg-deep` is repainted to a cream panel in light
+   mode. (`.bg-deep` with any alpha suffix must be excluded.) */
+
+/* A solid light fill on a dark band needs dark ink. `bg-white/5` and
+   `bg-white/[0.06]` are NOT that: 6% white over #0B0A0F is #19181D, a
+   near-black card. The old `[class*="bg-white/"]` caught them anyway and
+   painted #0B0A0F ink on them — "TSh 99K", "Custom" and "Total" on /pricing
+   and /impact measured 1.10:1 in dark mode. Only near-opaque washes count. */
 html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone,
-    [class*="bg-white/"]) {
+    [class*="bg-white/9"], [class*="bg-white/8"], [class*="bg-white/[0.9"],
+    [class*="bg-white/[0.8"]) {
   color: #0B0A0F;
+}
+/* …unless the element carries its own dark fill as well. An avatar written
+   `bg-deep text-white` inside a white card has `on-dark` for the white
+   initials' sake, and the rule above painted #0B0A0F on #0B0A0F (1.00:1). */
+html .on-dark :is([class*="bg-deep"], [class*="bg-noir"]):is(.text-white, [class*="text-white/"]) {
+  color: #ffffff;
 }
 html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone):is(
     .text-deep, [class*="text-deep/"]),
@@ -1451,17 +1544,29 @@ html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone)
    The fix restores inheritance the way the page intends: inside a light
    ground, the inherited colour is dark ink. Scoped to the ground elements
    themselves so dark bands and cards are untouched. */
-[class*="bg-cream"], [class*="bg-paper"], [class*="bg-white"],
-[class*="bg-bone"] {
+[class*="bg-cream"], [class*="bg-paper"], [class*="bg-white"] {
   color: #0B0A0F;
+}
+/* …but `[class*="bg-white"]` also matches `bg-white/[0.06]`, a 6% white wash
+   over a dark band. That is a near-BLACK card (#19181D), so forcing dark ink
+   on it put "Custom", "TSh 99K" and "Total" at 1.10:1 on /pricing and
+   /impact in dark mode. Only the solid/near-opaque fills are light grounds;
+   low-alpha washes re-inherit. */
+:is([class*="bg-white/0"], [class*="bg-white/1"], [class*="bg-white/2"],
+    [class*="bg-white/3"], [class*="bg-white/4"], [class*="bg-white/5"],
+    [class*="bg-white/6"], [class*="bg-white/7"],
+    [class*="bg-white/[0"], [class*="bg-white/[1"], [class*="bg-white/[2"],
+    [class*="bg-white/[3"], [class*="bg-white/[4"], [class*="bg-white/[5"],
+    [class*="bg-white/[6"], [class*="bg-white/[7"],
+    [class*="bg-cream/"], [class*="bg-paper/"], [class*="bg-bone/"]):not([class*="bg-white/9"]) {
+  color: inherit;
 }
 /* In light mode the ground is light on purpose and the same ink applies;
    this second rule exists so `--ui-ink` stays the single source of "dark
    ink" if it is ever retuned. */
 html[data-theme="light"] [class*="bg-cream"],
 html[data-theme="light"] [class*="bg-paper"],
-html[data-theme="light"] [class*="bg-white"],
-html[data-theme="light"] [class*="bg-bone"] {
+html[data-theme="light"] [class*="bg-white"] {
   color: var(--ui-ink);
 }
 
