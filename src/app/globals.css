@@ -839,7 +839,9 @@ textarea:focus {
     letter-spacing: -0.035em;
     line-height: 0.9;
     font-size: clamp(2.4rem, 6.6vw, 5rem);
-    color: var(--color-bone);
+    /* same defect as .u-mega — bone on cream is 1.09:1. This is the
+       headline in every section on the home page. */
+    color: var(--ui-ink);
     text-wrap: balance;
   }
   .u-mega {
@@ -1130,14 +1132,14 @@ textarea:focus {
     letter-spacing: 0.01em;
   }
 
-  /* quiet greys that were too quiet to read */
-  .text-white\/40, .text-white\/35, .text-white\/30 { color: rgba(255, 255, 255, 0.62) !important; }
-  .text-white\/25, .text-white\/20 { color: rgba(255, 255, 255, 0.55) !important; }
-  .text-deep\/40, .text-deep\/45 { color: rgba(11, 10, 15, 0.62) !important; }
-  .text-deep\/30 { color: rgba(11, 10, 15, 0.55) !important; }
-  .text-bone\/40, .text-bone\/45 { color: rgba(237, 233, 227, 0.62) !important; }
-  .text-bone\/20 { color: rgba(237, 233, 227, 0.5) !important; }
-  .text-ash\/70, .text-ash\/60 { color: #9C9691 !important; }
+  /* A LEGIBILITY FLOOR.
+     The old version hard-coded bone at 62% with `!important`, which made it
+     unbeatable: `!important` inside @layer utilities beats every unlayered
+     theme rule, so these seven classes were the one part of the page light
+     mode could never repaint (3.30:1 on cream, the quietest text on the
+     site and the most common thing to squint at).
+     The floor is now expressed per theme, outside the layers, where it can
+     actually win. Nothing here needs `!important`. */
 }
 
 /* Dark bands: the same floor, expressed against bone instead of white. */
@@ -1371,6 +1373,26 @@ html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-bone/"], [c
 }
 html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-ash/"]) {
   color: rgba(168, 162, 156, 0.85);
+}
+
+/* ---------- 2f. THE LEGIBILITY FLOOR ----------
+   `/20` `/30` `/40` were "whisper" text sizes on black. On cream, a 20%
+   ink wash is not a whisper, it is a smudge. These raise the floor so the
+   quietest text on the page is still readable — same visual rank, higher
+   legibility. Dark mode keeps its existing values. */
+html[data-theme="light"] :is([class*="text-bone/2"], [class*="text-white/2"],
+    [class*="text-bone/3"], [class*="text-white/3"],
+    [class*="text-bone/4"], [class*="text-white/4"]) {
+  color: color-mix(in oklab, var(--ui-ink) 72%, transparent);
+}
+html[data-theme="light"] :is([class*="text-bone/5"], [class*="text-white/5"],
+    [class*="text-deep/4"], [class*="text-deep/5"]) {
+  color: color-mix(in oklab, var(--ui-ink) 82%, transparent);
+}
+html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-bone/2"], [class*="text-white/2"],
+    [class*="text-bone/3"], [class*="text-white/3"],
+    [class*="text-bone/4"], [class*="text-white/4"]) {
+  color: color-mix(in oklab, var(--ui-ink) 62%, transparent);
 }
 
 /* ---------- 3. SURFACES + LINES ---------- */
