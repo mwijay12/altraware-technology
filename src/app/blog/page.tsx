@@ -29,7 +29,7 @@ export default function BlogPage() {
             <h1 className="display text-5xl md:text-7xl font-medium">
               Thinking, <i className="text-viol">written down.</i>
             </h1>
-            <p className="text-deep/60 mt-6 max-w-xl text-[15px] md:text-base">{content.blog.intro}</p>
+            <p className="text-bone/60 mt-6 max-w-xl text-[15px] md:text-base">{content.blog.intro}</p>
           </Reveal>
         </div>
       </section>

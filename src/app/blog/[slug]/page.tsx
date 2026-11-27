@@ -44,7 +44,7 @@ export default function BlogPostPage() {
               <div className="on-dark w-10 h-10 rounded-full bg-deep text-white flex items-center justify-center font-bold">{post.author.charAt(0)}</div>
               <div>
                 <div className="text-sm font-bold">{post.author}</div>
-                <div className="text-xs text-deep/50 font-mono">
+                <div className="text-xs text-bone/50 font-mono">
                   {new Date(post.date).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                 </div>
               </div>

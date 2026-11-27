@@ -64,7 +64,7 @@ export default function PricingPage() {
                 </TextEffect>
               </i>
             </h1>
-            <p className="text-deep/60 mt-6 max-w-xl text-[15px] md:text-base">{pricing.intro}</p>
+            <p className="text-bone/60 mt-6 max-w-xl text-[15px] md:text-base">{pricing.intro}</p>
           </Reveal>
         </div>
       </section>

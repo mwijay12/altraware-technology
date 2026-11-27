@@ -35,7 +35,7 @@ export default function AboutPage() {
                 </i>
               </span>
             </h1>
-            <div className="mt-8 max-w-2xl text-deep/80 text-base md:text-xl font-medium leading-relaxed">
+            <div className="mt-8 max-w-2xl text-bone/80 text-base md:text-xl font-medium leading-relaxed">
               <TextGradientScroll text={a.longIntro} type="word" textOpacity="soft" />
             </div>
           </Reveal>
