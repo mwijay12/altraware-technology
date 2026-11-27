@@ -231,17 +231,24 @@ export default function ProjectModal({
               Close
             </button>
 
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block"
+            {/* A <button> inside an <a> is invalid HTML — the parser may
+                close one of them and lose the link. MetalButton takes an
+                `asChild`-style anchor instead: same metal treatment, real
+                anchor semantics, one focusable element. */}
+            <MetalButton
+              asChild
+              variant="primary"
+              className="text-xs h-10 px-5 gap-2"
             >
-              <MetalButton variant="primary" className="text-xs h-10 px-5 gap-2">
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <span>Visit Live Website</span>
                 <i className="fa-solid fa-arrow-up-right-from-square text-[10px]" />
-              </MetalButton>
-            </a>
+              </a>
+            </MetalButton>
           </div>
         </div>
       </div>
