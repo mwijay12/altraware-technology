@@ -184,6 +184,9 @@ type ColorVariant =
 interface MetalButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ColorVariant;
+  /** Render the child element (usually an <a>) with the metal treatment
+   *  instead of nesting a <button> inside it. */
+  asChild?: boolean;
 }
 
 const colorVariants: Record<
@@ -204,11 +207,15 @@ const colorVariants: Record<
     textShadow: "[text-shadow:_0_-1px_0_rgb(80_80_80_/_100%)]",
   },
   primary: {
-    outer: "bg-gradient-to-b from-[#000] to-[#A0A0A0]",
-    inner: "bg-gradient-to-b from-primary via-secondary to-muted",
-    button: "bg-gradient-to-b from-primary to-primary/40",
+    /* These were `from-primary via-secondary to-muted` — shadcn tokens that
+       do not exist in this project, so Tailwind emitted nothing: the button
+       had NO background and white ink over whatever was behind it (1.00:1
+       on the modal footer). They are the project's own violet now. */
+    outer: "bg-gradient-to-b from-[#2A0F5C] to-[#C4B5FD]",
+    inner: "bg-gradient-to-b from-[#7C4AEF] via-[#6D3DE0] to-[#6D3DE0]",
+    button: "bg-gradient-to-b from-[#7C4AEF] to-[#5B21B6]",
     textColor: "text-white",
-    textShadow: "[text-shadow:_0_-1px_0_rgb(30_58_138_/_100%)]",
+    textShadow: "[text-shadow:_0_-1px_0_rgb(49_16_110_/_100%)]",
   },
   success: {
     outer: "bg-gradient-to-b from-[#005A43] to-[#7CCB9B]",
@@ -308,7 +315,7 @@ const ShineEffect = ({ isPressed }: { isPressed: boolean }) => {
 export const MetalButton = React.forwardRef<
   HTMLButtonElement,
   MetalButtonProps
->(({ children, className, variant = "default", ...props }, ref) => {
+>(({ children, className, variant = "default", asChild = false, ...props }, ref) => {
   const [isPressed, setIsPressed] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [isTouchDevice, setIsTouchDevice] = React.useState(false);
@@ -350,28 +357,49 @@ export const MetalButton = React.forwardRef<
     setIsPressed(false);
   };
 
+  const inner = (
+    <>
+      <ShineEffect isPressed={isPressed} />
+      {buttonText}
+      {isHovered && !isPressed && !isTouchDevice && (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t rounded-lg from-transparent to-white/5" />
+      )}
+    </>
+  );
+
+  const surface = cn(variants.button, className);
+
   return (
     <div className={variants.wrapper} style={variants.wrapperStyle}>
       <div className={variants.inner} style={variants.innerStyle} />
-      <button
-        ref={ref}
-        className={cn(variants.button, className)}
-        style={variants.buttonStyle}
-        {...props}
-        onMouseDown={handleInternalMouseDown}
-        onMouseUp={handleInternalMouseUp}
-        onMouseLeave={handleInternalMouseLeave}
-        onMouseEnter={handleInternalMouseEnter}
-        onTouchStart={handleInternalTouchStart}
-        onTouchEnd={handleInternalTouchEnd}
-        onTouchCancel={handleInternalTouchCancel}
-      >
-        <ShineEffect isPressed={isPressed} />
-        {buttonText}
-        {isHovered && !isPressed && !isTouchDevice && (
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t rounded-lg from-transparent to-white/5" />
-        )}
-      </button>
+      {asChild ? (
+        React.cloneElement(
+          React.Children.only(children) as React.ReactElement<
+            React.HTMLAttributes<HTMLElement>
+          >,
+          {
+            className: cn(surface, (children as React.ReactElement<{ className?: string }>).props.className),
+            style: { ...variants.buttonStyle, ...(children as React.ReactElement<{ style?: React.CSSProperties }>).props.style },
+            children: inner,
+          }
+        )
+      ) : (
+        <button
+          ref={ref}
+          className={surface}
+          style={variants.buttonStyle}
+          {...props}
+          onMouseDown={handleInternalMouseDown}
+          onMouseUp={handleInternalMouseUp}
+          onMouseLeave={handleInternalMouseLeave}
+          onMouseEnter={handleInternalMouseEnter}
+          onTouchStart={handleInternalTouchStart}
+          onTouchEnd={handleInternalTouchEnd}
+          onTouchCancel={handleInternalTouchCancel}
+        >
+          {inner}
+        </button>
+      )}
     </div>
   );
 });
