@@ -67,7 +67,7 @@ export default function BlogPage() {
                       </div>
                     </div>
                     <div className="p-5">
-                      <div className="text-[11px] font-mono text-deep/40">
+                      <div className="text-[11px] font-mono text-deep/55">
                         {new Date(p.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} · {p.author}
                       </div>
                       <div className="font-grotesk font-bold text-lg mt-2 leading-snug">{p.title}</div>
@@ -83,7 +83,7 @@ export default function BlogPage() {
           </div>
 
           {shown.length === 0 && (
-            <div className="text-center text-deep/40 py-20">No posts under this tag yet — coming soon.</div>
+            <div className="text-center text-deep/55 py-20">No posts under this tag yet — coming soon.</div>
           )}
         </div>
       </section>

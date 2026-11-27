@@ -313,7 +313,7 @@ function FaidaDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "e
               </span>
             </div>
           </div>
-          <div className="text-[11px] font-grotesk font-bold tracking-widest text-deep/40 mb-3">
+          <div className="text-[11px] font-grotesk font-bold tracking-widest text-deep/55 mb-3">
             TAP ITEMS TO ADD — GUSA BIDHAA KUWEKA
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -527,7 +527,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
           <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
             <div>
               <div className="font-grotesk font-bold text-lg">
-                Today <span className="text-deep/40 font-sans font-normal text-sm">
+                Today <span className="text-deep/55 font-sans font-normal text-sm">
                   {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" })}
                 </span>
               </div>
@@ -567,8 +567,8 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
               </div>
             </div>
             <div className="bg-paper border border-deep/10 rounded-2xl p-4">
-              <div className="text-[10px] tracking-widest text-deep/40 font-grotesk">MEALS LOGGED</div>
-              <div className="font-grotesk font-bold text-3xl">3<span className="text-sm text-deep/40">/3</span></div>
+              <div className="text-[10px] tracking-widest text-deep/55 font-grotesk">MEALS LOGGED</div>
+              <div className="font-grotesk font-bold text-3xl">3<span className="text-sm text-deep/55">/3</span></div>
               <div className="text-[11px] text-deep/50 mt-1">✓ breakfast · lunch · snack</div>
             </div>
             <div className="bg-viol/10 border border-viol/20 rounded-2xl p-4">
@@ -596,7 +596,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
                     <div className="text-[13px] font-bold truncate">{k.n}</div>
                     <div className="text-[11px] text-deep/45">{k.a} · {k.g}</div>
                   </div>
-                  <span className={`text-[10px] font-bold px-2.5 py-1.5 rounded-full ${on ? "bg-green-500 text-white" : "bg-deep/5 text-deep/40"}`}>
+                  <span className={`text-[10px] font-bold px-2.5 py-1.5 rounded-full ${on ? "bg-green-500 text-white" : "bg-deep/5 text-deep/55"}`}>
                     {on ? "✓ IN" : "ABSENT"}
                   </span>
                 </button>
@@ -614,7 +614,7 @@ function CareDemo({ notify }: { notify: (m: string, k?: "info" | "success" | "er
                 <div key={i} className={`flex-1 rounded-t-lg ${i === 3 ? "bg-viol" : "bg-deep/15"}`} style={{ height: chart ? `${v}%` : "4%", transitionDelay: `${i * 120}ms` }} title={v + "%"} />
               ))}
             </div>
-            <div className="flex gap-2 mt-2 text-[10px] font-grotesk text-deep/40">
+            <div className="flex gap-2 mt-2 text-[10px] font-grotesk text-deep/55">
               {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                 <span key={d} className="flex-1 text-center">{d}</span>
               ))}

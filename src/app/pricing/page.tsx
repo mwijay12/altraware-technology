@@ -274,12 +274,12 @@ export default function PricingPage() {
                       POPULAR
                     </div>
                   )}
-                  <div className={`text-xs font-grotesk font-bold tracking-widest ${p.popular ? "text-white/70" : "text-white/50"}`}>
+                  <div className={`text-xs font-grotesk font-bold tracking-widest ${p.popular ? "text-white" : "text-white/70"}`}>
                     {p.name.toUpperCase()}
                   </div>
                   <div className="font-grotesk font-bold text-3xl mt-2">
                     {p.price === "custom" ? "Custom" : geo.fmtTag(p.price)}
-                    {p.price !== "custom" && <span className={`text-sm font-sans font-normal ${p.popular ? "text-white/70" : "text-white/50"}`}>{p.unit}</span>}
+                    {p.price !== "custom" && <span className={`text-sm font-sans font-normal ${p.popular ? "text-white" : "text-white/70"}`}>{p.unit}</span>}
                   </div>
                   <ul className={`text-sm mt-4 space-y-2.5 ${p.popular ? "text-white/85" : "text-white/65"}`}>
                     {p.features.map((f) => (

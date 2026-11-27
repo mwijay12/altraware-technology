@@ -142,7 +142,7 @@ export default function ImpactPage() {
                     )}
                     <div className="p-5 flex flex-col justify-between flex-1">
                       <div>
-                        <div className="flex items-center gap-2 text-[10px] font-grotesk font-bold tracking-widest text-deep/40">
+                        <div className="flex items-center gap-2 text-[10px] font-grotesk font-bold tracking-widest text-deep/55">
                           {p.category.toUpperCase()} · {p.year}
                         </div>
                         <div className="font-grotesk font-bold text-lg mt-1.5 group-hover:text-viol transition-colors">{p.title}</div>
@@ -174,7 +174,7 @@ export default function ImpactPage() {
 
                       <div className="mt-4 pt-3 border-t border-deep/5 flex items-center justify-between text-xs font-semibold text-viol group-hover:underline">
                         <span>View full details →</span>
-                        <span className="text-[11px] text-deep/40 group-hover:text-deep/70">Click for overview</span>
+                        <span className="text-[11px] text-deep/55 group-hover:text-deep/70">Click for overview</span>
                       </div>
                     </div>
                   </TiltCard>
@@ -211,7 +211,7 @@ export default function ImpactPage() {
             <Reveal delay={0.2}>
               <div className="on-dark bg-deep text-white rounded-2xl p-6">
                 <div className="text-[11px] font-grotesk font-bold tracking-[0.25em] text-white/40 mb-3">WHO WE SERVE — TUNAWAHUDUMIA</div>
-                <p className="text-sm text-white/70 leading-relaxed">{content.about.whoWeServe}</p>
+                <p className="text-sm text-white/85 leading-relaxed">{content.about.whoWeServe}</p>
               </div>
             </Reveal>
           </div>
@@ -238,12 +238,12 @@ export default function ImpactPage() {
                       POPULAR
                     </div>
                   )}
-                  <div className={`text-xs font-grotesk font-bold tracking-widest ${p.popular ? "text-white/70" : "text-white/50"}`}>
+                  <div className={`text-xs font-grotesk font-bold tracking-widest ${p.popular ? "text-white/85" : "text-white/50"}`}>
                     {p.name.toUpperCase()}
                   </div>
                   <div className="font-grotesk font-bold text-3xl mt-2">
                     {p.price === "custom" ? "Custom" : `TSh ${Math.round(p.price / 1000)}k`}
-                    {p.price !== "custom" && <span className={`text-sm font-sans font-normal ${p.popular ? "text-white/70" : "text-white/50"}`}>{p.unit}</span>}
+                    {p.price !== "custom" && <span className={`text-sm font-sans font-normal ${p.popular ? "text-white/85" : "text-white/50"}`}>{p.unit}</span>}
                   </div>
                   <ul className={`text-sm mt-4 space-y-2.5 ${p.popular ? "text-white/85" : "text-white/65"}`}>
                     {p.features.map((f) => (

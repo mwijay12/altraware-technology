@@ -20,7 +20,7 @@ export function ContentDisplay({
   return (
     <div className="pt-[120px]">
       {/* HERO */}
-      <section className="relative overflow-hidden grid-bg">
+      <section className="relative overflow-hidden grid-bg bg-cream">
         <div className="absolute -top-32 -right-32 w-[560px] h-[560px] rounded-full bg-viol/10 blur-[120px] pointer-events-none" />
         <div className="max-w-[840px] mx-auto px-5 md:px-8 py-16 md:py-24">
           <Reveal>

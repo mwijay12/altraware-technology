@@ -47,11 +47,133 @@ def lab_to_srgb(Lv, av, bv):
     return (enc(R), enc(G), enc(B))
 
 
+def _parse_color_mix(v):
+    """colour-mix(in <space>, C1 p1%, C2 p2%) -> (r, g, b, a)
+
+    Only the two-stop form Tailwind emits is handled. A transparent stop is
+    treated as alpha 0; the result is premultiplied so the composite is
+    correct whatever the element sits on.
+    """
+    body = v[len("color-mix("):-1]
+    args = split_args(body)
+    if not args:
+        return None
+    space = "oklab"
+    m = re.match(r"in\s+([a-z-]+)", args[0])
+    if m:
+        space = m.group(1)
+        args = args[1:]
+    stops = []
+    for a in args:
+        m = re.fullmatch(r"(.+?)\s+([\d.]+)%", a.strip())
+        if m:
+            token, pct = m.group(1).strip(), float(m.group(2)) / 100.0
+        else:
+            # Tailwind writes `color-mix(in oklab, #000 70%, transparent)`
+            # with no percentage on the second stop: the omitted one takes
+            # the remainder.
+            token, pct = a.strip(), None
+        if token == "transparent":
+            stops.append(((0, 0, 0, 0.0), pct))
+            continue
+        colour = parse_colour(token)
+        if colour is None:
+            return None
+        stops.append((colour, pct))
+    if len(stops) != 2:
+        return None
+    (c1, p1), (c2, p2) = stops
+    # fill in a single omitted percentage from the remainder
+    if p1 is None and p2 is None:
+        p1 = p2 = 0.5
+    elif p1 is None:
+        p1 = max(0.0, 1.0 - p2)
+    elif p2 is None:
+        p2 = max(0.0, 1.0 - p1)
+    total = p1 + p2
+    if total <= 0:
+        return None
+    p1, p2 = p1 / total, p2 / total
+    # premultiplied alpha blend in the given space
+    a1, a2 = c1[3], c2[3]
+    A = p1 * a1 + p2 * a2
+    if A <= 0:
+        return (0, 0, 0, 0.0)
+    if space.startswith("oklab"):
+        L1 = srgb_to_oklab(*c1[:3]); L2 = srgb_to_oklab(*c2[:3])
+    else:
+        L1, L2 = c1[:3], c2[:3]
+    mixed = tuple((p1 * a1 * x + p2 * a2 * y) / A for x, y in zip(L1, L2))
+    if space.startswith("oklab"):
+        rgb = oklab_to_srgb(*mixed)
+    else:
+        rgb = tuple(round(max(0, min(255, x))) for x in mixed)
+    return (rgb[0], rgb[1], rgb[2], A)
+
+
+def oklab_to_srgb(Lv, av, bv):
+    """OKLab -> sRGB 8-bit. Tailwind v4 compiles `text-x/70` to
+    color-mix(in oklab, ...), so this is the space that matters."""
+    l_ = Lv + 0.3963377774 * av + 0.2158037573 * bv
+    m_ = Lv - 0.1055613458 * av - 0.0638541728 * bv
+    s_ = Lv - 0.0894841775 * av - 1.2914855480 * bv
+    l, m, s2 = l_ ** 3, m_ ** 3, s_ ** 3
+    R = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s2
+    G = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s2
+    B = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s2
+
+    def enc(c):
+        c = max(0.0, min(1.0, c))
+        c = 12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055
+        return round(c * 255)
+
+    return (enc(R), enc(G), enc(B))
+
+
+def srgb_to_oklab(r, g, b):
+    def lin(c):
+        c /= 255.0
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = lin(r), lin(g), lin(b)
+    l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
+    m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b
+    s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
+    l_, m_, s_ = (x ** (1 / 3) if x >= 0 else -((-x) ** (1 / 3)) for x in (l, m, s))
+    return (0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+            1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+            0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_)
+
+
+def split_args(body):
+    """Split on top-level commas only (nested parens stay intact)."""
+    out, depth, cur = [], 0, ""
+    for ch in body:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        out.append(cur.strip())
+    return out
+
+
 def parse_colour(value):
     """Return (r, g, b, a) or None."""
     v = value.strip().lower()
     if v in ("transparent", "currentcolor", "inherit", "initial", "unset"):
         return None
+    # Tailwind v4 compiles every alpha utility (`text-bone/70`) to
+    # `color-mix(in oklab, <colour> 70%, transparent)`. Without this the
+    # harness returned None and fell back to "inherit", which silently lost
+    # the real ink — that is where the /impact and /pricing false positives
+    # came from.
+    if v.startswith("color-mix(") and v.endswith(")"):
+        return _parse_color_mix(v)
     m = re.fullmatch(r"#([0-9a-f]{3,8})", v)
     if m:
         h = m.group(1)
@@ -147,14 +269,59 @@ def split_selector_list(sel):
     return [x for x in out if x]
 
 
+def _is_inner(sel, start):
+    """Return (inner, index_after_close) for a functional pseudo at `start`."""
+    i, depth, j = start + 1, 1, start + 1
+    while j < len(sel) and depth:
+        if sel[j] == "(":
+            depth += 1
+        elif sel[j] == ")":
+            depth -= 1
+        j += 1
+    return sel[i:j - 1], j
+
+
 def specificity(sel):
-    """(ids, classes+attrs+pseudoclasses, types) — approximation, no :not()."""
-    s = re.sub(r'\[[^\]]*\]', ' [ATTR] ', sel)
-    s = re.sub(r'::?[a-z-]+\(', ' (', s)
-    ids = len(re.findall(r"#[\w-]+", s))
-    classes = len(re.findall(r"\.[\w-]+", s)) + s.count("[ATTR]")
-    types = len(re.findall(r"(?:^|[\s>+~,])([a-z][a-z0-9]*)", s))
-    return (ids, classes, types)
+    """(ids, classes+attrs+pseudoclasses, types).
+
+    `:is()` / `:where()` / `:not()` contribute the MAXIMUM of their
+    alternatives — not the sum. Counting every branch made
+    `:is(.on-dark, .band-hold)` weigh two classes instead of one, so a
+    one-class rule outranked a later rule that should have won.
+    `:where()` contributes nothing at all.
+    """
+    total = [0, 0, 0]
+
+    def walk(s):
+        out = [0, 0, 0]
+        # functional pseudos first, replaced by their contribution
+        while True:
+            m = re.search(r":(is|where|not|matches)\(", s)
+            if not m:
+                break
+            inner, end = _is_inner(s, m.end() - 1)
+            if m.group(1) == "where":
+                add = [0, 0, 0]
+            else:
+                best = [0, 0, 0]
+                for alt in split_selector_list(inner):
+                    a = walk(alt)
+                    if tuple(a) > tuple(best):
+                        best = a
+                add = best
+            out = [x + y for x, y in zip(out, add)]
+            s = s[:m.start()] + " " + s[end:]
+        body = re.sub(r"\[[^\]]*\]", " [ATTR] ", s)
+        body = re.sub(r"::[a-z-]+", "", body)
+        body = re.sub(r":[a-z-]+", "", body)   # simple pseudos: 1 class each
+        out[0] += len(re.findall(r"#[\w-]+", body))
+        out[1] += len(re.findall(r"\.[\w-]+", body)) + body.count("[ATTR]")
+        out[1] += len(re.findall(r":(?!:)[a-z-]+", s))
+        out[2] += len(re.findall(r"(?:^|[\s>+~,])([a-z][a-z0-9]*)", body))
+        return out
+
+    r = walk(sel)
+    return (r[0], r[1], r[2])
 
 
 def _split_compounds(sel):
@@ -183,37 +350,46 @@ def matches(el, sel):
 
     # expand :is(...) / :where(...) into alternation, recursively
     def expand(s):
-        while True:
-            m = re.search(r":(?:is|where|matches)\(", s)
+        """Fan a selector out into every :is()/:where() alternative.
+
+        This used to `return` on the FIRST `:is()`, so a selector with two of
+        them — `html .on-dark :is(.bg-white, …) :is(h1, h2, p)` — was left
+        half-expanded and matched every descendant of `.on-dark`, including
+        `<div>`s. That is how the /platforms avatar scored 1.00:1.
+        """
+        pending, done = [s], []
+        while pending:
+            cur = pending.pop()
+            m = re.search(r":(?:is|where|matches)\(", cur)
             if not m:
-                return s
+                done.append(cur)
+                continue
             i, depth, j = m.end(), 1, m.end()
-            while j < len(s) and depth:
-                if s[j] == "(":
+            while j < len(cur) and depth:
+                if cur[j] == "(":
                     depth += 1
-                elif s[j] == ")":
+                elif cur[j] == ")":
                     depth -= 1
                 j += 1
-            inner = s[i:j - 1]
-            # split on top-level commas
-            opts, depth, cur = [], 0, ""
+            inner = cur[i:j - 1]
+            opts, d2, part = [], 0, ""
             for ch in inner:
                 if ch == "(":
-                    depth += 1
-                    cur += ch
+                    d2 += 1
+                    part += ch
                 elif ch == ")":
-                    depth -= 1
-                    cur += ch
-                elif ch == "," and depth == 0:
-                    opts.append(cur.strip())
-                    cur = ""
+                    d2 -= 1
+                    part += ch
+                elif ch == "," and d2 == 0:
+                    opts.append(part.strip())
+                    part = ""
                 else:
-                    cur += ch
-            opts.append(cur.strip())
-            head = s[:m.start()]
-            tail = s[j:]
-            # if the :is() is glued to a compound, expand into full selectors
-            return [head + o + tail for o in opts]
+                    part += ch
+            opts.append(part.strip())
+            head, tail = cur[:m.start()], cur[j:]
+            for o in opts:
+                pending.append(head + o + tail)
+        return done
 
     try:
         variants = expand(sel)
@@ -249,9 +425,60 @@ def _match_compound_chain(el, sel):
     return True
 
 
+ATTR_NAMES = {
+    "class", "id", "href", "src", "alt", "title", "type", "name", "value",
+    "role", "lang", "dir", "style", "target", "rel", "id", "aria-hidden",
+    "aria-label", "aria-expanded", "aria-current", "data-theme", "data-state",
+    "data-active", "data-sidebar", "data-mobile", "data-orientation",
+    "width", "height", "viewbox", "fill", "stroke", "d", "placeholder",
+    "disabled", "checked", "selected", "open", "hidden", "for", "action",
+    "method", "content", "property", "charset", "http-equiv", "loading",
+    "decoding", "sizes", "srcset", "crossorigin", "referrerpolicy",
+    "autocomplete", "inputmode", "min", "max", "step", "pattern", "required",
+    "readonly", "multiple", "accept", "rows", "cols", "span", "start",
+}
+
+
+def _class_tokens(comp):
+    """Class names in a compound selector, honouring escaped characters and
+    arbitrary values in square brackets."""
+    out = []
+    i, n = 0, len(comp)
+    while i < n:
+        if comp[i] != ".":
+            i += 1
+            continue
+        i += 1
+        start, depth = i, 0
+        while i < n:
+            ch = comp[i]
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == "[":
+                depth += 1
+            elif ch == "]":
+                depth = max(0, depth - 1)
+            elif depth == 0 and (ch in ".#>+~ \t\n," or ch == "("):
+                break
+            i += 1
+        out.append(comp[start:i])
+    return out
+
+
 def _unescape(sel):
-    """CSS escapes: `.text-deep\\/55` is the class `text-deep/55`."""
-    return re.sub(r"\\(.)", r"\1", sel)
+    """CSS escapes: `.text-deep\\/55` is the class `text-deep/55`.
+
+    Tailwind emits arbitrary values double-escaped (`.bg-\\\\[\\\\#fdfcf9\\\\]`),
+    and a single pass left one backslash behind, so every `bg-[#...]` element
+    was invisible to the audit: its ground never resolved and `/pricing`'s
+    `text-deep` headline scored 1.00:1 on a cream section. Loop to a fixed
+    point.
+    """
+    prev = None
+    while prev != sel:
+        prev, sel = sel, re.sub(r"\\(.)", r"\1", sel)
+    return sel
 
 
 def _match_compound(el, comp):
@@ -276,16 +503,28 @@ def _match_compound(el, comp):
     m = re.match(r"^([a-z][a-z0-9-]*)", comp)
     if m and el.tag.lower() != m.group(1):
         return False
-    # id
-    for i in re.findall(r"#([\w-]+)", comp):
-        if el.get("id") != i:
-            return False
-    # classes
-    for c in re.findall(r"\.([\w/-]+)", comp):
+    # id — `#` inside an arbitrary value (`.bg-[#fdfcf9]`) is a colour, not
+    # an id, and used to make every such element unmatchable.
+    depth = 0
+    for m in re.finditer(r"[\[\]]|#([\w-]+)", comp):
+        if m.group(0) == "[":
+            depth += 1
+        elif m.group(0) == "]":
+            depth -= 1
+        elif m.group(1) and depth == 0:
+            if el.get("id") != m.group(1):
+                return False
+    # classes — arbitrary values (`.bg-[#fdfcf9]`, `.grid-cols-[1fr_2fr]`,
+    # `.w-[calc(100%-2rem)]`) contain brackets, #, % and commas, which the
+    # old `[\w/-]+` class pattern cut short: `.bg-[#fdfcf9]` reduced to
+    # `bg-` and every arbitrary-value element silently lost its background.
+    for c in _class_tokens(comp):
         if c not in classes:
             return False
     # attributes
     for attr, op, val in re.findall(r'\[([\w-]+)(?:([*^$~|]?=)"?([^"\]]*)"?)?\]', comp):
+        if attr not in ATTR_NAMES:
+            continue
         have = el.get(attr)
         if have is None:
             return False
@@ -423,6 +662,55 @@ def resolve(el, unlayered, layered, theme):
     return best[3], best[4]
 
 
+def resolve_prop(el, unlayered, layered, theme, prop):
+    """Winning value of `prop` on `el`, same cascade as `resolve`."""
+    candidates = []
+
+    def consider(entry, layer_rank):
+        sel, decls, order = entry
+        if prop not in decls:
+            return
+        for one in split_selector_list(sel):
+            if not one:
+                continue
+            if 'data-theme="light"' in one and theme != "light":
+                continue
+            if 'data-theme="dark"' in one and theme != "dark":
+                continue
+            if not matches(el, one):
+                continue
+            candidates.append((layer_rank, specificity(one), order,
+                               decls[prop], one))
+            break
+
+    for e in unlayered:
+        consider(e, 1)
+    for layer, e in layered:
+        consider(e, 0)
+    if not candidates:
+        return None, None
+    best = max(candidates, key=lambda c: (c[0], c[1], c[2]))
+    return best[3], best[4]
+
+
+def stroke_colour(el, unlayered, layered, theme, variables):
+    """Outlined type (`u-outline*`) paints with -webkit-text-stroke and sets
+    `color: transparent`. Reading `color` alone scored it 1.00:1 and buried
+    the real findings under hundreds of false ones."""
+    for prop in ("-webkit-text-stroke-color", "-webkit-text-stroke",
+                 "text-stroke-color"):
+        raw, sel = resolve_prop(el, unlayered, layered, theme, prop)
+        if raw:
+            raw = resolve_vars(raw, variables)
+            # `1px rgba(...)` shorthand -> take the colour part
+            m = re.search(r"(rgba?\([^)]*\)|#[0-9a-fA-F]{3,8}|lab\([^)]*\))",
+                          raw)
+            c = parse_colour(m.group(1) if m else raw)
+            if c:
+                return c
+    return None
+
+
 def background_of(el, unlayered, layered, theme):
     """Walk up the tree compositing background-color until opaque.
 
@@ -432,9 +720,19 @@ def background_of(el, unlayered, layered, theme):
     over `.bg-bone`, which made every filled button look black.
     """
     stack = []
-    variables = build_vars(unlayered, layered, theme)
+    # Custom properties are inherited, so the base table is the ROOT one;
+    # any element in the ancestor chain may re-declare one (e.g. an
+    # `.on-dark` band flips the ink scale back to bone).
+    # `:root`/`html` bare selectors are theme-agnostic, so a base table built
+    # with el=None picks up the LIGHT block for --ui-ground and dark readings
+    # came out on a cream page. Seed from the theme's own root instead.
+    html_el = el
+    while html_el.getparent() is not None:
+        html_el = html_el.getparent()
+    variables = build_vars(unlayered, layered, theme, el=html_el)
     node = el
     while node is not None:
+        variables.update(build_vars(unlayered, layered, theme, el=node))
         cands = []
         for rank, entries in ((1, unlayered), (0, [e for _, e in layered])):
             for sel, decls, order in entries:
@@ -500,7 +798,7 @@ def audit(html_path, css_text, theme="dark", min_ratio=3.0):
         f.write(css_text)
     unlayered, layered = load_stylesheet(tmp)
     os.unlink(tmp)
-    variables = build_vars(unlayered, layered, theme)
+    root_vars = build_vars(unlayered, layered, theme, el=tree)
 
     findings = []
     for el in tree.iter():
@@ -509,6 +807,44 @@ def audit(html_path, css_text, theme="dark", min_ratio=3.0):
         own = (el.text or "").strip()
         if not own:
             continue
+        # Split-text headings (`<span data-ch>` per character) inherit their
+        # colour from the animated parent. One letter is not readable text on
+        # its own, so measuring it in isolation is meaningless.
+        if el.get("data-ch") is not None:
+            continue
+        # A 3.5%-opacity watermark numeral is a texture, not copy. Anything
+        # below 8% alpha cannot read as text on any ground, which is exactly
+        # why designers use it that way.
+        m_alpha = re.search(r"/(?:\[(\d*\.?\d+)\]|(\d{1,3}))(?:\s|$)", (el.get("class") or ""))
+        if m_alpha:
+            a_tok = m_alpha.group(1) or str(int(m_alpha.group(2)) / 100)
+            try:
+                if float(a_tok) < 0.08:
+                    continue
+            except ValueError:
+                pass
+        # `mix-blend-difference` numerals invert whatever is behind them, so
+        # their static `color` says nothing about what the eye sees. The
+        # renderer computes them; a cascade model cannot.
+        blend, _ = resolve_prop(el, unlayered, layered, theme, "mix-blend-mode")
+        if blend and "difference" in blend or (blend and "exclusion" in blend):
+            continue
+        # Decorative glyphs (`✦` separators) are marked aria-hidden and are
+        # not readable text — judging them by contrast is noise.
+        if el.get("aria-hidden") == "true" or any(
+                a.get("aria-hidden") == "true" for a in el.iterancestors()):
+            continue
+        # Custom properties inherit, so the table that applies to this
+        # element is root + every ancestor, nearest declaration winning.
+        variables = dict(root_vars)
+        chain = []
+        node = el
+        while node is not None:
+            chain.append(node)
+            node = node.getparent()
+        for node in reversed(chain):
+            variables.update(build_vars(unlayered, layered, theme, el=node))
+
         val, sel = resolve(el, unlayered, layered, theme)
         if val is None:
             val = "inherit"
@@ -523,7 +859,21 @@ def audit(html_path, css_text, theme="dark", min_ratio=3.0):
                     found = v2
                 node = node.getparent()
             val = found or ("#EDE9E3" if theme == "dark" else "#14121A")
-        c = parse_colour(resolve_vars(val, variables))
+        declared = resolve_vars(val, variables).strip().lower()
+        c = parse_colour(declared)
+        if c is None and declared in ("transparent", "#0000", "#00000000"):
+            c = (0, 0, 0, 0.0)
+        if c is not None and c[3] < 0.02:
+            # fully transparent glyph fill: either outlined type or a
+            # decorative ghost. Outlined type paints with a stroke.
+            sc = stroke_colour(el, unlayered, layered, theme, variables)
+            if sc is not None and sc[3] < 0.45:
+                # A hairline stroke at low alpha is a deliberate stylistic
+                # outline, not body copy. WCAG 1.4.3 exempts it; measuring it
+                # as if it were text produced the last three "failures" on
+                # /home in both themes.
+                continue
+            c = sc or c
         if c is None:
             # inherit: approximate by walking to nearest ancestor with colour
             node, c = el.getparent(), None
@@ -574,22 +924,52 @@ VAR_PROPS = {
 }
 
 
-def build_vars(unlayered, layered, theme):
-    """Collect custom properties for the given theme from :root/html blocks."""
-    out = {}
-    entries = [(None, e) for e in unlayered] + [(l, e) for l, e in layered]
-    for layer, (sel, decls, order) in entries:
+def build_vars(unlayered, layered, theme, el=None):
+    """Custom properties that apply to `el` (or to :root when el is None).
+
+    This used to `setdefault` into one flat dict, which was wrong twice over:
+    the FIRST declaration won (CSS says the last), and element-scoped rules
+    like `html[data-theme=light] :is(.on-dark,.band-hold)` were folded into
+    the root table, so a cream section could resolve `--ui-ink` to the
+    inverse band's bone. Every light-theme reading was built on that.
+
+    Now it runs the real cascade: unlayered beats layered, then specificity,
+    then source order — same rule as `resolve`.
+    """
+    candidates = {}
+
+    def consider(entry, layer_rank):
+        sel, decls, order = entry
+        vars_here = {k: v for k, v in decls.items() if k.startswith("--")}
+        if not vars_here:
+            return
         for one in split_selector_list(sel):
             one = one.strip()
-            want = ('data-theme="light"' in one and theme == "light") or \
-                   ('data-theme="dark"' in one and theme == "dark") or \
-                   (one in (":root", "html", ":host") and 'data-theme' not in one)
-            if not want:
+            if not one:
                 continue
-            for k, v in decls.items():
-                if k.startswith("--"):
-                    out.setdefault(k, v)
-    return out
+            if 'data-theme="light"' in one and theme != "light":
+                continue
+            if 'data-theme="dark"' in one and theme != "dark":
+                continue
+            if el is None:
+                # `:root`/`html` only — but theme blocks are written
+                # `html[data-theme=light]`, so match those too.
+                if one not in (":root", "html", ":host") and \
+                        not re.fullmatch(r'html\[data-theme=["\']?\w+["\']?\]', one):
+                    continue
+            elif not matches(el, one):
+                continue
+            key = (layer_rank, specificity(one), order)
+            for k, v in vars_here.items():
+                if k not in candidates or key > candidates[k][0]:
+                    candidates[k] = (key, v)
+            break
+
+    for e in unlayered:
+        consider(e, 1)
+    for layer, e in layered:
+        consider(e, 0)
+    return {k: v for k, (_, v) in candidates.items()}
 
 
 def resolve_vars(value, variables, depth=0):
