@@ -1248,9 +1248,24 @@ html[data-theme="light"] .text-ash  { color: var(--ui-ink-soft); }
 html[data-theme="light"] .border-wire { border-color: var(--ui-hairline); }
 
 /* Legacy ink: `text-deep` means "body text", which is dark in light mode. */
-html[data-theme="light"] :is(.text-deep, [class*="text-deep/"]) {
+html[data-theme="light"] .text-deep {
   color: var(--ui-ink);
 }
+/* ...but `text-deep/60` is body text at 60%, and the first version of this
+   rule collapsed every variant to full ink. That is legible and WRONG: the
+   whole secondary-text hierarchy disappears and a caption ends up as heavy
+   as the heading above it. Each step keeps its own weight by mixing the
+   theme ink at the same alpha. */
+html[data-theme="light"] :is(.text-deep\/30) { color: color-mix(in oklab, var(--ui-ink) 46%, transparent); }
+html[data-theme="light"] :is(.text-deep\/40, .text-deep\/45) { color: color-mix(in oklab, var(--ui-ink) 58%, transparent); }
+html[data-theme="light"] :is(.text-deep\/50) { color: color-mix(in oklab, var(--ui-ink) 64%, transparent); }
+html[data-theme="light"] :is(.text-deep\/55) { color: color-mix(in oklab, var(--ui-ink) 68%, transparent); }
+html[data-theme="light"] :is(.text-deep\/60) { color: color-mix(in oklab, var(--ui-ink) 72%, transparent); }
+html[data-theme="light"] :is(.text-deep\/65) { color: color-mix(in oklab, var(--ui-ink) 76%, transparent); }
+html[data-theme="light"] :is(.text-deep\/70) { color: color-mix(in oklab, var(--ui-ink) 80%, transparent); }
+html[data-theme="light"] :is(.text-deep\/75) { color: color-mix(in oklab, var(--ui-ink) 84%, transparent); }
+html[data-theme="light"] :is(.text-deep\/80) { color: color-mix(in oklab, var(--ui-ink) 88%, transparent); }
+html[data-theme="light"] :is(.text-deep\/85) { color: color-mix(in oklab, var(--ui-ink) 92%, transparent); }
 /* ...but inside a band that stayed dark, it must stay light. */
 html[data-theme="light"] .band-hold :is(.text-deep, [class*="text-deep/"]) {
   color: rgba(237, 233, 227, 0.72);
@@ -1406,8 +1421,14 @@ html[data-theme="light"] .bg-cream { background-color: #FBF8F2; }
    Light mode needs the opposite gesture — a LIFTED panel that is lighter
    than the ground, with a real shadow under it. */
 html[data-theme="light"] header .backdrop-blur-xl {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  box-shadow: 0 10px 40px -14px rgba(20, 18, 26, 0.28);
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  /* The panel is only 1.10:1 against the cream ground, so the EDGE and the
+     SHADOW are what make it read as a floating object rather than a wash.
+     Both are explicit here so it still works if shadows are unsupported. */
+  border-color: rgba(20, 18, 26, 0.1);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.7) inset,
+    0 12px 44px -16px rgba(20, 18, 26, 0.34);
 }
 /* The mobile sheet is a full-bleed `bg-noir`. On cream it must be a
    distinctly lighter panel than the page or every link sits on nothing. */
