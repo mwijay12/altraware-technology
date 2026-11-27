@@ -190,6 +190,24 @@ body {
   will-change: transform;
 }
 
+/* The transition curtain is a FIXED DARK GROUND: `bg-[#0a1735]` does not
+   follow the theme, and neither does the violet layer. But `#transitionWord`
+   is `text-white`, and the light-theme ink flip repaints every `text-white`
+   to `--ui-ink` — so the word the curtain exists to show ("Roots", "Let's
+   Go") rendered at 1.05:1 on navy. Every ground rule in this file assumes
+   the element's ground comes from the theme; this one never does. */
+#transitionCenter {
+  color: #ffffff;
+}
+#transitionCenter :is(.text-white, [class*="text-white/"]) {
+  color: #ffffff;
+}
+/* The small caps line is `text-violet-300/70` — 5.9:1 on the navy. It is
+   fine; it is named here only so the pairing is documented. */
+#transitionCenter .text-violet-300\/70 {
+  color: #c4b5fd;
+}
+
 /* ============ MODAL INTERNAL SCROLLBAR (thin, dark, rounded) ============ */
 .modal-scroll {
   scrollbar-width: thin;

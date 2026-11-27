@@ -711,6 +711,50 @@ def stroke_colour(el, unlayered, layered, theme, variables):
     return None
 
 
+def _overlay_ground(el, unlayered, layered, theme):
+    """Ground contributed by SIBLINGS inside a fixed full-viewport overlay.
+
+    `#transitionCenter` (the "Roots" word) is a sibling of the curtain
+    columns, not a child of them. Walking up the tree therefore lands on
+    <body> and reports the page ground — cream — so the word measured
+    16.75:1 and passed while it actually sat on navy at 1.05:1.
+
+    Inside a fixed inset-0 container, earlier siblings paint underneath
+    whatever comes later, so the LAST opaque fill among them is the ground.
+    """
+    node, overlay = el, None
+    while node is not None:
+        pos, _ = resolve_prop(node, unlayered, layered, theme, "position")
+        if pos and pos.strip() == "fixed":
+            overlay = node
+            break
+        node = node.getparent()
+    if overlay is None:
+        return None
+
+    # the branch of the overlay that contains `el`
+    branch = el
+    while branch.getparent() is not None and branch.getparent() is not overlay:
+        branch = branch.getparent()
+    if branch.getparent() is not overlay:
+        return None
+
+    best = None
+    for sib in overlay:
+        if sib is branch:
+            break                      # only things painted before us
+        for sub in sib.iter():
+            if not isinstance(sub.tag, str):
+                continue
+            v, _ = resolve_prop(sub, unlayered, layered, theme, "background-color")
+            if not v or v.strip().lower() in ("transparent", "initial", "inherit"):
+                continue
+            c = parse_colour(resolve_vars(v, build_vars(unlayered, layered, theme, el=sib)))
+            if c and c[3] > 0.6:
+                best = c
+    return best
+
+
 def background_of(el, unlayered, layered, theme):
     """Walk up the tree compositing background-color until opaque.
 
@@ -772,12 +816,17 @@ def background_of(el, unlayered, layered, theme):
                 break
         node = node.getparent()
 
+    # Inside a fixed full-viewport overlay the ground comes from the earlier
+    # SIBLINGS, not from <body> — see _overlay_ground.
+    overlay = _overlay_ground(el, unlayered, layered, theme)
     base = parse_colour(variables.get("--ui-ground", "#0B0A0F"))
     if base is None:
         base = parse_colour("#0B0A0F" if theme == "dark" else "#F6F3EC")
     out = base
     for c in reversed(stack):
         out = composite(c, out)
+    if overlay is not None and len(stack) <= 1:
+        out = overlay
     return out
 
 
@@ -831,9 +880,16 @@ def audit(html_path, css_text, theme="dark", min_ratio=3.0):
             continue
         # Decorative glyphs (`✦` separators) are marked aria-hidden and are
         # not readable text — judging them by contrast is noise.
+        #
+        # BUT a whole overlay can be aria-hidden and still be the most visible
+        # thing on the page: the page-transition curtain is, and its word sat
+        # at 1.05:1 for months because this check skipped it wholesale. So
+        # skip small decorative marks, not entire fixed-position subtrees.
         if el.get("aria-hidden") == "true" or any(
                 a.get("aria-hidden") == "true" for a in el.iterancestors()):
-            continue
+            if len(own) <= 3 and all(not c.isalnum() for c in own):
+                continue   # ✦ ▲ · — a mark, not a word
+            # otherwise fall through: visible text is visible text
         # Custom properties inherit, so the table that applies to this
         # element is root + every ancestor, nearest declaration winning.
         variables = dict(root_vars)
