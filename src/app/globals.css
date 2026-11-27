@@ -1068,10 +1068,6 @@ textarea:focus {
     color: rgba(237, 233, 227, 0.34);
   }
 
-  .on-dark :is(.border-deep, [class*="border-deep/"]) {
-    border-color: rgba(237, 233, 227, 0.16);
-  }
-
   /* --- light card sitting on a light section --- */
   .on-light :is(.bg-white, .bg-white\/90, .bg-white\/85, .bg-white\/80) {
     background-color: #FDFBF7;
@@ -1408,6 +1404,37 @@ html[data-theme="light"] :is(.on-dark, .band-hold) :is([class*="text-bone/2"], [
     [class*="text-bone/3"], [class*="text-white/3"],
     [class*="text-bone/4"], [class*="text-white/4"]) {
   color: color-mix(in oklab, var(--ui-ink) 62%, transparent);
+}
+
+/* ---------- 2f-bis. A LIGHT FILL INSIDE A DARK BAND ----------
+   This is the bug in the screenshot, and it was never theme-specific.
+   The CTA is `bg-white text-deep` inside `<section class="on-dark …">`.
+   `.on-dark` converts `text-deep` to bone at 72% because it assumes the
+   ground behind the text is dark. Here the element paints its OWN white
+   fill, so the assumption is wrong and the label renders at 1.15:1 — a
+   pill that looks disabled.
+
+   The rule below is UNLAYERED on purpose. The rule it must beat lives in
+   `@layer components`, and an unlayered declaration wins over every layer
+   regardless of specificity. My first attempt put this inside a layer and
+   silently did nothing. */
+html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone,
+    [class*="bg-white/"]) {
+  color: #0B0A0F;
+}
+html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone):is(
+    .text-deep, [class*="text-deep/"]),
+html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone)
+    :is(.text-deep, [class*="text-deep/"]),
+html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone)
+    :is(h1, h2, h3, h4, h5, h6, p) {
+  color: #0B0A0F;
+}
+/* Secondary copy on that white card keeps a step of hierarchy, but a
+   readable one. */
+html .on-dark :is(.bg-white, .bg-cream, .bg-paper, .bg-bone)
+    :is([class*="text-deep/"], .text-bone, [class*="text-bone/"]) {
+  color: rgba(11, 10, 15, 0.72);
 }
 
 /* ---------- 3. SURFACES + LINES ---------- */
